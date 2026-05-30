@@ -7,6 +7,7 @@ CREATE TABLE IF NOT EXISTS track_history (
     id      INTEGER PRIMARY KEY AUTOINCREMENT,
     name    TEXT NOT NULL,
     singer  TEXT,
+    album   TEXT,
     time    TEXT NOT NULL
 );
 

@@ -20,9 +20,10 @@ def process_streaming_history():
         for entry in data:
             name = entry.get("master_metadata_track_name")
             singer = entry.get("master_metadata_album_artist_name")
+            album = entry.get("master_metadata_album_album_name")
             time = entry.get("ts")
             if name and time:
-                tracks.append({"name": name, "singer": singer, "time": time})
+                tracks.append({"name": name, "singer": singer, "album": album, "time": time})
     return tracks
 
 
@@ -32,8 +33,8 @@ def save_to_db(tracks):
         con.executescript(f.read())
 
     con.executemany(
-        "INSERT INTO track_history (name, singer, time) VALUES (?, ?, ?)",
-        [(t["name"], t["singer"], t["time"]) for t in tracks],
+        "INSERT INTO track_history (name, singer, album, time) VALUES (?, ?, ?, ?)",
+        [(t["name"], t["singer"], t["album"], t["time"]) for t in tracks],
     )
     con.commit()
     con.close()
