@@ -3,7 +3,7 @@ import json
 import os
 import sqlite3
 
-BASE_DIR = os.path.dirname(__file__)
+BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 RAW_DIR = os.path.join(BASE_DIR, "data", "spotifyRaw")
 PROCESSED_DIR = os.path.join(BASE_DIR, "data", "spotifyProcessed")
 DB_PATH = os.path.join(PROCESSED_DIR, "SpotifyData.db")

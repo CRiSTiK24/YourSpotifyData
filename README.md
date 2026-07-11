@@ -4,7 +4,7 @@
 
 Spotify lets you [request a full copy of your data](https://support.spotify.com/us/article/data-rights-and-privacy-settings/) under GDPR. The export contains your complete streaming history, liked songs, liked albums, and playlists but it's raw JSON files in ZIPs.
 
-This project processes that data into a local SQLite database and exposes it through a Streamlit web app, so you can browse, search, and visualise everything in one place. You can see it with my own data in [https://cristik.duckdns.org](https://cristik.duckdns.org)
+This project processes that data into a local SQLite database and exposes it through a FastAPI + htmx web app, so you can browse, search, and visualise everything in one place. You can see it with my own data in [https://cristik.duckdns.org](https://cristik.duckdns.org)
 
 
 
@@ -41,16 +41,21 @@ Extract the Spotify zip and put the relevant files into `data/spotifyRaw/`:
 
 **3. Process the data**
 
+These only use the standard library, so no `uv`/venv is needed:
+
 ```bash
-python3 StreamingHistoryProcessor.py
-python3 YourLibraryProcessor.py
-python3 PlaylistProcessor.py
+python3 processors/StreamingHistoryProcessor.py
+python3 processors/YourLibraryProcessor.py
+python3 processors/PlaylistProcessor.py
 ```
 
 **4. Run the app**
 
 ```bash
-uv run streamlit run main.py
+cd backend
+uv run uvicorn src.main:app --reload
 ```
 
-Open `http://localhost:8501` in your browser. You should be able to see the same as in https://cristik.duckdns.org/ but with your own data loaded. 
+Open `http://localhost:8000` in your browser. You should be able to see the same as in https://cristik.duckdns.org/ but with your own data loaded.
+
+By default the app reads the database from `data/spotifyProcessed/SpotifyData.db`. To point it elsewhere, set `DB_PATH` in `backend/.env`.
