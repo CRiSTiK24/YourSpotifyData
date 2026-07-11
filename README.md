@@ -27,35 +27,39 @@ At the moment this is a one-person thing which has already been done in other pr
 
 **1. Request your Spotify data**
 
-Go to [Spotify Privacy Settings](https://support.spotify.com/us/article/data-rights-and-privacy-settings/), request your extended streaming history, and wait for the download link (can take up to 30 days, in my case it took 4). You'll need the Account data for the Playlists and Liked Songs/Albums information, and the Spotify Extended Streaming History for the whole of it. Be aware that they are not 100% synchronised, so new tracks in the Account Data might not be in the Extended Streaming History yet.
+Go to [Spotify Privacy Settings](https://support.spotify.com/us/article/data-rights-and-privacy-settings/), request your extended streaming history, and wait for the download link (can take up to 30 days, in my case it took 4).
 
-**2. Place your raw data**
-
-Extract the Spotify zip and put the relevant files into `data/spotifyRaw/`:
-
-| File | Description |
-|------|-------------|
-| `Streaming_History_Audio_*.json` | Full play history |
-| `YourLibrary.json` | Liked songs and albums |
-| `Playlist*.json` | Your playlists |
-
-**3. Process the data**
-
-These only use the standard library, so no `uv`/venv is needed:
-
-```bash
-python3 processors/StreamingHistoryProcessor.py
-python3 processors/YourLibraryProcessor.py
-python3 processors/PlaylistProcessor.py
-```
-
-**4. Run the app**
+**2. Run the app**
 
 ```bash
 cd backend
 uv run uvicorn src.main:app --reload
 ```
 
-Open `http://localhost:8000` in your browser. You should be able to see the same as in https://cristik.duckdns.org/ but with your own data loaded.
+Open `http://localhost:8000` in your browser. By default it reads the database from `data/spotifyProcessed/SpotifyData.db`; set `DB_PATH` in `backend/.env` to point it elsewhere.
 
-By default the app reads the database from `data/spotifyProcessed/SpotifyData.db`. To point it elsewhere, set `DB_PATH` in `backend/.env`.
+**3. Enable login and upload your export**
+
+Data gets in through the browser, not by hand-placing files. Login is gated by email code (there's exactly one authorized account: mine :O), sent via [Resend](https://resend.com). Sign up, grab an API key, and in `backend/.env` set:
+
+```
+ALLOWED_EMAIL=you@example.com
+RESEND_API_KEY=re_xxxxxxxx
+RESEND_FROM=onboarding@resend.dev
+```
+
+Log in, then drop your Spotify zip at `/upload`. Re-uploading a newer export later only adds what's new.
+
+**4. Fetch cover art**
+
+Register an app in the [Spotify Developer Dashboard](https://developer.spotify.com/dashboard) (Development Mode, Client Credentials flow, no user login needed) and set `SPOTIFY_CLIENT_ID` / `SPOTIFY_CLIENT_SECRET` in `backend/.env`. It's an automated background job, but sadly it's heavily throttled by Spotify.
+
+**5. Enable the scrobbler**
+
+Rather than re-uploading exports, link your Spotify account once and let the app poll for new plays automatically. In the [Spotify Developer Dashboard](https://developer.spotify.com/dashboard): allowlist yourself under "Users and Access" (Development Mode requires it) and add a Redirect URI, e.g. `https://your-domain/scrobbler/callback`. Then set it in `backend/.env`:
+
+```
+SPOTIFY_REDIRECT_URI=https://your-domain/scrobbler/callback
+```
+
+Visit `/scrobbler` (same login as `/upload`) and hit "Connect Spotify". From then on it checks recently-played every 15 minutes and adds anything new.

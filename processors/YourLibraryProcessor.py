@@ -16,39 +16,63 @@ def process_library():
         data = json.load(f)
 
     tracks = [
-        {"track_name": t["track"], "artist_name": t["artist"]}
+        {"track_name": t["track"], "artist_name": t["artist"], "uri": t.get("uri")}
         for t in data.get("tracks", [])
         if t.get("track") and t.get("artist")
     ]
 
     albums = [
-        {"album_name": a["album"], "artist_name": a["artist"]}
+        {"album_name": a["album"], "artist_name": a["artist"], "uri": a.get("uri")}
         for a in data.get("albums", [])
         if a.get("album") and a.get("artist")
     ]
 
-    return tracks, albums
+    artists = [
+        {"artist_name": a["name"], "uri": a.get("uri")}
+        for a in data.get("artists", [])
+        if a.get("name")
+    ]
+
+    return tracks, albums, artists
 
 
-def save_to_db(tracks, albums):
-    con = sqlite3.connect(DB_PATH)
-    with open(SCHEMA_PATH) as f:
-        con.executescript(f.read())
+def _count(con, table):
+    return con.execute(f"SELECT COUNT(*) FROM {table}").fetchone()[0]
+
+
+def save_to_db(con, tracks, albums, artists):
+    """YourLibrary.json always reflects the full current state, so re-running
+    against it should only add genuinely new liked items (INSERT OR IGNORE
+    against the UNIQUE constraints) rather than duplicating unchanged ones."""
+    before_tracks = _count(con, "library_tracks")
+    before_albums = _count(con, "library_albums")
+    before_artists = _count(con, "library_artists")
 
     con.executemany(
-        "INSERT INTO library_tracks (track_name, artist_name) VALUES (?, ?)",
-        [(t["track_name"], t["artist_name"]) for t in tracks],
+        "INSERT OR IGNORE INTO library_tracks (track_name, artist_name, spotify_track_uri) "
+        "VALUES (?, ?, ?)",
+        [(t["track_name"], t["artist_name"], t["uri"]) for t in tracks],
     )
     con.executemany(
-        "INSERT INTO library_albums (album_name, artist_name) VALUES (?, ?)",
-        [(a["album_name"], a["artist_name"]) for a in albums],
+        "INSERT OR IGNORE INTO library_albums (album_name, artist_name, spotify_album_uri) "
+        "VALUES (?, ?, ?)",
+        [(a["album_name"], a["artist_name"], a["uri"]) for a in albums],
+    )
+    con.executemany(
+        "INSERT OR IGNORE INTO library_artists (artist_name, spotify_artist_uri) VALUES (?, ?)",
+        [(a["artist_name"], a["uri"]) for a in artists],
     )
     con.commit()
-    con.close()
+
+    return {
+        "new_library_tracks": _count(con, "library_tracks") - before_tracks,
+        "new_library_albums": _count(con, "library_albums") - before_albums,
+        "new_library_artists": _count(con, "library_artists") - before_artists,
+    }
 
 
 def main():
-    tracks, albums = process_library()
+    tracks, albums, artists = process_library()
 
     print(f"Found {len(tracks)} library tracks\n")
     for t in tracks[:20]:
@@ -62,8 +86,22 @@ def main():
     if len(albums) > 20:
         print(f"  ... and {len(albums) - 20} more")
 
-    save_to_db(tracks, albums)
-    print(f"\nSaved to {DB_PATH}")
+    print(f"\nFound {len(artists)} library artists\n")
+    for a in artists[:20]:
+        print(f"  {a['artist_name']}")
+    if len(artists) > 20:
+        print(f"  ... and {len(artists) - 20} more")
+
+    con = sqlite3.connect(DB_PATH)
+    with open(SCHEMA_PATH) as f:
+        con.executescript(f.read())
+    counts = save_to_db(con, tracks, albums, artists)
+    con.close()
+
+    print(f"\nAdded {counts['new_library_tracks']} new tracks, "
+          f"{counts['new_library_albums']} new albums, "
+          f"{counts['new_library_artists']} new artists, saved to {DB_PATH}")
+    print(json.dumps(counts))
 
 
 if __name__ == "__main__":

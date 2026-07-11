@@ -72,6 +72,7 @@ def playlist_detail(playlist_id: int, request: Request, con: DBDep, name: str = 
             f"/track/{quote(t['track_name'])}?artist={quote(t['artist_name'])}",
             t["artist_name"],
             f"/artist/{quote(t['artist_name'])}",
+            image_url=t["image_url"],
         )
         for t in tracks
     )

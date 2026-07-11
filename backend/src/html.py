@@ -26,6 +26,8 @@ def page(content: str) -> HTMLResponse:
     <a href="/liked-albums">Liked Albums</a>
     <a href="/playlists">Playlists</a>
     <a href="/artists">Artists</a>
+    <a href="/upload">Upload</a>
+    <a href="/scrobbler">Scrobbler</a>
   </div>
 </nav>
 <div class="container">
@@ -46,7 +48,10 @@ def row(
     secondary_label: str | None = None,
     secondary_href: str | None = None,
     note: str | None = None,
+    *,
+    image_url: str | None = None,
 ) -> str:
+    thumb = f"<img class='row-thumb' src='{escape(image_url)}' loading='lazy'>" if image_url else ""
     left = f"<a href='{escape(primary_href)}'>{escape(primary_label)}</a>"
     if secondary_label and secondary_href:
         left += (
@@ -54,7 +59,13 @@ def row(
             f"<a href='{escape(secondary_href)}'>{escape(secondary_label)}</a>"
         )
     right = f"<span class='note'>{escape(note)}</span>" if note else ""
-    return f"<div class='row'><div class='left'>{left}</div>{right}</div>"
+    return f"<div class='row'><div class='left'>{thumb}{left}</div>{right}</div>"
+
+
+def hero_image(image_url: str | None) -> str:
+    if not image_url:
+        return ""
+    return f"<img class='hero-image' src='{escape(image_url)}' loading='lazy'>"
 
 
 def pagination_html(current_page: int, total_pages: int, base_href: str, param: str) -> str:

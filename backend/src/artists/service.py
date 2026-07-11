@@ -6,10 +6,11 @@ from src.utils import word_clauses
 def load_artists(con: sqlite3.Connection) -> list[sqlite3.Row]:
     return con.execute(
         """
-        SELECT singer, COUNT(*) as play_count
-        FROM track_history
-        WHERE singer IS NOT NULL AND singer != ''
-        GROUP BY singer
+        SELECT th.singer, COUNT(*) as play_count, ai.image_url
+        FROM track_history th
+        LEFT JOIN artist_images ai ON ai.artist_name = th.singer
+        WHERE th.singer IS NOT NULL AND th.singer != ''
+        GROUP BY th.singer
         ORDER BY play_count DESC
         """
     ).fetchall()
@@ -17,10 +18,16 @@ def load_artists(con: sqlite3.Connection) -> list[sqlite3.Row]:
 
 def search_artists(con: sqlite3.Connection, query: str) -> list[sqlite3.Row]:
     words = query.split()
-    where, params = word_clauses(words, "singer")
+    where, params = word_clauses(words, "th.singer")
     return con.execute(
-        f"SELECT singer, COUNT(*) as play_count FROM track_history "
-        f"WHERE singer IS NOT NULL AND singer != '' AND {where} GROUP BY singer ORDER BY play_count DESC",
+        f"""
+        SELECT th.singer, COUNT(*) as play_count, ai.image_url
+        FROM track_history th
+        LEFT JOIN artist_images ai ON ai.artist_name = th.singer
+        WHERE th.singer IS NOT NULL AND th.singer != '' AND {where}
+        GROUP BY th.singer
+        ORDER BY play_count DESC
+        """,
         params,
     ).fetchall()
 
@@ -34,6 +41,21 @@ def load_artist_history(con: sqlite3.Connection, artist_name: str) -> list[sqlit
 
 def load_artist_top_tracks(con: sqlite3.Connection, artist_name: str) -> list[sqlite3.Row]:
     return con.execute(
-        "SELECT name, COUNT(*) as cnt FROM track_history WHERE singer = ? GROUP BY name ORDER BY cnt DESC LIMIT 20",
+        """
+        SELECT th.name, COUNT(*) as cnt, ai.image_url
+        FROM track_history th
+        LEFT JOIN album_images ai ON ai.artist_name = th.singer AND ai.album_name = th.album
+        WHERE th.singer = ?
+        GROUP BY th.name
+        ORDER BY cnt DESC
+        LIMIT 20
+        """,
         (artist_name,),
     ).fetchall()
+
+
+def get_artist_image(con: sqlite3.Connection, artist_name: str) -> str | None:
+    row = con.execute(
+        "SELECT image_url FROM artist_images WHERE artist_name = ?", (artist_name,)
+    ).fetchone()
+    return row["image_url"] if row else None

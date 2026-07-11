@@ -4,9 +4,10 @@ from urllib.parse import quote
 from fastapi import APIRouter, Request
 from fastapi.responses import HTMLResponse
 
+from src.albums.service import get_album_image
 from src.database import DBDep
 from src.heatmap import build_heatmap_html
-from src.html import page, row
+from src.html import hero_image, page, row
 
 from . import service
 
@@ -47,6 +48,7 @@ def track_detail(track_name: str, request: Request, con: DBDep, artist: str = ""
 
     content = f"""
 <a class="back-link" href="javascript:history.back()">← Back</a>
+{hero_image(get_album_image(con, artist, album_name) if album_name else None)}
 <h1>🎵 {escape(track_name)}</h1>
 {artist_link} {album_link}
 <p class="subtitle">Played {len(history)} time{"s" if len(history) != 1 else ""}</p>

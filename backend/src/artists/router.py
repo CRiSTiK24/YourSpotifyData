@@ -7,7 +7,7 @@ from fastapi.responses import HTMLResponse
 from src.constants import MONTHS
 from src.database import DBDep
 from src.heatmap import build_heatmap_html
-from src.html import page, paginate, pagination_html, row
+from src.html import hero_image, page, paginate, pagination_html, row
 from src.utils import aggregate_plays
 
 from . import service
@@ -25,7 +25,12 @@ def artists(request: Request, con: DBDep, query: str = "", artists_page: int = 1
     page_items, current_page, total_pages = paginate(list(all_artists), artists_page)
 
     rows_html = "".join(
-        row(a["singer"], f"/artist/{quote(a['singer'])}", note=f"{a['play_count']} plays")
+        row(
+            a["singer"],
+            f"/artist/{quote(a['singer'])}",
+            note=f"{a['play_count']} plays",
+            image_url=a["image_url"],
+        )
         for a in page_items
     )
     base = f"/artists?query={quote(query)}" if query else "/artists"
@@ -77,13 +82,17 @@ def artist_detail(artist_name: str, request: Request, con: DBDep):
 
     top_html = "".join(
         row(
-            t["name"], f"/track/{quote(t['name'])}?artist={quote(artist_name)}", note=f"×{t['cnt']}"
+            t["name"],
+            f"/track/{quote(t['name'])}?artist={quote(artist_name)}",
+            note=f"×{t['cnt']}",
+            image_url=t["image_url"],
         )
         for t in top_tracks
     )
 
     content = f"""
 <a class="back-link" href="/artists">← Back</a>
+{hero_image(service.get_artist_image(con, artist_name))}
 <h1>🎤 {escape(artist_name)}</h1>
 <p class="subtitle">{len(history)} total plays</p>
 <hr class="divider">

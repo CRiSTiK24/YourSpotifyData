@@ -22,6 +22,7 @@ def liked_songs(con: DBDep):
             f"/track/{quote(t['track_name'])}?artist={quote(t['artist_name'])}",
             t["artist_name"],
             f"/artist/{quote(t['artist_name'])}",
+            image_url=t["image_url"],
         )
         for t in tracks
     )
@@ -45,6 +46,7 @@ def liked_albums(con: DBDep):
             f"/album/{quote(a['album_name'])}?artist={quote(a['artist_name'])}",
             a["artist_name"],
             f"/artist/{quote(a['artist_name'])}",
+            image_url=a["image_url"],
         )
         for a in albums
     )

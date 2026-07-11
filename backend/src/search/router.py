@@ -55,6 +55,7 @@ def search(request: Request, con: DBDep, query: str = "", search_page: int = 1):
                 f"/track/{quote(r['track_name'])}?artist={quote(r['artist_name'])}",
                 r["artist_name"],
                 f"/artist/{quote(r['artist_name'])}",
+                image_url=r["image_url"],
             )
             for r in lib_tracks
         )
@@ -69,6 +70,7 @@ def search(request: Request, con: DBDep, query: str = "", search_page: int = 1):
                 f"/album/{quote(r['album_name'])}?artist={quote(r['artist_name'])}",
                 r["artist_name"],
                 f"/artist/{quote(r['artist_name'])}",
+                image_url=r["image_url"],
             )
             for r in lib_albums
         )
@@ -91,6 +93,7 @@ def search(request: Request, con: DBDep, query: str = "", search_page: int = 1):
                 f"/track/{quote(t['track_name'])}?artist={quote(t['artist_name'])}",
                 t["artist_name"],
                 f"/artist/{quote(t['artist_name'])}",
+                image_url=t["image_url"],
             )
             for t in tracks
         )

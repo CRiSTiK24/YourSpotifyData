@@ -1,6 +1,9 @@
 data/spotifyRaw/Streaming_History_Audio_*.json
 data/spotifyRaw/Streaming_History_Video_*.json
 data/spotifyProcessed/SpotifyData.db
+data/spotifyProcessed/image_fetch.log
+data/spotifyProcessed/.image_fetch.lock
 __pycache__/
 *.pyc
 .env
+config.env

@@ -7,7 +7,7 @@ from fastapi.responses import HTMLResponse
 from src.constants import MONTHS
 from src.database import DBDep
 from src.heatmap import build_heatmap_html
-from src.html import page, row
+from src.html import hero_image, page, row
 from src.utils import aggregate_plays
 
 from . import service
@@ -63,6 +63,7 @@ def album_detail(album_name: str, request: Request, con: DBDep, artist: str = ""
 
     content = f"""
 <a class="back-link" href="/liked-albums">← Back</a>
+{hero_image(service.get_album_image(con, artist, album_name))}
 <h1>💿 {escape(album_name)}</h1>
 {artist_link}
 <p class="subtitle">{len(history)} plays from this album</p>

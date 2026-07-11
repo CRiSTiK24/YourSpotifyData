@@ -11,7 +11,15 @@ def playlist_exists(con: sqlite3.Connection, playlist_id: int) -> bool:
 
 def load_playlist_tracks(con: sqlite3.Connection, playlist_id: int) -> list[sqlite3.Row]:
     return con.execute(
-        "SELECT track_name, artist_name FROM playlist_tracks WHERE playlist_id = ? ORDER BY rowid",
+        """
+        SELECT pt.track_name, pt.artist_name, ai.image_url
+        FROM playlist_tracks pt
+        LEFT JOIN track_history th ON th.name = pt.track_name AND th.singer = pt.artist_name
+        LEFT JOIN album_images ai ON ai.artist_name = pt.artist_name AND ai.album_name = th.album
+        WHERE pt.playlist_id = ?
+        GROUP BY pt.id
+        ORDER BY pt.rowid
+        """,
         (playlist_id,),
     ).fetchall()
 
