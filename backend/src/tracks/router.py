@@ -7,7 +7,7 @@ from fastapi.responses import HTMLResponse
 from src.albums.service import get_album_image
 from src.database import DBDep
 from src.heatmap import build_heatmap_html
-from src.html import back_link, chip_link, detail_layout, hero_image, page, row
+from src.html import detail_layout, hero_image, link, page, row
 
 from . import service
 
@@ -25,12 +25,14 @@ def track_detail(track_name: str, request: Request, con: DBDep, artist: str = ""
     playlists_in = service.load_track_playlists(con, track_name, artist)
 
     album_name = next((r["album"] for r in history if r["album"]), None)
-    album_link = (
-        chip_link(album_name, f"/album/{quote(album_name)}?artist={quote(artist)}")
+    album_line = (
+        f"<p class='subtitle'>Album: {link(album_name, f'/album/{quote(album_name)}?artist={quote(artist)}')}</p>"
         if album_name
         else ""
     )
-    artist_link = chip_link(artist, f"/artist/{quote(artist)}") if artist else ""
+    artist_line = (
+        f"<p class='subtitle'>Artist: {link(artist, f'/artist/{quote(artist)}')}</p>" if artist else ""
+    )
 
     heatmap_html, _ = build_heatmap_html(history, f"track_{track_name}", request)
 
@@ -42,10 +44,10 @@ def track_detail(track_name: str, request: Request, con: DBDep, artist: str = ""
     )
 
     header = f"""
-{back_link("javascript:history.back()")}
 {hero_image(get_album_image(con, artist, album_name) if album_name else None)}
 <h1>{escape(track_name)}</h1>
-{artist_link} {album_link}
+{artist_line}
+{album_line}
 <p class="subtitle">Played {len(history)} time{"s" if len(history) != 1 else ""}</p>
 """
     return page(detail_layout(header, heatmap_html, "Playlists", pl_html))

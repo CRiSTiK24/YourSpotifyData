@@ -6,7 +6,7 @@ from fastapi.responses import HTMLResponse
 
 from src.database import DBDep
 from src.heatmap import build_heatmap_html
-from src.html import back_link, page, paginate, pagination_html, row
+from src.html import page, paginate, pagination_html, row
 from src.utils import aggregate_plays
 
 from . import service
@@ -105,7 +105,6 @@ def search(request: Request, con: DBDep, query: str = "", search_page: int = 1):
         )
 
     content = f"""
-{back_link("/")}
 <h1>Search: &ldquo;{escape(query)}&rdquo;</h1>
 <h2>Play history — {len(history)} plays across {len(aggregated)} track{"s" if len(aggregated) != 1 else ""}</h2>
 {rows_html or "<p class='info'>No play history found.</p>"}

@@ -13,6 +13,15 @@ def aggregate_plays(plays: list) -> list[tuple[str, str | None, int]]:
     )
 
 
+def fts_match_query(words: list[str]) -> str:
+    """Build an FTS5 MATCH query from user-typed words: each word becomes a
+    quoted prefix term (so "day" matches "Daytime"), AND'd together. Bareword
+    terms match against any indexed column, same semantics as the old
+    per-column OR in word_clauses."""
+    terms = [f'"{word.replace(chr(34), chr(34) * 2)}"*' for word in words]
+    return " AND ".join(terms)
+
+
 def word_clauses(words: list[str], *columns: str) -> tuple[str, list[str]]:
     parts = []
     params = []

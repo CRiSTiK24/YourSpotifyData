@@ -7,7 +7,7 @@ from fastapi.responses import HTMLResponse
 from src.constants import MONTHS
 from src.database import DBDep
 from src.heatmap import build_heatmap_html
-from src.html import back_link, chip_link, detail_layout, hero_image, page, row
+from src.html import detail_layout, hero_image, link, page, row
 from src.utils import aggregate_plays
 
 from . import service
@@ -46,22 +46,25 @@ def album_detail(album_name: str, request: Request, con: DBDep, artist: str = ""
             for name, singer, count in aggregated
         )
 
-    all_plays_html = "".join(
+    tracks_html = "".join(
         row(
-            r["name"],
-            f"/track/{quote(r['name'])}?artist={quote(r['singer'] or artist)}",
-            note=r["time"].replace("T", " ").replace("Z", " UTC"),
+            name,
+            f"/track/{quote(name)}?artist={quote(singer or artist)}",
+            singer or artist,
+            f"/artist/{quote(singer or artist)}" if (singer or artist) else None,
+            note=f"×{count}",
         )
-        for r in history
+        for name, singer, count in aggregate_plays(history)
     )
 
-    artist_link = chip_link(artist, f"/artist/{quote(artist)}") if artist else ""
+    artist_line = (
+        f"<p class='subtitle'>Artist: {link(artist, f'/artist/{quote(artist)}')}</p>" if artist else ""
+    )
 
     header = f"""
-{back_link("/liked-albums")}
 {hero_image(service.get_album_image(con, artist, album_name))}
 <h1>{escape(album_name)}</h1>
-{artist_link}
+{artist_line}
 <p class="subtitle">{len(history)} plays from this album</p>
 """
-    return page(detail_layout(header, heatmap_html + period_html, "All plays", all_plays_html))
+    return page(detail_layout(header, heatmap_html + period_html, "Tracks", tracks_html))

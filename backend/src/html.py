@@ -16,15 +16,15 @@ logged_in_var: ContextVar[bool] = ContextVar("logged_in", default=False)
 
 def page(content: str) -> HTMLResponse:
     if logged_in_var.get():
-        nav_right = """
-    <div class="nav-right">
+        sidebar_bottom = """
+    <div class="sidebar-bottom">
       <a href="/upload">Upload</a>
       <a href="/scrobbler">Scrobbler</a>
       <a href="/theme">Theme</a>
     </div>"""
     else:
-        nav_right = """
-    <div class="nav-right">
+        sidebar_bottom = """
+    <div class="sidebar-bottom">
       <a href="/login">Login</a>
     </div>"""
     html = f"""<!DOCTYPE html>
@@ -44,18 +44,18 @@ def page(content: str) -> HTMLResponse:
   </script>
   <script src="https://unpkg.com/htmx.org@2.0.4" integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+" crossorigin="anonymous"></script>
 </head>
-<body hx-boost="true">
-<nav>
-  <div class="inner">
+<body hx-boost="true" hx-target="#content" hx-select="#content" hx-swap="outerHTML">
+<div class="shell">
+  <aside class="sidebar">
     <a class="brand" href="/">Home</a>
     <a href="/liked-songs">Liked Songs</a>
     <a href="/liked-albums">Liked Albums</a>
     <a href="/playlists">Playlists</a>
-    <a href="/artists">Artists</a>{nav_right}
-  </div>
-</nav>
-<div class="container">
+    <a href="/artists">Artists</a>{sidebar_bottom}
+  </aside>
+  <main class="content" id="content">
 {content}
+  </main>
 </div>
 </body>
 </html>"""
@@ -71,31 +71,28 @@ def button(label: str, href: str, *, hx_boost: bool | None = None) -> str:
     return f"<a class='btn' href='{escape(href)}'{boost_attr}>{escape(label)}</a>"
 
 
-def chip_link(label: str, href: str) -> str:
-    return f"<a class='chip-link' href='{escape(href)}'>{escape(label)}</a>"
-
-
-def back_link(href: str, label: str = "← Back") -> str:
-    return f"<a class='back-link' href='{escape(href)}'>{escape(label)}</a>"
-
-
-def stat_card(title: str, count_label: str) -> str:
-    return f"""
-  <div class="card">
-    <h2>{escape(title)}</h2>
-    <p class="count">{escape(count_label)}</p>
-  </div>"""
-
-
 def search_form(
-    action: str, placeholder: str, *, value: str = "", autofocus: bool = True, name: str = "query"
+    action: str,
+    placeholder: str,
+    *,
+    value: str = "",
+    autofocus: bool = True,
+    name: str = "query",
+    hx_target: str = "#content",
+    hx_select: str = "#content",
+    hx_swap: str = "outerHTML",
+    hx_push_url: bool = True,
 ) -> str:
     autofocus_attr = " autofocus" if autofocus else ""
     value_attr = f" value='{escape(value)}'" if value else ""
+    action_esc = escape(action)
+    push_url = "true" if hx_push_url else "false"
     return f"""
-<form class="search-form" action="{escape(action)}" method="get">
-  <input name="{escape(name)}" type="text"{value_attr} placeholder="{escape(placeholder)}"{autofocus_attr}>
-  <button type="submit">Search</button>
+<form class="search-form" action="{action_esc}" method="get" autocomplete="off">
+  <input id="live-search-input" name="{escape(name)}" type="text" autocomplete="off"{value_attr} placeholder="{escape(placeholder)}"{autofocus_attr}
+    onkeydown="if(event.key==='Enter'){{event.preventDefault();}}"
+    hx-get="{action_esc}" hx-trigger="input changed delay:300ms" hx-target="{escape(hx_target)}"
+    hx-select="{escape(hx_select)}" hx-swap="{escape(hx_swap)}" hx-push-url="{push_url}" hx-preserve="true">
 </form>"""
 
 
@@ -109,11 +106,11 @@ def row(
     image_url: str | None = None,
 ) -> str:
     thumb = f"<img class='row-thumb' src='{escape(image_url)}' loading='lazy'>" if image_url else ""
-    left = f"<a href='{escape(primary_href)}'>{escape(primary_label)}</a>"
+    left = f"<a class='row-primary' href='{escape(primary_href)}'>{escape(primary_label)}</a>"
     if secondary_label and secondary_href:
         left += (
             f" <span class='sep'>—</span> "
-            f"<a href='{escape(secondary_href)}'>{escape(secondary_label)}</a>"
+            f"<a class='row-secondary' href='{escape(secondary_href)}'>{escape(secondary_label)}</a>"
         )
     right = f"<span class='note'>{escape(note)}</span>" if note else ""
     return f"<div class='row'><div class='left'>{thumb}{left}</div>{right}</div>"
@@ -125,18 +122,45 @@ def hero_image(image_url: str | None) -> str:
     return f"<img class='hero-image' src='{escape(image_url)}' loading='lazy'>"
 
 
-def detail_layout(header: str, heatmap: str, list_title: str, list_content: str) -> str:
+def detail_layout(
+    header: str, heatmap: str, list_title: str, list_content: str, list_id: str = ""
+) -> str:
     """Two-panel layout used by track/album/artist/playlist detail pages:
-    header info on the left, heatmap on the right, full-width list below."""
+    header info + list on the left, heatmap on the right."""
+    list_id_attr = f" id='{escape(list_id)}'" if list_id else ""
     return f"""
 <div class="detail-layout">
-  <div class="panel detail-header">{header}</div>
-  <div class="panel detail-heatmap">{heatmap}</div>
-  <div class="panel detail-list">
+  <div class="panel detail-header">
+    {header}
+    <hr class="divider">
     <h2>{escape(list_title)}</h2>
-    {list_content}
+    <div{list_id_attr}>{list_content}</div>
   </div>
+  <div class="panel detail-heatmap">{heatmap}</div>
 </div>"""
+
+
+def infinite_scroll_trigger(next_href: str) -> str:
+    """A sentinel element that fetches the next batch when scrolled into
+    view, replacing itself with the response (more rows + a fresh sentinel,
+    or nothing once there's no more data).
+
+    Uses "intersect once" (IntersectionObserver-backed) rather than
+    "revealed", since "revealed" only listens for the window's own scroll
+    event, so it never fires when the scrolling happens inside a nested
+    `overflow: auto` panel (e.g. detail pages' capped-height panels) rather
+    than the page itself. "intersect" doesn't care which element scrolled.
+
+    hx-target/hx-select are pinned to itself and unset, since without this
+    it inherits hx-target="#content" / hx-select="#content" from <body> (the
+    nearest ancestor that sets them, since this sentinel isn't a descendant
+    of the search input that overrides those), and since its own response
+    has no #content element, that inherited select-and-swap wipes the
+    entire page content out."""
+    return (
+        f"<div hx-get='{escape(next_href)}' hx-trigger='intersect once' hx-target='this' "
+        f"hx-select='unset' hx-swap='outerHTML'></div>"
+    )
 
 
 def pagination_html(current_page: int, total_pages: int, base_href: str, param: str) -> str:

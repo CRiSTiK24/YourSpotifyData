@@ -7,7 +7,7 @@ from fastapi.responses import HTMLResponse
 from src.constants import MONTHS
 from src.database import DBDep
 from src.heatmap import build_heatmap_html
-from src.html import back_link, detail_layout, page, row
+from src.html import detail_layout, page, row
 from src.utils import aggregate_plays
 
 from . import service
@@ -69,7 +69,6 @@ def playlist_detail(playlist_id: int, request: Request, con: DBDep, name: str = 
     )
 
     header = f"""
-{back_link("/playlists")}
 <h1>{escape(name)}</h1>
 <p class="subtitle">{len(tracks)} track{"s" if len(tracks) != 1 else ""} &nbsp;·&nbsp; {len(history)} total plays</p>
 """

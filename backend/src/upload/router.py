@@ -7,7 +7,7 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 
 from src.auth.service import require_auth
 from src.database import DBDep
-from src.html import back_link, page
+from src.html import page
 
 from . import service
 from .exceptions import JobNotFound
@@ -60,8 +60,14 @@ def _status_block(job) -> str:
     if status in ("done", "error"):
         poll_attrs = ""
     else:
+        # hx-target/hx-select pinned to itself and unset — without this it
+        # inherits hx-target="#content" / hx-select="#content" from <body>,
+        # and since this polled fragment has no #content element, that
+        # inherited select-and-swap wipes the entire page content out on
+        # the very first poll (same failure mode as infinite_scroll_trigger).
         poll_attrs = (
-            f" hx-get='/upload/{job['id']}/status' hx-trigger='every 2s' hx-swap='outerHTML'"
+            f" hx-get='/upload/{job['id']}/status' hx-trigger='every 2s' hx-target='this' "
+            f"hx-select='unset' hx-swap='outerHTML'"
         )
 
     if status == "done":
@@ -95,7 +101,6 @@ def upload_status(job_id: int, con: DBDep):
     if job is None:
         raise JobNotFound(job_id)
     content = f"""
-{back_link("/upload", "← Upload another")}
 <h1>Import #{job['id']}</h1>
 {_status_block(job)}
 """

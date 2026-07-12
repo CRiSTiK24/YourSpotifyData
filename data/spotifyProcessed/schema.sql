@@ -12,6 +12,37 @@ CREATE TABLE IF NOT EXISTS track_history (
     spotify_track_uri  TEXT
 );
 
+-- Speeds up equality lookups/joins against this table by (name, singer) —
+-- e.g. search's LEFT JOIN from library_tracks/playlist_tracks, and
+-- get_album_image's representative-track lookup. Doesn't help the FTS
+-- MATCH queries above (those use track_history_fts instead), only exact
+-- and prefix equality via this index.
+CREATE INDEX IF NOT EXISTS idx_track_history_name_singer ON track_history(name, singer);
+
+-- Full-text index over track_history(name, singer) — LIKE '%word%' on this
+-- table (206k+ rows and growing) forces a full scan on every search
+-- keystroke; FTS5 turns that into a token lookup. content='track_history'
+-- means this table stores no data of its own, just the index — it mirrors
+-- rowids from track_history, kept in sync by the triggers below.
+CREATE VIRTUAL TABLE IF NOT EXISTS track_history_fts USING fts5(
+    name, singer, content='track_history', content_rowid='id'
+);
+
+CREATE TRIGGER IF NOT EXISTS track_history_ai AFTER INSERT ON track_history BEGIN
+    INSERT INTO track_history_fts(rowid, name, singer) VALUES (new.id, new.name, new.singer);
+END;
+
+CREATE TRIGGER IF NOT EXISTS track_history_ad AFTER DELETE ON track_history BEGIN
+    INSERT INTO track_history_fts(track_history_fts, rowid, name, singer)
+    VALUES ('delete', old.id, old.name, old.singer);
+END;
+
+CREATE TRIGGER IF NOT EXISTS track_history_au AFTER UPDATE ON track_history BEGIN
+    INSERT INTO track_history_fts(track_history_fts, rowid, name, singer)
+    VALUES ('delete', old.id, old.name, old.singer);
+    INSERT INTO track_history_fts(rowid, name, singer) VALUES (new.id, new.name, new.singer);
+END;
+
 CREATE TABLE IF NOT EXISTS library_tracks (
     id                 INTEGER PRIMARY KEY AUTOINCREMENT,
     track_name         TEXT NOT NULL,

@@ -1,16 +1,13 @@
 import sqlite3
 from urllib.parse import quote
 
-from src.html import back_link, paginate, pagination_html, row, search_form
+from src.html import infinite_scroll_trigger, paginate, row, search_form
 
 from . import service
 
 
-def artists_content(con: sqlite3.Connection, query: str = "", artists_page: int = 1) -> str:
-    all_artists = service.search_artists(con, query) if query else service.load_artists(con)
-
-    page_items, current_page, total_pages = paginate(list(all_artists), artists_page)
-
+def artist_rows_html(all_artists: list, query: str, artists_page: int) -> str:
+    page_items, current_page, total_pages = paginate(all_artists, artists_page)
     rows_html = "".join(
         row(
             a["singer"],
@@ -20,15 +17,20 @@ def artists_content(con: sqlite3.Connection, query: str = "", artists_page: int 
         )
         for a in page_items
     )
-    base = f"/artists?query={quote(query)}" if query else "/artists"
-    pag = pagination_html(current_page, total_pages, base, "artists_page")
+    if current_page < total_pages:
+        next_href = f"/artists/rows?query={quote(query)}&artists_page={current_page + 1}"
+        rows_html += infinite_scroll_trigger(next_href)
+    return rows_html
+
+
+def artists_content(con: sqlite3.Connection, query: str = "", artists_page: int = 1) -> str:
+    all_artists = list(service.search_artists(con, query) if query else service.load_artists(con))
+    rows_html = artist_rows_html(all_artists, query, artists_page)
 
     return f"""
-{back_link("/")}
 <h1>Artists</h1>
 {search_form("/artists", "Search artists…", value=query, autofocus=False)}
 <hr class="divider">
-{rows_html}
-{pag}
+<div id="artist-rows">{rows_html}</div>
 <p class="subtitle">{len(all_artists)} artists total</p>
 """

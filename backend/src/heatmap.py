@@ -30,11 +30,16 @@ def _month_grid_html(
     key_prefix: str,
 ) -> str:
     sep = "&" if "?" in base_href else "?"
-    header = "<th class='row-label'></th>" + "".join(f"<th>{y}</th>" for y in years)
+    # Once a month is selected, collapse to just that year's column instead
+    # of showing every year, freeing up the horizontal space the day-level
+    # grid needs to sit alongside it without crowding/scrolling.
+    display_years = [selected[0]] if selected else years
+    corner = f"<a href='{escape(base_href)}' title='All years'>‹</a>" if selected else ""
+    header = f"<th class='row-label'>{corner}</th>" + "".join(f"<th>{y}</th>" for y in display_years)
     rows = ""
     for m in range(1, 13):
         cells = f"<td style='font-size:11px;color:{Palette.TEXT};padding-right:6px'>{MONTHS[m - 1]}</td>"
-        for year in years:
+        for year in display_years:
             c = counts.get((year, m), 0)
             color = _cell_color(c)
             border = f"2px solid {Palette.TEXT}" if selected == (year, m) else "2px solid transparent"

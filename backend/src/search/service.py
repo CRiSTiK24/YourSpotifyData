@@ -1,14 +1,23 @@
 import sqlite3
 
-from src.utils import word_clauses
+from src.utils import fts_match_query, word_clauses
 
 
 def search_track_history(con: sqlite3.Connection, query: str) -> list[sqlite3.Row]:
-    words = query.split()
-    where, params = word_clauses(words, "name", "singer")
+    # track_history is 200k+ rows and growing — a LIKE '%word%' scan there is
+    # too slow to run on every search. track_history_fts (see schema.sql) is
+    # a full-text index over (name, singer), kept in sync via triggers, that
+    # turns this into a token lookup instead of a full scan.
+    match = fts_match_query(query.split())
     return con.execute(
-        f"SELECT name, singer, time FROM track_history WHERE {where} ORDER BY time DESC",
-        params,
+        """
+        SELECT th.name, th.singer, th.time
+        FROM track_history_fts
+        JOIN track_history th ON th.id = track_history_fts.rowid
+        WHERE track_history_fts MATCH ?
+        ORDER BY th.time DESC
+        """,
+        (match,),
     ).fetchall()
 
 

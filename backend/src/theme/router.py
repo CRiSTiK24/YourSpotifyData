@@ -15,7 +15,6 @@ TOKENS = [
     ("--color-bg", "Background"),
     ("--color-text", "Text"),
     ("--color-surface", "Surface"),
-    ("--color-surface-hover", "Surface hover"),
     ("--color-border", "Border"),
     ("--color-nav-bg", "Nav background"),
     ("--color-accent", "Accent"),

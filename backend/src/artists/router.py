@@ -7,14 +7,35 @@ from fastapi.responses import HTMLResponse
 from src.constants import MONTHS
 from src.database import DBDep
 from src.heatmap import build_heatmap_html
-from src.html import back_link, detail_layout, hero_image, page, row
+from src.html import detail_layout, hero_image, infinite_scroll_trigger, page, row
 from src.utils import aggregate_plays
 
 from . import service
 from .exceptions import ArtistNotFound
-from .views import artists_content
+from .views import artist_rows_html, artists_content
 
 router = APIRouter(tags=["artists"])
+
+ARTIST_TRACKS_BATCH = 20
+
+
+def _artist_tracks_html(con, artist_name: str, offset: int) -> str:
+    tracks = service.load_artist_tracks_page(con, artist_name, offset, ARTIST_TRACKS_BATCH)
+    has_more = len(tracks) > ARTIST_TRACKS_BATCH
+    tracks = tracks[:ARTIST_TRACKS_BATCH]
+    rows_html = "".join(
+        row(
+            t["name"],
+            f"/track/{quote(t['name'])}?artist={quote(artist_name)}",
+            note=f"×{t['cnt']}",
+            image_url=t["image_url"],
+        )
+        for t in tracks
+    )
+    if has_more:
+        next_href = f"/artist/{quote(artist_name)}/tracks?offset={offset + ARTIST_TRACKS_BATCH}"
+        rows_html += infinite_scroll_trigger(next_href)
+    return rows_html
 
 
 @router.get(
@@ -22,6 +43,17 @@ router = APIRouter(tags=["artists"])
 )
 def artists(con: DBDep, query: str = "", artists_page: int = 1):
     return page(artists_content(con, query, artists_page))
+
+
+@router.get(
+    "/artists/rows",
+    response_class=HTMLResponse,
+    status_code=200,
+    description="Infinite-scroll fragment: next batch of artist rows",
+)
+def artists_rows(con: DBDep, query: str = "", artists_page: int = 1):
+    all_artists = list(service.search_artists(con, query) if query else service.load_artists(con))
+    return HTMLResponse(artist_rows_html(all_artists, query, artists_page))
 
 
 @router.get(
@@ -34,8 +66,6 @@ def artist_detail(artist_name: str, request: Request, con: DBDep):
     history = service.load_artist_history(con, artist_name)
     if not history:
         raise ArtistNotFound(artist_name)
-
-    top_tracks = service.load_artist_top_tracks(con, artist_name)
 
     heatmap_html, result = build_heatmap_html(history, f"artist_{artist_name}", request)
 
@@ -53,20 +83,25 @@ def artist_detail(artist_name: str, request: Request, con: DBDep):
             for name, _, count in aggregated
         )
 
-    top_html = "".join(
-        row(
-            t["name"],
-            f"/track/{quote(t['name'])}?artist={quote(artist_name)}",
-            note=f"×{t['cnt']}",
-            image_url=t["image_url"],
-        )
-        for t in top_tracks
-    )
+    tracks_html = _artist_tracks_html(con, artist_name, 0)
 
     header = f"""
-{back_link("/artists")}
 {hero_image(service.get_artist_image(con, artist_name))}
 <h1>{escape(artist_name)}</h1>
 <p class="subtitle">{len(history)} total plays</p>
 """
-    return page(detail_layout(header, heatmap_html + period_html, "Top tracks", top_html))
+    return page(
+        detail_layout(
+            header, heatmap_html + period_html, "Tracks", tracks_html, list_id="artist-tracks"
+        )
+    )
+
+
+@router.get(
+    "/artist/{artist_name}/tracks",
+    response_class=HTMLResponse,
+    status_code=200,
+    description="Infinite-scroll fragment: next batch of an artist's tracks",
+)
+def artist_tracks(artist_name: str, con: DBDep, offset: int = 0):
+    return HTMLResponse(_artist_tracks_html(con, artist_name, offset))
