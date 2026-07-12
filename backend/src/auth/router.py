@@ -50,7 +50,7 @@ def login_submit(email: str = Form(...)):
 def login_verify(con: DBDep, code: str = Form(...)):
     if not service.verify_code(code):
         content = f"""
-<p class="subtitle" style="color:#f85149">Invalid or expired code.</p>
+<p class="subtitle">Invalid or expired code.</p>
 {_CODE_FORM}
 """
         return page(content)

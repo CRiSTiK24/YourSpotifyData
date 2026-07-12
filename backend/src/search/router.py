@@ -6,7 +6,7 @@ from fastapi.responses import HTMLResponse
 
 from src.database import DBDep
 from src.heatmap import build_heatmap_html
-from src.html import page, paginate, pagination_html, row
+from src.html import back_link, page, paginate, pagination_html, row
 from src.utils import aggregate_plays
 
 from . import service
@@ -64,7 +64,7 @@ def search(request: Request, con: DBDep, query: str = "", search_page: int = 1):
 
     albums_section = ""
     if lib_albums:
-        albums_section = "<h2>💿 Liked albums</h2>" + "".join(
+        albums_section = "<h2>Liked albums</h2>" + "".join(
             row(
                 r["album_name"],
                 f"/album/{quote(r['album_name'])}?artist={quote(r['artist_name'])}",
@@ -99,25 +99,25 @@ def search(request: Request, con: DBDep, query: str = "", search_page: int = 1):
         )
         pl_html += (
             f"<details style='margin-bottom:8px'>"
-            f"<summary style='cursor:pointer;padding:6px 0;color:#58a6ff'>"
-            f"📋 {escape(pl_name)} ({len(tracks)} match{'es' if len(tracks) > 1 else ''})"
+            f"<summary style='cursor:pointer;padding:6px 0'>"
+            f"{escape(pl_name)} ({len(tracks)} match{'es' if len(tracks) > 1 else ''})"
             f"</summary>{inner}</details>"
         )
 
     content = f"""
-<a class="back-link" href="/">← Back</a>
+{back_link("/")}
 <h1>Search: &ldquo;{escape(query)}&rdquo;</h1>
-<h2>🎵 Play history — {len(history)} plays across {len(aggregated)} track{"s" if len(aggregated) != 1 else ""}</h2>
+<h2>Play history — {len(history)} plays across {len(aggregated)} track{"s" if len(aggregated) != 1 else ""}</h2>
 {rows_html or "<p class='info'>No play history found.</p>"}
 {pag}
 <h2>Listen history heatmap</h2>
 {heatmap_html}
 <hr class="divider">
-<h2>💚 Liked songs ({len(lib_tracks)})</h2>
+<h2>Liked songs ({len(lib_tracks)})</h2>
 {liked_rows}
 {albums_section}
 <hr class="divider">
-<h2>📋 Playlists ({len(playlist_rows)} matches)</h2>
+<h2>Playlists ({len(playlist_rows)} matches)</h2>
 {pl_html or "<p class='info'>Not found in any playlist.</p>"}
 """
     return page(content)

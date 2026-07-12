@@ -7,11 +7,12 @@ from fastapi.responses import HTMLResponse
 from src.constants import MONTHS
 from src.database import DBDep
 from src.heatmap import build_heatmap_html
-from src.html import hero_image, page, paginate, pagination_html, row
+from src.html import back_link, detail_layout, hero_image, page, row
 from src.utils import aggregate_plays
 
 from . import service
 from .exceptions import ArtistNotFound
+from .views import artists_content
 
 router = APIRouter(tags=["artists"])
 
@@ -19,36 +20,8 @@ router = APIRouter(tags=["artists"])
 @router.get(
     "/artists", response_class=HTMLResponse, status_code=200, description="Browse all artists"
 )
-def artists(request: Request, con: DBDep, query: str = "", artists_page: int = 1):
-    all_artists = service.search_artists(con, query) if query else service.load_artists(con)
-
-    page_items, current_page, total_pages = paginate(list(all_artists), artists_page)
-
-    rows_html = "".join(
-        row(
-            a["singer"],
-            f"/artist/{quote(a['singer'])}",
-            note=f"{a['play_count']} plays",
-            image_url=a["image_url"],
-        )
-        for a in page_items
-    )
-    base = f"/artists?query={quote(query)}" if query else "/artists"
-    pag = pagination_html(current_page, total_pages, base, "artists_page")
-
-    content = f"""
-<a class="back-link" href="/">← Back</a>
-<h1>🎤 Artists</h1>
-<form class="search-form" action="/artists" method="get">
-  <input name="query" type="text" value="{escape(query)}" placeholder="Search artists…">
-  <button type="submit">Search</button>
-</form>
-<hr class="divider">
-{rows_html}
-{pag}
-<p class="subtitle">{len(all_artists)} artists total</p>
-"""
-    return page(content)
+def artists(con: DBDep, query: str = "", artists_page: int = 1):
+    return page(artists_content(con, query, artists_page))
 
 
 @router.get(
@@ -90,16 +63,10 @@ def artist_detail(artist_name: str, request: Request, con: DBDep):
         for t in top_tracks
     )
 
-    content = f"""
-<a class="back-link" href="/artists">← Back</a>
+    header = f"""
+{back_link("/artists")}
 {hero_image(service.get_artist_image(con, artist_name))}
-<h1>🎤 {escape(artist_name)}</h1>
+<h1>{escape(artist_name)}</h1>
 <p class="subtitle">{len(history)} total plays</p>
-<hr class="divider">
-{heatmap_html}
-{period_html}
-<hr class="divider">
-<h2>Top tracks</h2>
-{top_html}
 """
-    return page(content)
+    return page(detail_layout(header, heatmap_html + period_html, "Top tracks", top_html))

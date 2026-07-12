@@ -7,28 +7,19 @@ from fastapi.responses import HTMLResponse
 from src.constants import MONTHS
 from src.database import DBDep
 from src.heatmap import build_heatmap_html
-from src.html import page, row
+from src.html import back_link, detail_layout, page, row
 from src.utils import aggregate_plays
 
 from . import service
 from .exceptions import PlaylistNotFound
+from .views import playlists_content
 
 router = APIRouter(tags=["playlists"])
 
 
 @router.get("/playlists", response_class=HTMLResponse, status_code=200, description="All playlists")
 def playlists(con: DBDep):
-    pls = service.load_playlists(con)
-    rows_html = "".join(
-        row(pl["name"], f"/playlist/{pl['id']}?name={quote(pl['name'])}") for pl in pls
-    )
-    content = f"""
-<a class="back-link" href="/">← Back</a>
-<h1>📋 Playlists ({len(pls)})</h1>
-<hr class="divider">
-{rows_html}
-"""
-    return page(content)
+    return page(playlists_content(con))
 
 
 @router.get(
@@ -77,15 +68,9 @@ def playlist_detail(playlist_id: int, request: Request, con: DBDep, name: str = 
         for t in tracks
     )
 
-    content = f"""
-<a class="back-link" href="/playlists">← Back</a>
-<h1>📋 {escape(name)}</h1>
+    header = f"""
+{back_link("/playlists")}
+<h1>{escape(name)}</h1>
 <p class="subtitle">{len(tracks)} track{"s" if len(tracks) != 1 else ""} &nbsp;·&nbsp; {len(history)} total plays</p>
-<hr class="divider">
-{heatmap_html}
-{period_html}
-<hr class="divider">
-<h2>Tracks</h2>
-{tracks_html}
 """
-    return page(content)
+    return page(detail_layout(header, heatmap_html + period_html, "Tracks", tracks_html))

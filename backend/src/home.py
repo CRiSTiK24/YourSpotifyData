@@ -4,7 +4,7 @@ from fastapi import APIRouter
 from fastapi.responses import HTMLResponse
 
 from src.database import DBDep
-from src.html import page
+from src.html import page, search_form, stat_card
 
 router = APIRouter(tags=["home"])
 
@@ -17,34 +17,18 @@ def home_page(con: sqlite3.Connection) -> HTMLResponse:
         "SELECT COUNT(DISTINCT singer) FROM track_history WHERE singer IS NOT NULL AND singer != ''"
     ).fetchone()[0]
 
+    cards = "".join(
+        [
+            stat_card("Liked Songs", f"{n_tracks} tracks"),
+            stat_card("Liked Albums", f"{n_albums} albums"),
+            stat_card("Playlists", f"{n_playlists} playlists"),
+            stat_card("Artists", f"{n_artists} artists"),
+        ]
+    )
     content = f"""
-<h1>🎵 Your Spotify Data</h1>
-<form class="search-form" action="/search" method="get">
-  <input name="query" type="text" placeholder="Search for a song or artist…" autofocus>
-  <button type="submit">Search</button>
-</form>
+{search_form("/search", "Search for a song or artist…")}
 <hr class="divider">
-<div class="grid-4">
-  <div class="card">
-    <h2>💚 Liked Songs</h2>
-    <p class="count">{n_tracks} tracks</p>
-    <a class="btn" href="/liked-songs">View Liked Songs</a>
-  </div>
-  <div class="card">
-    <h2>💿 Liked Albums</h2>
-    <p class="count">{n_albums} albums</p>
-    <a class="btn" href="/liked-albums">View Liked Albums</a>
-  </div>
-  <div class="card">
-    <h2>📋 Playlists</h2>
-    <p class="count">{n_playlists} playlists</p>
-    <a class="btn" href="/playlists">View Playlists</a>
-  </div>
-  <div class="card">
-    <h2>🎤 Artists</h2>
-    <p class="count">{n_artists} artists</p>
-    <a class="btn" href="/artists">View Artists</a>
-  </div>
+<div class="grid-4">{cards}
 </div>
 """
     return page(content)

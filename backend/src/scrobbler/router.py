@@ -5,7 +5,7 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 
 from src.auth.service import require_auth
 from src.database import DBDep
-from src.html import page
+from src.html import button, page
 
 from . import service
 
@@ -19,7 +19,7 @@ def _status_content(con) -> str:
 <h1>Scrobbler</h1>
 <p class="subtitle">Not connected. Link your Spotify account to automatically pull in new
 plays every couple of minutes, instead of manually re-uploading your export.</p>
-<a href="/scrobbler/connect" hx-boost="false" class="button-link">Connect Spotify</a>
+{button("Connect Spotify", "/scrobbler/connect", hx_boost=False)}
 """
     last_poll = f"<li>Last checked: {escape(row['last_poll_at'])}</li>" if row["last_poll_at"] else ""
     new_count = (
@@ -28,13 +28,13 @@ plays every couple of minutes, instead of manually re-uploading your export.</p>
         else ""
     )
     error = (
-        f"<p style='color:#f85149'>Last error: {escape(row['last_error'])}</p>"
+        f"<p>Last error: {escape(row['last_error'])}</p>"
         if row["last_error"]
         else ""
     )
     return f"""
 <h1>Scrobbler</h1>
-<p class="subtitle" style="color:#3fb950">Connected since {escape(row['connected_at'])}.</p>
+<p class="subtitle">Connected since {escape(row['connected_at'])}.</p>
 <ul>
   {last_poll}
   {new_count}
@@ -64,7 +64,7 @@ def connect():
 )
 def callback(con: DBDep, code: str | None = None, state: str | None = None, error: str | None = None):
     if error:
-        return page(f"<h1>Scrobbler</h1><p style='color:#f85149'>{escape(error)}</p>")
+        return page(f"<h1>Scrobbler</h1><p>{escape(error)}</p>")
     if not code or not state or not service.verify_state(state):
         raise HTTPException(status_code=400, detail="Invalid or expired OAuth state")
     service.exchange_code(con, code)

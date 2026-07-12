@@ -1,4 +1,5 @@
 import os
+from contextvars import ContextVar
 from html import escape
 
 from fastapi.responses import HTMLResponse
@@ -7,27 +8,50 @@ _STATIC_DIR = os.path.join(
     os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "frontend", "static"
 )
 
+# Set by auth middleware for the duration of each request, so `page()` can
+# render the right nav links without every route having to pass auth state
+# through explicitly.
+logged_in_var: ContextVar[bool] = ContextVar("logged_in", default=False)
+
 
 def page(content: str) -> HTMLResponse:
+    if logged_in_var.get():
+        nav_right = """
+    <div class="nav-right">
+      <a href="/upload">Upload</a>
+      <a href="/scrobbler">Scrobbler</a>
+      <a href="/theme">Theme</a>
+    </div>"""
+    else:
+        nav_right = """
+    <div class="nav-right">
+      <a href="/login">Login</a>
+    </div>"""
     html = f"""<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Your Spotify Data</title>
+  <title></title>
   <link rel="stylesheet" href="/static/style.css">
+  <script>
+  (function () {{
+    try {{
+      var overrides = JSON.parse(localStorage.getItem("theme-overrides") || "{{}}");
+      for (var key in overrides) document.documentElement.style.setProperty(key, overrides[key]);
+    }} catch (e) {{}}
+  }})();
+  </script>
   <script src="https://unpkg.com/htmx.org@2.0.4" integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+" crossorigin="anonymous"></script>
 </head>
 <body hx-boost="true">
 <nav>
   <div class="inner">
-    <a class="brand" href="/">🎵 Your Spotify Data</a>
+    <a class="brand" href="/">Home</a>
     <a href="/liked-songs">Liked Songs</a>
     <a href="/liked-albums">Liked Albums</a>
     <a href="/playlists">Playlists</a>
-    <a href="/artists">Artists</a>
-    <a href="/upload">Upload</a>
-    <a href="/scrobbler">Scrobbler</a>
+    <a href="/artists">Artists</a>{nav_right}
   </div>
 </nav>
 <div class="container">
@@ -40,6 +64,39 @@ def page(content: str) -> HTMLResponse:
 
 def link(label: str, href: str) -> str:
     return f"<a href='{escape(href)}'>{escape(label)}</a>"
+
+
+def button(label: str, href: str, *, hx_boost: bool | None = None) -> str:
+    boost_attr = f" hx-boost='{'true' if hx_boost else 'false'}'" if hx_boost is not None else ""
+    return f"<a class='btn' href='{escape(href)}'{boost_attr}>{escape(label)}</a>"
+
+
+def chip_link(label: str, href: str) -> str:
+    return f"<a class='chip-link' href='{escape(href)}'>{escape(label)}</a>"
+
+
+def back_link(href: str, label: str = "← Back") -> str:
+    return f"<a class='back-link' href='{escape(href)}'>{escape(label)}</a>"
+
+
+def stat_card(title: str, count_label: str) -> str:
+    return f"""
+  <div class="card">
+    <h2>{escape(title)}</h2>
+    <p class="count">{escape(count_label)}</p>
+  </div>"""
+
+
+def search_form(
+    action: str, placeholder: str, *, value: str = "", autofocus: bool = True, name: str = "query"
+) -> str:
+    autofocus_attr = " autofocus" if autofocus else ""
+    value_attr = f" value='{escape(value)}'" if value else ""
+    return f"""
+<form class="search-form" action="{escape(action)}" method="get">
+  <input name="{escape(name)}" type="text"{value_attr} placeholder="{escape(placeholder)}"{autofocus_attr}>
+  <button type="submit">Search</button>
+</form>"""
 
 
 def row(
@@ -66,6 +123,20 @@ def hero_image(image_url: str | None) -> str:
     if not image_url:
         return ""
     return f"<img class='hero-image' src='{escape(image_url)}' loading='lazy'>"
+
+
+def detail_layout(header: str, heatmap: str, list_title: str, list_content: str) -> str:
+    """Two-panel layout used by track/album/artist/playlist detail pages:
+    header info on the left, heatmap on the right, full-width list below."""
+    return f"""
+<div class="detail-layout">
+  <div class="panel detail-header">{header}</div>
+  <div class="panel detail-heatmap">{heatmap}</div>
+  <div class="panel detail-list">
+    <h2>{escape(list_title)}</h2>
+    {list_content}
+  </div>
+</div>"""
 
 
 def pagination_html(current_page: int, total_pages: int, base_href: str, param: str) -> str:

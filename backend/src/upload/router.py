@@ -7,7 +7,7 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 
 from src.auth.service import require_auth
 from src.database import DBDep
-from src.html import page
+from src.html import back_link, page
 
 from . import service
 from .exceptions import JobNotFound
@@ -66,7 +66,7 @@ def _status_block(job) -> str:
 
     if status == "done":
         body = f"""
-<p style="color:#3fb950">Done.</p>
+<p>Done.</p>
 <ul>
   <li>{job['new_history_rows'] or 0} new plays</li>
   <li>{job['new_library_tracks'] or 0} new liked tracks</li>
@@ -77,7 +77,7 @@ def _status_block(job) -> str:
 </ul>
 """
     elif status == "error":
-        body = f"<p style='color:#f85149'>Failed: {escape(job['message'] or 'unknown error')}</p>"
+        body = f"<p>Failed: {escape(job['message'] or 'unknown error')}</p>"
     else:
         body = f"<p>Status: {escape(status)}…</p>"
 
@@ -95,7 +95,7 @@ def upload_status(job_id: int, con: DBDep):
     if job is None:
         raise JobNotFound(job_id)
     content = f"""
-<a class="back-link" href="/upload">← Upload another</a>
+{back_link("/upload", "← Upload another")}
 <h1>Import #{job['id']}</h1>
 {_status_block(job)}
 """

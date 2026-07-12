@@ -112,3 +112,8 @@ def require_auth(request: Request, con: DBDep) -> None:
     token = request.cookies.get(SESSION_COOKIE_NAME)
     if not token or not session_valid(con, token):
         raise NotAuthenticated()
+
+
+def is_logged_in(request: Request, con: sqlite3.Connection) -> bool:
+    token = request.cookies.get(SESSION_COOKIE_NAME)
+    return bool(token) and session_valid(con, token)

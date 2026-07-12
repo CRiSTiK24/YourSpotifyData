@@ -7,17 +7,19 @@ from urllib.parse import urlencode
 from fastapi import Request
 
 from src.constants import COLORS, DAYS_OF_WEEK, MONTHS
+from src.palette import Palette
 
 
-def _cell_color(count: int, max_count: int) -> str:
-    if count == 0 or max_count == 0:
+_THRESHOLDS = [50, 100, 200]  # absolute play-count breakpoints, low to high
+
+
+def _cell_color(count: int) -> str:
+    if count == 0:
         return COLORS[0]
-    return COLORS[max(1, round(count / max_count * 4))]
-
-
-def _legend_html() -> str:
-    squares = "".join(f'<span class="legend-sq" style="background:{c}"></span>' for c in COLORS)
-    return f'<div class="legend">Less &nbsp;{squares}&nbsp; More</div>'
+    for i, threshold in enumerate(_THRESHOLDS, start=1):
+        if count <= threshold:
+            return COLORS[i]
+    return COLORS[-1]
 
 
 def _month_grid_html(
@@ -28,15 +30,14 @@ def _month_grid_html(
     key_prefix: str,
 ) -> str:
     sep = "&" if "?" in base_href else "?"
-    max_count = max(counts.values()) if counts else 1
-    header = "<th class='row-label'></th>" + "".join(f"<th>{m}</th>" for m in MONTHS)
+    header = "<th class='row-label'></th>" + "".join(f"<th>{y}</th>" for y in years)
     rows = ""
-    for year in years:
-        cells = f"<td style='font-size:11px;color:#8b949e;padding-right:6px'>{year}</td>"
-        for m in range(1, 13):
+    for m in range(1, 13):
+        cells = f"<td style='font-size:11px;color:{Palette.TEXT};padding-right:6px'>{MONTHS[m - 1]}</td>"
+        for year in years:
             c = counts.get((year, m), 0)
-            color = _cell_color(c, max_count)
-            border = "2px solid #e6edf3" if selected == (year, m) else "2px solid transparent"
+            color = _cell_color(c)
+            border = f"2px solid {Palette.TEXT}" if selected == (year, m) else "2px solid transparent"
             tooltip = f"{MONTHS[m - 1]} {year}: {c} play{'s' if c != 1 else ''}"
             href = base_href + sep + urlencode({f"hm_{key_prefix}": f"{year}-{m}"})
             text = "&nbsp;" if c == 0 else str(c)
@@ -61,25 +62,24 @@ def _day_grid_html(
     key_prefix: str,
 ) -> str:
     sep = "&" if "?" in base_href else "?"
-    max_count = max(day_counts.values()) if day_counts else 1
     first_weekday, num_days = calendar.monthrange(year, month)
     header = "<th style='width:30px'></th>" + "".join(
-        f"<th style='width:38px;text-align:center;font-size:11px;color:#8b949e'>{d}</th>"
+        f"<th style='width:38px;text-align:center;font-size:11px;color:{Palette.TEXT}'>{d}</th>"
         for d in DAYS_OF_WEEK
     )
     day_cursor = 1
     rows = ""
     week = 1
     while day_cursor <= num_days:
-        cells = f"<td style='font-size:11px;color:#8b949e;padding-right:4px'>W{week}</td>"
+        cells = f"<td style='font-size:11px;color:{Palette.TEXT};padding-right:4px'>W{week}</td>"
         for dow in range(7):
             if (week == 1 and dow < first_weekday) or day_cursor > num_days:
                 cells += "<td style='padding:2px'><span style='display:block;width:28px;height:28px'></span></td>"
             else:
                 d = day_cursor
                 c = day_counts.get(d, 0)
-                color = _cell_color(c, max_count)
-                border = "2px solid #e6edf3" if selected_day == d else "2px solid transparent"
+                color = _cell_color(c)
+                border = f"2px solid {Palette.TEXT}" if selected_day == d else "2px solid transparent"
                 tooltip = f"{MONTHS[month - 1]} {d}, {year}: {c} play{'s' if c != 1 else ''}"
                 href = base_href + sep + urlencode(
                     {f"hm_{key_prefix}": f"{year}-{month}", f"hm_{key_prefix}_d": d}
@@ -140,11 +140,9 @@ def build_heatmap_html(
     sel_month_key = qp.get(f"hm_{key_prefix}", "")
     sel_month = tuple(int(x) for x in sel_month_key.split("-")) if sel_month_key else None
 
-    legend = _legend_html()
-
     if not sel_month:
         grid = _month_grid_html(counts, years, None, base_href, key_prefix)
-        return legend + grid, None
+        return grid, None
 
     sel_year, sel_month_num = sel_month
     month_plays = by_month.get((sel_year, sel_month_num), [])
@@ -158,18 +156,14 @@ def build_heatmap_html(
     sel_day_key = qp.get(f"hm_{key_prefix}_d", "")
     sel_day = int(sel_day_key) if sel_day_key else None
 
-    month_label = (
-        f"{MONTHS[sel_month_num - 1]} {sel_year} — "
-        f"{len(month_plays)} play{'s' if len(month_plays) != 1 else ''}"
-    )
+    month_label = f"{MONTHS[sel_month_num - 1]} {sel_year}"
     month_grid = _month_grid_html(counts, years, sel_month, base_href, key_prefix)
     day_grid = _day_grid_html(
         sel_year, sel_month_num, dict(day_counts), sel_day, base_href, key_prefix
     )
 
     html = (
-        legend
-        + f"<div class='heatmap-cols'>{month_grid}"
+        f"<div class='heatmap-cols'>{month_grid}"
         + f"<div><p class='subtitle'>{month_label}</p>{day_grid}</div></div>"
     )
 
