@@ -1,142 +1,32 @@
 {
   "playlists" : [ {
-    "name" : "Mind the gap between the street sharks and the platform",
-    "lastModifiedDate" : "2025-11-19",
-    "collaborators" : [ "<anonymous-user>", "<anonymous-user>", "<anonymous-user>", "<anonymous-user>" ],
-    "items" : [ {
-      "track" : {
-        "trackName" : "Friday I'm In Love",
-        "artistName" : "The Cure",
-        "albumName" : "Wish",
-        "trackUri" : "spotify:track:4QlzkaRHtU8gAdwqjWmO8n"
-      },
-      "addedDate" : "2025-11-18"
-    }, {
-      "track" : {
-        "trackName" : "I wish for the rain",
-        "artistName" : "Liana Flores",
-        "albumName" : "Flower of the soul",
-        "trackUri" : "spotify:track:59ZkByVPAIPe0YhqIO723Y"
-      },
-      "addedDate" : "2025-11-18"
-    }, {
-      "track" : {
-        "trackName" : "Roked",
-        "artistName" : "Shye Ben Tzur",
-        "albumName" : "Junun",
-        "trackUri" : "spotify:track:0v6lKeqANj3eVvKOs6BQfR"
-      },
-      "addedDate" : "2025-11-18"
-    }, {
-      "track" : {
-        "trackName" : "Honey I",
-        "artistName" : "Maiya Blaney",
-        "albumName" : "A Room With A Door That Closes",
-        "trackUri" : "spotify:track:4FpPJgXiIqMSzQzEMfyojv"
-      },
-      "addedDate" : "2025-11-18"
-    }, {
-      "track" : {
-        "trackName" : "Tetris",
-        "artistName" : "Pinguini Tattici Nucleari",
-        "albumName" : "Gioventù brucata",
-        "trackUri" : "spotify:track:5SGm0Q5Wur9mhpXnbzaPjG"
-      },
-      "addedDate" : "2025-11-18"
-    }, {
-      "track" : {
-        "trackName" : "Gabriel's Oboe",
-        "artistName" : "Ennio Morricone",
-        "albumName" : "The Mission: Music From The Motion Picture",
-        "trackUri" : "spotify:track:6opPrJUpq4Pl5c84eCwLmo"
-      },
-      "addedDate" : "2025-11-18"
-    }, {
-      "track" : {
-        "trackName" : "Bailar Pegados",
-        "artistName" : "Sergio Dalma",
-        "albumName" : "Sintiendonos La Piel",
-        "trackUri" : "spotify:track:4QkQmdvFjEVvjc1ONi6t6N"
-      },
-      "addedDate" : "2025-11-18"
-    }, {
-      "track" : {
-        "trackName" : "Beautiful",
-        "artistName" : "Eminem",
-        "albumName" : "Relapse: Refill",
-        "trackUri" : "spotify:track:1HR2CTi0ytRJIcik1QKdOa"
-      },
-      "addedDate" : "2025-11-18"
-    }, {
-      "track" : {
-        "trackName" : "Don't Stop Me Now",
-        "artistName" : "Queen",
-        "albumName" : "Discover More Classic Rock",
-        "trackUri" : "spotify:track:0DrDcqWpokMlhKYJSwoT4B"
-      },
-      "addedDate" : "2025-11-18"
-    }, {
-      "track" : {
-        "trackName" : "Last Man Standing",
-        "artistName" : "HammerFall",
-        "albumName" : "Any Means Necessary",
-        "trackUri" : "spotify:track:18S33odAheWBHbVAefiRLM"
-      },
-      "addedDate" : "2025-11-18"
-    }, {
-      "track" : {
-        "trackName" : "Tannhäuser: Overture",
-        "artistName" : "Richard Wagner",
-        "albumName" : "Wagner: Tristan und Isolde; Tannhäuser; Die Meistersinger - Orchestral Music",
-        "trackUri" : "spotify:track:3IqO5qY6gPAGBYgDfGc8CK"
-      },
-      "addedDate" : "2025-11-18"
-    }, {
-      "track" : {
-        "trackName" : "Walkürenritt",
-        "artistName" : "Richard Wagner",
-        "albumName" : "Klassik 100 Meisterwerke: Klassik die man gehört haben muss",
-        "trackUri" : "spotify:track:5lRKNSVD2EoiWL5hOXLtQW"
-      },
-      "addedDate" : "2025-11-19"
-    }, {
-      "track" : {
-        "trackName" : "Opalite",
-        "artistName" : "Taylor Swift",
-        "albumName" : "The Life of a Showgirl",
-        "trackUri" : "spotify:track:3yWuTOYDztXjZxdE2cIRUa"
-      },
-      "addedDate" : "2025-11-19"
-    } ],
-    "numberOfFollowers" : 3
-  }, {
-    "name" : "karaoke",
-    "lastModifiedDate" : "2025-08-23",
+    "name" : "Folk popular | Bossa Nova",
+    "lastModifiedDate" : "2026-07-15",
     "collaborators" : [ ],
     "items" : [ {
       "track" : {
-        "trackName" : "Chop Suey!",
-        "artistName" : "System Of A Down",
-        "albumName" : "Toxicity",
-        "trackUri" : "spotify:track:2DlHlPMa4M17kufBvI2lEN"
+        "trackName" : "O Caderno",
+        "artistName" : "Chico Buarque",
+        "albumName" : "Umas E Outras",
+        "trackUri" : "spotify:track:3TzffjZ5vdW57esQqREJdD"
       },
-      "addedDate" : "2025-08-17"
+      "addedDate" : "2026-07-14"
     }, {
       "track" : {
-        "trackName" : "I Have the Moon",
-        "artistName" : "Lush",
-        "albumName" : "Topolino",
-        "trackUri" : "spotify:track:298kgP95oJvq6FNDLqu6Lf"
+        "trackName" : "Angélica",
+        "artistName" : "Chico Buarque",
+        "albumName" : "Almanaque",
+        "trackUri" : "spotify:track:6lKpCT8IbiQ0sXwudGOQq7"
       },
-      "addedDate" : "2025-08-17"
+      "addedDate" : "2026-07-14"
     }, {
       "track" : {
-        "trackName" : "Agosto",
-        "artistName" : "Bad Bunny",
-        "albumName" : "Un Verano Sin Ti",
-        "trackUri" : "spotify:track:0wihfILRNOwE2156Shezc8"
+        "trackName" : "Cálice",
+        "artistName" : "Chico Buarque",
+        "albumName" : "Chico Buarque",
+        "trackUri" : "spotify:track:0VUgbCK0k8QWGpLiEV8YYZ"
       },
-      "addedDate" : "2025-08-17"
+      "addedDate" : "2026-07-14"
     }, {
       "track" : {
         "trackName" : "Apesar De Você",
@@ -144,39 +34,127 @@
         "albumName" : "Chico Buarque",
         "trackUri" : "spotify:track:2GAFZG9Z7UGS1iMm4Idrnr"
       },
-      "addedDate" : "2025-08-17"
+      "addedDate" : "2026-07-14"
     }, {
       "track" : {
-        "trackName" : "Saccharine",
-        "artistName" : "VIOLENT VIRA",
-        "albumName" : "Saccharine",
-        "trackUri" : "spotify:track:1NiPI7ATyw4ZwI2b858XrT"
+        "trackName" : "A Banda",
+        "artistName" : "Chico Buarque",
+        "albumName" : "Chico Buarque de Hollanda",
+        "trackUri" : "spotify:track:6wUp7y502iyWLuLuurlOyw"
       },
-      "addedDate" : "2025-08-17"
+      "addedDate" : "2026-07-14"
     }, {
       "track" : {
-        "trackName" : "What You Won't Do for Love",
-        "artistName" : "Bobby Caldwell",
-        "albumName" : "What You Won't Do for Love",
-        "trackUri" : "spotify:track:1lB6TCFlx4f50wdetOuGcT"
+        "trackName" : "Valsinha",
+        "artistName" : "Chico Buarque",
+        "albumName" : "Construção",
+        "trackUri" : "spotify:track:6BmiOymAiOcmThWDKLysFK"
       },
-      "addedDate" : "2025-08-17"
+      "addedDate" : "2026-07-14"
     }, {
       "track" : {
-        "trackName" : "Wave (Vou Te Contar)",
-        "artistName" : "Tempo Rei",
-        "albumName" : "Latin Jazz - Garota de Ipanema-Wave-Desafinado-Samba de uma nota so",
-        "trackUri" : "spotify:track:2RNPfsP3oTxc3R4WVj2hgC"
+        "trackName" : "O Mundo É Um Moinho",
+        "artistName" : "Cartola",
+        "albumName" : "Cartola",
+        "trackUri" : "spotify:track:3PavsmA9S6QA5lNmmsuOif"
       },
-      "addedDate" : "2025-08-17"
+      "addedDate" : "2026-07-14"
     }, {
       "track" : {
-        "trackName" : "My Song",
-        "artistName" : "Labi Siffre",
-        "albumName" : "Crying Laughing Loving Lying",
-        "trackUri" : "spotify:track:2EQWbkcNoKPOXQtJM7nqRV"
+        "trackName" : "Preciso Me Encontrar",
+        "artistName" : "Cartola",
+        "albumName" : "Cartola",
+        "trackUri" : "spotify:track:5AKrqJ7RiOCfCaaCuxxGk0"
       },
-      "addedDate" : "2025-08-17"
+      "addedDate" : "2026-07-14"
+    }, {
+      "track" : {
+        "trackName" : "Águas De Março",
+        "artistName" : "Elis Regina",
+        "albumName" : "Elis & Tom",
+        "trackUri" : "spotify:track:15ouqiBsgL12olEwP3COsH"
+      },
+      "addedDate" : "2026-07-14"
+    }, {
+      "track" : {
+        "trackName" : "Carta Ao Tom 74",
+        "artistName" : "Vinícius de Moraes",
+        "albumName" : "Vinicius & Toquinho",
+        "trackUri" : "spotify:track:5DHsGfjaxIpt0v0dPGaWdI"
+      },
+      "addedDate" : "2026-07-14"
+    }, {
+      "track" : {
+        "trackName" : "Saudosa Maloca",
+        "artistName" : "Adoniran Barbosa",
+        "albumName" : "Adoniran Barbosa",
+        "trackUri" : "spotify:track:2lWmqGC70SKMebW1HgPGkA"
+      },
+      "addedDate" : "2026-07-14"
+    }, {
+      "track" : {
+        "trackName" : "Trem Das Onze",
+        "artistName" : "Adoniran Barbosa",
+        "albumName" : "Adoniran Barbosa",
+        "trackUri" : "spotify:track:2TI5GBkbrrFtZRM5v1heeb"
+      },
+      "addedDate" : "2026-07-14"
+    }, {
+      "track" : {
+        "trackName" : "Brasil pandeiro",
+        "artistName" : "Novos Baianos",
+        "albumName" : "Enciclopédia Musical Brasileira",
+        "trackUri" : "spotify:track:4IIK7KvWCTSkVVRufxyh3d"
+      },
+      "addedDate" : "2026-07-14"
+    }, {
+      "track" : {
+        "trackName" : "Deixa Eu Dizer",
+        "artistName" : "Claudya",
+        "albumName" : "Deixa Eu Dizer",
+        "trackUri" : "spotify:track:1z1VvotFOcYm72B56JQ85S"
+      },
+      "addedDate" : "2026-07-14"
+    }, {
+      "track" : {
+        "trackName" : "Sobre O Amor E Seu Trabalho Silencioso",
+        "artistName" : "Céu",
+        "albumName" : "Vagarosa",
+        "trackUri" : "spotify:track:6RPQlpWjKCBy9uT4WkWCf0"
+      },
+      "addedDate" : "2026-07-14"
+    }, {
+      "track" : {
+        "trackName" : "O Telefone Tocou Novamente",
+        "artistName" : "Jorge Ben Jor",
+        "albumName" : "Força Bruta",
+        "trackUri" : "spotify:track:2OmW34Xkvsy1VCOZ4OZhKv"
+      },
+      "addedDate" : "2026-07-14"
+    }, {
+      "track" : {
+        "trackName" : "Quando O Carnaval Chegar",
+        "artistName" : "Quarteto Em Cy",
+        "albumName" : "Quarteto Em Cy",
+        "trackUri" : "spotify:track:5Iuqp8HuZwjV3Uo5g5naHw"
+      },
+      "addedDate" : "2026-07-14"
+    }, {
+      "track" : {
+        "trackName" : "Corazón Impar",
+        "artistName" : "Jorge Drexler",
+        "albumName" : "Tinta y Tiempo",
+        "trackUri" : "spotify:track:2oDgXEQpEqvVh29uunCasa"
+      },
+      "addedDate" : "2026-07-14"
+    }, {
+      "track" : {
+        "trackName" : "Não Sou Mais Disso - Ao Vivo No Rio De Janeiro / 2003",
+        "artistName" : "Zeca Pagodinho",
+        "albumName" : "Acústico - Zeca Pagodinho",
+        "trackUri" : "spotify:track:7hSQUyk4WZzW3gcY3avvvl"
+      },
+      "addedDate" : "2026-07-14"
     }, {
       "track" : {
         "trackName" : "Te lo agradezco, pero no (feat. Shakira)",
@@ -184,79 +162,31 @@
         "albumName" : "El tren de los momentos",
         "trackUri" : "spotify:track:0TSO6afZViXH6OUlIMl6m4"
       },
-      "addedDate" : "2025-08-17"
+      "addedDate" : "2026-07-14"
     }, {
       "track" : {
-        "trackName" : "Tan Difícil de Entender",
-        "artistName" : "Pantoja",
-        "albumName" : "Tan Difícil de Entender",
-        "trackUri" : "spotify:track:2KkQ9qiUzA7SHwCadQtI8u"
+        "trackName" : "Donde convergemos",
+        "artistName" : "Alejandro Sanz",
+        "albumName" : "El tren de los momentos",
+        "trackUri" : "spotify:track:2N0mhvIYbl9AtjNT2eZOEy"
       },
-      "addedDate" : "2025-08-17"
+      "addedDate" : "2026-07-14"
     }, {
       "track" : {
-        "trackName" : "No More ?'s",
-        "artistName" : "Eazy-E",
-        "albumName" : "Eazy-Duz-It",
-        "trackUri" : "spotify:track:7y9yjpRtZajYzVpXHRjwGz"
+        "trackName" : "Corazón partío",
+        "artistName" : "Alejandro Sanz",
+        "albumName" : "Más",
+        "trackUri" : "spotify:track:0wQCKR9OFjYu5Kzrk7WivJ"
       },
-      "addedDate" : "2025-08-17"
+      "addedDate" : "2026-07-14"
     }, {
       "track" : {
-        "trackName" : "Let You Break My Heart Again",
-        "artistName" : "Laufey",
-        "albumName" : "Let You Break My Heart Again",
-        "trackUri" : "spotify:track:709p9UGPAuyImWf1Z3vjRo"
+        "trackName" : "Siempre es de noche",
+        "artistName" : "Alejandro Sanz",
+        "albumName" : "Más",
+        "trackUri" : "spotify:track:6ZL2hqLpDdMzDkxIp7I7aZ"
       },
-      "addedDate" : "2025-08-18"
-    }, {
-      "track" : {
-        "trackName" : "No More What Ifs",
-        "artistName" : "Lyn",
-        "albumName" : "Persona 5 Royal: Original Soundtrack",
-        "trackUri" : "spotify:track:2SQ9RmQAOxGICUSt9T5dIX"
-      },
-      "addedDate" : "2025-08-18"
-    }, {
-      "track" : {
-        "trackName" : "SNOWFLAKES",
-        "artistName" : "平田志穂子",
-        "albumName" : "ペルソナ4 ザ・ゴールデン オリジナル・サウンドトラック",
-        "trackUri" : "spotify:track:3Ybug08EbRV4RZfcw8WZMk"
-      },
-      "addedDate" : "2025-08-18"
-    }, {
-      "track" : {
-        "trackName" : "Avalon",
-        "artistName" : "Blur",
-        "albumName" : "The Ballad of Darren",
-        "trackUri" : "spotify:track:18LncIpU1D8uzVtt1vs2X3"
-      },
-      "addedDate" : "2025-08-18"
-    }, {
-      "track" : {
-        "trackName" : "Tortoise Of Independency",
-        "artistName" : "King Krule",
-        "albumName" : "Space Heavy",
-        "trackUri" : "spotify:track:7msZWkDsoKGXz4yFWSyMJ3"
-      },
-      "addedDate" : "2025-08-18"
-    }, {
-      "track" : {
-        "trackName" : "Here's Where the Story Ends",
-        "artistName" : "The Sundays",
-        "albumName" : "Reading Writing And Arithmetic",
-        "trackUri" : "spotify:track:5gSHlT2SI0dtjeHrjj96A1"
-      },
-      "addedDate" : "2025-08-18"
-    }, {
-      "track" : {
-        "trackName" : "Shimmy Shimmy Ya",
-        "artistName" : "Ol' Dirty Bastard",
-        "albumName" : "Return to the 36 Chambers: The Dirty Version",
-        "trackUri" : "spotify:track:3ABG1UQTk0eLYUAeWkmfMi"
-      },
-      "addedDate" : "2025-08-18"
+      "addedDate" : "2026-07-14"
     }, {
       "track" : {
         "trackName" : "Amiga mía",
@@ -264,1662 +194,340 @@
         "albumName" : "Más",
         "trackUri" : "spotify:track:6kQYMqjobmB8MkWwa9OUyA"
       },
-      "addedDate" : "2025-08-23"
+      "addedDate" : "2026-07-14"
+    }, {
+      "track" : {
+        "trackName" : "Y sólo se me ocurre amarte",
+        "artistName" : "Alejandro Sanz",
+        "albumName" : "MTV Unplugged",
+        "trackUri" : "spotify:track:05Zcw1sWmSu3wfbaLTeosp"
+      },
+      "addedDate" : "2026-07-14"
+    }, {
+      "track" : {
+        "trackName" : "Amar Pelos Dois",
+        "artistName" : "Salvador Sobral",
+        "albumName" : "Amar Pelos Dois",
+        "trackUri" : "spotify:track:3UjSOJ00E1eLMcayBm827Q"
+      },
+      "addedDate" : "2026-07-14"
+    }, {
+      "track" : {
+        "trackName" : "Wave (Vou Te Contar)",
+        "artistName" : "Tempo Rei",
+        "albumName" : "Latin Jazz - Garota de Ipanema-Wave-Desafinado-Samba de uma nota so",
+        "trackUri" : "spotify:track:2RNPfsP3oTxc3R4WVj2hgC"
+      },
+      "addedDate" : "2026-07-14"
+    }, {
+      "track" : {
+        "trackName" : "Tendência - Ao vivo",
+        "artistName" : "Jorge Aragão",
+        "albumName" : "Ao vivo 3",
+        "trackUri" : "spotify:track:6ty2XoMAhwS2WRevhjQeb3"
+      },
+      "addedDate" : "2026-07-14"
+    }, {
+      "track" : {
+        "trackName" : "Tan Difícil de Entender",
+        "artistName" : "Pantoja",
+        "albumName" : "Tan Difícil de Entender",
+        "trackUri" : "spotify:track:2KkQ9qiUzA7SHwCadQtI8u"
+      },
+      "addedDate" : "2026-07-15"
     } ],
     "numberOfFollowers" : 0
   }, {
-    "name" : "Trees...",
-    "lastModifiedDate" : "2025-06-10",
+    "name" : "Ambient",
+    "lastModifiedDate" : "2026-07-14",
     "collaborators" : [ ],
     "items" : [ {
       "track" : {
-        "trackName" : "Trees...",
-        "artistName" : "Omori",
-        "albumName" : "Omori (Original Game Soundtrack), Pt.1",
-        "trackUri" : "spotify:track:2Ow8YPaRkaHd5Cr9zGpoHC"
+        "trackName" : "Tama",
+        "artistName" : "Tonto's Expanding Head Band",
+        "albumName" : "Zero Time",
+        "trackUri" : "spotify:track:7A6YuGexPYQsGmJ8ZPH7ca"
       },
-      "addedDate" : "2025-06-04"
+      "addedDate" : "2026-07-14"
     }, {
       "track" : {
-        "trackName" : "Lost Library",
-        "artistName" : "Omori",
-        "albumName" : "Omori (Original Game Soundtrack), Pt. 2",
-        "trackUri" : "spotify:track:33i4H7iDxIes1d8Nd0S3QF"
+        "trackName" : "Treefingers",
+        "artistName" : "Radiohead",
+        "albumName" : "Kid A",
+        "trackUri" : "spotify:track:4LrfsgQ5AGouvH3PlxW2PC"
       },
-      "addedDate" : "2025-06-04"
+      "addedDate" : "2026-07-14"
     }, {
       "track" : {
-        "trackName" : "Spaces Inbetween.",
-        "artistName" : "Omori",
-        "albumName" : "Omori (Original Game Soundtrack), Pt.1",
-        "trackUri" : "spotify:track:54shhL9vif2iwUXg0lNpQX"
+        "trackName" : "Immortality",
+        "artistName" : "Ana Roxanne",
+        "albumName" : "~~~",
+        "trackUri" : "spotify:track:7umwXBtyRHfXl0UnhsWKRZ"
       },
-      "addedDate" : "2025-06-04"
+      "addedDate" : "2026-07-14"
     }, {
       "track" : {
-        "trackName" : "Poems in the Fog",
-        "artistName" : "Omori",
-        "albumName" : "Omori (Original Game Soundtrack), Pt.1",
-        "trackUri" : "spotify:track:5UyCeNAdl20Lio0M6JosDy"
+        "trackName" : "La petite fille de la mer - Remastered",
+        "artistName" : "Vangelis",
+        "albumName" : "L'apocalypse des animaux",
+        "trackUri" : "spotify:track:3uNFRvQVEIEsQgHdZFw6Dk"
       },
-      "addedDate" : "2025-06-04"
+      "addedDate" : "2026-07-14"
     }, {
       "track" : {
-        "trackName" : "Space Road 1979",
-        "artistName" : "Omori",
-        "albumName" : "Omori (Original Game Soundtrack), Pt.1",
-        "trackUri" : "spotify:track:17iDeAmxcxIzwnI2CBMXNT"
+        "trackName" : "Cold and warm in winter",
+        "artistName" : "Akira Rin",
+        "albumName" : "Cold and warm in winter",
+        "trackUri" : "spotify:track:7hCPYy1JzXePy4pZFdPGeP"
       },
-      "addedDate" : "2025-06-04"
-    }, {
-      "track" : {
-        "trackName" : "A Place by a Lake",
-        "artistName" : "Omori",
-        "albumName" : "Omori (Original Game Soundtrack), Pt.1",
-        "trackUri" : "spotify:track:58R1FPRbqKN7tq1B466QPB"
-      },
-      "addedDate" : "2025-06-04"
-    }, {
-      "track" : {
-        "trackName" : "Sugar Star Planetarium",
-        "artistName" : "Omori",
-        "albumName" : "Omori (Original Game Soundtrack), Pt.1",
-        "trackUri" : "spotify:track:5ClvtUXRpO2KeRBrK0ushG"
-      },
-      "addedDate" : "2025-06-04"
-    }, {
-      "track" : {
-        "trackName" : "Lovesick - 80,000 Lightyears",
-        "artistName" : "Omori",
-        "albumName" : "Omori (Original Game Soundtrack), Pt.1",
-        "trackUri" : "spotify:track:14ZLZIJjJzzxZOcoHDuraW"
-      },
-      "addedDate" : "2025-06-04"
-    }, {
-      "track" : {
-        "trackName" : "I Will Catch up!",
-        "artistName" : "Omori",
-        "albumName" : "Omori (Original Game Soundtrack), Pt.1",
-        "trackUri" : "spotify:track:2ib9e0d9YOPm2w33RMOJxo"
-      },
-      "addedDate" : "2025-06-04"
-    }, {
-      "track" : {
-        "trackName" : "Snow Forest - A Single Flower Blooms",
-        "artistName" : "Omori",
-        "albumName" : "Omori (Original Game Soundtrack), Pt.1",
-        "trackUri" : "spotify:track:537nqymLhimaaCVDS6bYRY"
-      },
-      "addedDate" : "2025-06-04"
-    }, {
-      "track" : {
-        "trackName" : "The Elegance of the Mysterious and Distant",
-        "artistName" : "Omori",
-        "albumName" : "Omori (Original Game Soundtrack), Pt.1",
-        "trackUri" : "spotify:track:4QtvMYyaFneVP4NzQTwyQi"
-      },
-      "addedDate" : "2025-06-04"
-    }, {
-      "track" : {
-        "trackName" : "Photograph",
-        "artistName" : "Omori",
-        "albumName" : "Omori (Original Game Soundtrack), Pt.1",
-        "trackUri" : "spotify:track:5VOJx46O9TqFWaQjxbFpfD"
-      },
-      "addedDate" : "2025-06-04"
-    }, {
-      "track" : {
-        "trackName" : "Woof",
-        "artistName" : "Omori",
-        "albumName" : "Omori (Original Game Soundtrack), Pt.1",
-        "trackUri" : "spotify:track:1s7QM7h7k27X4V8OmFB97J"
-      },
-      "addedDate" : "2025-06-04"
-    }, {
-      "track" : {
-        "trackName" : "Respite",
-        "artistName" : "Omori",
-        "albumName" : "Omori (Original Game Soundtrack), Pt.1",
-        "trackUri" : "spotify:track:6tLtX9MXUGX0YFjSlcYIO6"
-      },
-      "addedDate" : "2025-06-04"
-    }, {
-      "track" : {
-        "trackName" : "See You Tomorrow",
-        "artistName" : "Omori",
-        "albumName" : "Omori (Original Game Soundtrack), Pt.1",
-        "trackUri" : "spotify:track:50IyqKFW5liwzYbUjZyZnJ"
-      },
-      "addedDate" : "2025-06-04"
-    }, {
-      "track" : {
-        "trackName" : "☆メニュータイプチェンジ☆",
-        "artistName" : "Kikiyama",
-        "albumName" : "ゆめにっき サウンドトラック　ゆめのおと 2",
-        "trackUri" : "spotify:track:7c3lk5GwSyJfaxG6wdW4Wv"
-      },
-      "addedDate" : "2025-06-05"
-    }, {
-      "track" : {
-        "trackName" : "Oyasame(?)",
-        "artistName" : "Pathcel Tarts",
-        "albumName" : "Oyasame(?)",
-        "trackUri" : "spotify:track:0tIBhanrKCc9SejXsMWhpP"
-      },
-      "addedDate" : "2025-06-05"
-    }, {
-      "track" : {
-        "trackName" : "A Home for Flowers (Empty)",
-        "artistName" : "Omori",
-        "albumName" : "Omori (Original Game Soundtrack), Pt.1",
-        "trackUri" : "spotify:track:1EUqwGln350zfIMKRuv1OD"
-      },
-      "addedDate" : "2025-06-10"
+      "addedDate" : "2026-07-14"
     } ],
     "numberOfFollowers" : 0
   }, {
-    "name" : "ALTER EGO ORIGINAL SOUNDTRACK",
-    "lastModifiedDate" : "2024-10-26",
+    "name" : "Ethereal Folk",
+    "lastModifiedDate" : "2026-07-15",
     "collaborators" : [ ],
     "items" : [ {
       "track" : {
-        "trackName" : "Alter ego",
-        "artistName" : "Caramel Column",
-        "albumName" : "ALTER EGO ORIGINAL SOUNDTRACK",
-        "trackUri" : "spotify:track:5Wz2pLAmzw8TXvFEbp7bz4"
+        "trackName" : "COLORATURA",
+        "artistName" : "Ichiko Aoba",
+        "albumName" : "Luminescent Creatures",
+        "trackUri" : "spotify:track:5SCKeEcc8msC3pg2tNCc4A"
       },
-      "addedDate" : "2024-10-26"
+      "addedDate" : "2026-06-27"
     }, {
       "track" : {
-        "trackName" : "Silence (piano)",
-        "artistName" : "Caramel Column",
-        "albumName" : "ALTER EGO ORIGINAL SOUNDTRACK",
-        "trackUri" : "spotify:track:4DcZXYvml87IYFphFXqC0K"
+        "trackName" : "SONAR",
+        "artistName" : "Ichiko Aoba",
+        "albumName" : "Luminescent Creatures",
+        "trackUri" : "spotify:track:6dFUg04kNhndbfAO8mTmba"
       },
-      "addedDate" : "2024-10-26"
+      "addedDate" : "2026-07-14"
     }, {
       "track" : {
-        "trackName" : "Silence (voice)",
-        "artistName" : "Caramel Column",
-        "albumName" : "ALTER EGO ORIGINAL SOUNDTRACK",
-        "trackUri" : "spotify:track:2eRnINCnwagtCHaeouQjw7"
+        "trackName" : "Mi alma sobre la mesa",
+        "artistName" : "Lorea",
+        "albumName" : "Los problemas se frotan",
+        "trackUri" : "spotify:track:5phzwqF1A7RmGh1ym30gEH"
       },
-      "addedDate" : "2024-10-26"
+      "addedDate" : "2026-07-14"
     }, {
       "track" : {
-        "trackName" : "Silence - Remix ver.",
-        "artistName" : "Caramel Column",
-        "albumName" : "ALTER EGO ORIGINAL SOUNDTRACK",
-        "trackUri" : "spotify:track:32bDsWnPPXFVzGfJvEiedY"
+        "trackName" : "Seabed Eden",
+        "artistName" : "Ichiko Aoba",
+        "albumName" : "Seabed Eden",
+        "trackUri" : "spotify:track:57nNl97dx0te1FSQAhA9mh"
       },
-      "addedDate" : "2024-10-26"
+      "addedDate" : "2026-07-14"
+    }, {
+      "track" : {
+        "trackName" : "Solidão",
+        "artistName" : "Jane Rutter",
+        "albumName" : "Brazil",
+        "trackUri" : "spotify:track:6DIbNuvvzaJem1hI6SGLIQ"
+      },
+      "addedDate" : "2026-07-14"
+    }, {
+      "track" : {
+        "trackName" : "Trocando Em Miúdos",
+        "artistName" : "Chico Buarque",
+        "albumName" : "Chico Buarque",
+        "trackUri" : "spotify:track:2hsLZH9ZoyQAo1drxbF1Il"
+      },
+      "addedDate" : "2026-07-14"
+    }, {
+      "track" : {
+        "trackName" : "Ocean",
+        "artistName" : "Phoebe Rings",
+        "albumName" : "Phoebe Rings",
+        "trackUri" : "spotify:track:1UfOVqE7qtUhA6mjChEXUO"
+      },
+      "addedDate" : "2026-07-14"
+    }, {
+      "track" : {
+        "trackName" : "Nons",
+        "artistName" : "Vivienne Eastwood",
+        "albumName" : "Shook - EP",
+        "trackUri" : "spotify:track:3fgNOFWDU57lq05wxAFYNR"
+      },
+      "addedDate" : "2026-07-14"
+    }, {
+      "track" : {
+        "trackName" : "Song To The Siren",
+        "artistName" : "This Mortal Coil",
+        "albumName" : "Lilliput",
+        "trackUri" : "spotify:track:0bM3fUvaZHBFUXyFNjCx1R"
+      },
+      "addedDate" : "2026-07-14"
+    }, {
+      "track" : {
+        "trackName" : "Path",
+        "artistName" : "Jokers",
+        "albumName" : "Hit Music Album Vol. 1 The Word Without You/The Moment of Goodbye",
+        "trackUri" : "spotify:track:4PfcGb4uyCAdHTpWcQ4jVA"
+      },
+      "addedDate" : "2026-07-15"
     } ],
     "numberOfFollowers" : 0
   }, {
-    "name" : "UNDERTALE Soundtrack",
-    "lastModifiedDate" : "2024-10-26",
+    "name" : "Experimental Folk",
+    "lastModifiedDate" : "2026-07-14",
     "collaborators" : [ ],
     "items" : [ {
       "track" : {
-        "trackName" : "Once Upon a Time",
-        "artistName" : "Toby Fox",
-        "albumName" : "UNDERTALE Soundtrack",
-        "trackUri" : "spotify:track:4XX5uZb9PvTKh8Nm2KSJfk"
+        "trackName" : "Roked",
+        "artistName" : "Shye Ben Tzur",
+        "albumName" : "Junun",
+        "trackUri" : "spotify:track:0v6lKeqANj3eVvKOs6BQfR"
       },
-      "addedDate" : "2024-10-26"
+      "addedDate" : "2026-07-14"
     }, {
       "track" : {
-        "trackName" : "Start Menu",
-        "artistName" : "Toby Fox",
-        "albumName" : "UNDERTALE Soundtrack",
-        "trackUri" : "spotify:track:5pb39nk7Wr8e0aMQ6VUdlr"
+        "trackName" : "nessas linhas eu destrincho minha alma",
+        "artistName" : "Digo",
+        "albumName" : "JËSUS PŪNĶ RØĈK",
+        "trackUri" : "spotify:track:15flM0tlZSxMNl09bpzvCt"
       },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Your Best Friend",
-        "artistName" : "Toby Fox",
-        "albumName" : "UNDERTALE Soundtrack",
-        "trackUri" : "spotify:track:6gJTgSwOw2TqAPCnk2gTlk"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Fallen Down",
-        "artistName" : "Toby Fox",
-        "albumName" : "UNDERTALE Soundtrack",
-        "trackUri" : "spotify:track:1jDMi92a9zNQuPD3uPMkla"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Ruins",
-        "artistName" : "Toby Fox",
-        "albumName" : "UNDERTALE Soundtrack",
-        "trackUri" : "spotify:track:1vuSdk2EGjh3eXCXBbT9Qf"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Uwa!! So Temperate♫",
-        "artistName" : "Toby Fox",
-        "albumName" : "UNDERTALE Soundtrack",
-        "trackUri" : "spotify:track:3PV4bPPqezu18K45MIOrVY"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Anticipation",
-        "artistName" : "Toby Fox",
-        "albumName" : "UNDERTALE Soundtrack",
-        "trackUri" : "spotify:track:5qmsdZZamDrOAq5wKCuSKC"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Unnecessary Tension",
-        "artistName" : "Toby Fox",
-        "albumName" : "UNDERTALE Soundtrack",
-        "trackUri" : "spotify:track:184lW8f9jvoShhMV8o6BuW"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Enemy Approaching",
-        "artistName" : "Toby Fox",
-        "albumName" : "UNDERTALE Soundtrack",
-        "trackUri" : "spotify:track:5iOTHhi2C3mHSn007Neqcg"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Ghost Fight",
-        "artistName" : "Toby Fox",
-        "albumName" : "UNDERTALE Soundtrack",
-        "trackUri" : "spotify:track:36AhCvv8NAVPr0eNsv2PrW"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Determination",
-        "artistName" : "Toby Fox",
-        "albumName" : "UNDERTALE Soundtrack",
-        "trackUri" : "spotify:track:3KHbBpwYdlM6uKJirvCrEA"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Home",
-        "artistName" : "Toby Fox",
-        "albumName" : "UNDERTALE Soundtrack",
-        "trackUri" : "spotify:track:5L9MJsGqzTRD09rSzHkCDy"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Home (Music Box)",
-        "artistName" : "Toby Fox",
-        "albumName" : "UNDERTALE Soundtrack",
-        "trackUri" : "spotify:track:1DkjqnjgbbpT7cYL2D2ma4"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Heartache",
-        "artistName" : "Toby Fox",
-        "albumName" : "UNDERTALE Soundtrack",
-        "trackUri" : "spotify:track:2bvbLvGD7YnS4Nhf9E4hUl"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "sans.",
-        "artistName" : "Toby Fox",
-        "albumName" : "UNDERTALE Soundtrack",
-        "trackUri" : "spotify:track:26lWYpgbcknITI0Fy1eZDs"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Nyeh Heh Heh!",
-        "artistName" : "Toby Fox",
-        "albumName" : "UNDERTALE Soundtrack",
-        "trackUri" : "spotify:track:6YEGQH32aAXb9vQQbBrPlw"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Snowy",
-        "artistName" : "Toby Fox",
-        "albumName" : "UNDERTALE Soundtrack",
-        "trackUri" : "spotify:track:7Af5aQzfpm2VxnCFsy6Tkx"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Uwa!! So Holiday♫",
-        "artistName" : "Toby Fox",
-        "albumName" : "UNDERTALE Soundtrack",
-        "trackUri" : "spotify:track:4mWFafcREuKWv2MeTVxDlQ"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Dogbass",
-        "artistName" : "Toby Fox",
-        "albumName" : "UNDERTALE Soundtrack",
-        "trackUri" : "spotify:track:1ynRabP8jaySeRvHBejfCT"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Mysterious Place",
-        "artistName" : "Toby Fox",
-        "albumName" : "UNDERTALE Soundtrack",
-        "trackUri" : "spotify:track:79HBiklNqtQXln5ocHUR3B"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Dogsong",
-        "artistName" : "Toby Fox",
-        "albumName" : "UNDERTALE Soundtrack",
-        "trackUri" : "spotify:track:23aRUhe4gmS4Bh7DUZecL4"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Snowdin Town",
-        "artistName" : "Toby Fox",
-        "albumName" : "UNDERTALE Soundtrack",
-        "trackUri" : "spotify:track:6VhLpbQlPWgU11As8woUIC"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Shop",
-        "artistName" : "Toby Fox",
-        "albumName" : "UNDERTALE Soundtrack",
-        "trackUri" : "spotify:track:5OyWN37xTdZtjbSQ15FA8K"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Bonetrousle",
-        "artistName" : "Toby Fox",
-        "albumName" : "UNDERTALE Soundtrack",
-        "trackUri" : "spotify:track:2AtC6i0b8TjpjhWBZYLprX"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Dating Start!",
-        "artistName" : "Toby Fox",
-        "albumName" : "UNDERTALE Soundtrack",
-        "trackUri" : "spotify:track:0R3JgweOfGl9kPxyd5DFC8"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Dating Tense!",
-        "artistName" : "Toby Fox",
-        "albumName" : "UNDERTALE Soundtrack",
-        "trackUri" : "spotify:track:0FnCnFGi6TKQSFDvxiCCuF"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Dating Fight!",
-        "artistName" : "Toby Fox",
-        "albumName" : "UNDERTALE Soundtrack",
-        "trackUri" : "spotify:track:0KQnhlCVldP6qicvBy9IJ5"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Premonition",
-        "artistName" : "Toby Fox",
-        "albumName" : "UNDERTALE Soundtrack",
-        "trackUri" : "spotify:track:2acj21k56lNshKpVAYF7DR"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Danger Mystery",
-        "artistName" : "Toby Fox",
-        "albumName" : "UNDERTALE Soundtrack",
-        "trackUri" : "spotify:track:3577RkKMcLN7NKeqNDjLQw"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Undyne",
-        "artistName" : "Toby Fox",
-        "albumName" : "UNDERTALE Soundtrack",
-        "trackUri" : "spotify:track:1MoAGaJNyPwaLSB6iTLNg1"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Waterfall",
-        "artistName" : "Toby Fox",
-        "albumName" : "UNDERTALE Soundtrack",
-        "trackUri" : "spotify:track:2N2lDDaucbMUw1I1GxBrbc"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Run!",
-        "artistName" : "Toby Fox",
-        "albumName" : "UNDERTALE Soundtrack",
-        "trackUri" : "spotify:track:6d3RasED8YglcjKywHGnKd"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Quiet Water",
-        "artistName" : "Toby Fox",
-        "albumName" : "UNDERTALE Soundtrack",
-        "trackUri" : "spotify:track:0gt76DuMx7F3UZJPg7jcC5"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Memory",
-        "artistName" : "Toby Fox",
-        "albumName" : "UNDERTALE Soundtrack",
-        "trackUri" : "spotify:track:4LrlsO9cnnNjxBiHeRedjF"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Bird That Carries You Over A Disproportionately Small Gap",
-        "artistName" : "Toby Fox",
-        "albumName" : "UNDERTALE Soundtrack",
-        "trackUri" : "spotify:track:5YfXQD5Jn5o5Wxay5pDL3j"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Dummy!",
-        "artistName" : "Toby Fox",
-        "albumName" : "UNDERTALE Soundtrack",
-        "trackUri" : "spotify:track:6ZEenbPqCbKxPmu49taU8u"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Pathetic House",
-        "artistName" : "Toby Fox",
-        "albumName" : "UNDERTALE Soundtrack",
-        "trackUri" : "spotify:track:4uDhRzIuby0r2dOD7DdYhA"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Spooktune",
-        "artistName" : "Toby Fox",
-        "albumName" : "UNDERTALE Soundtrack",
-        "trackUri" : "spotify:track:7jxPl7YKBJuLEgG2iuQ86u"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Spookwave",
-        "artistName" : "Toby Fox",
-        "albumName" : "UNDERTALE Soundtrack",
-        "trackUri" : "spotify:track:7IOkjKXVKvVoWNZCILCQNS"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Ghouliday",
-        "artistName" : "Toby Fox",
-        "albumName" : "UNDERTALE Soundtrack",
-        "trackUri" : "spotify:track:2ErNeINBpB3nr64KRi9JUS"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Chill",
-        "artistName" : "Toby Fox",
-        "albumName" : "UNDERTALE Soundtrack",
-        "trackUri" : "spotify:track:7aETfVDs6MnQg6uyEhhpro"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Thundersnail",
-        "artistName" : "Toby Fox",
-        "albumName" : "UNDERTALE Soundtrack",
-        "trackUri" : "spotify:track:47nTwghY7OBlUhnrp0npNp"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Temmie Village",
-        "artistName" : "Toby Fox",
-        "albumName" : "UNDERTALE Soundtrack",
-        "trackUri" : "spotify:track:7ym2c9z3JgkXVEQDk0sKn8"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Tem Shop",
-        "artistName" : "Toby Fox",
-        "albumName" : "UNDERTALE Soundtrack",
-        "trackUri" : "spotify:track:3SVrOYdMaqeW56eHfw7ScX"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "NGAHHH!!",
-        "artistName" : "Toby Fox",
-        "albumName" : "UNDERTALE Soundtrack",
-        "trackUri" : "spotify:track:5Q2YHimqwRHoPifb3H8Nlo"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Spear of Justice",
-        "artistName" : "Toby Fox",
-        "albumName" : "UNDERTALE Soundtrack",
-        "trackUri" : "spotify:track:0wae8KoprNjfrXWjYYHGy9"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Ooo",
-        "artistName" : "Toby Fox",
-        "albumName" : "UNDERTALE Soundtrack",
-        "trackUri" : "spotify:track:6MpL0zLvaHKjWFZQjwBnFB"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Alphys",
-        "artistName" : "Toby Fox",
-        "albumName" : "UNDERTALE Soundtrack",
-        "trackUri" : "spotify:track:5Prf4wpKlnsqj9HTSW4BjW"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "It's Showtime!",
-        "artistName" : "Toby Fox",
-        "albumName" : "UNDERTALE Soundtrack",
-        "trackUri" : "spotify:track:5lLuAtrQXTi204GNxkEenv"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Metal Crusher",
-        "artistName" : "Toby Fox",
-        "albumName" : "UNDERTALE Soundtrack",
-        "trackUri" : "spotify:track:6ZT36tXEKY2vvTCuNK4fi1"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Another Medium",
-        "artistName" : "Toby Fox",
-        "albumName" : "UNDERTALE Soundtrack",
-        "trackUri" : "spotify:track:3eQijz4pPT7rb020LqdhdX"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Uwa!! So HEATS!!♫",
-        "artistName" : "Toby Fox",
-        "albumName" : "UNDERTALE Soundtrack",
-        "trackUri" : "spotify:track:31Delkg9AZ1B4vmMrtJToF"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Stronger Monsters",
-        "artistName" : "Toby Fox",
-        "albumName" : "UNDERTALE Soundtrack",
-        "trackUri" : "spotify:track:0ROETpoLOKjq61LjwxNz92"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Hotel",
-        "artistName" : "Toby Fox",
-        "albumName" : "UNDERTALE Soundtrack",
-        "trackUri" : "spotify:track:0Tz2tckjhEvAppdWHsgqg6"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Can You Really Call This A Hotel, I Didn't Receive A Mint On My Pillow Or Anything",
-        "artistName" : "Toby Fox",
-        "albumName" : "UNDERTALE Soundtrack",
-        "trackUri" : "spotify:track:3llcyZnL04lIUQAiBCFng1"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Confession",
-        "artistName" : "Toby Fox",
-        "albumName" : "UNDERTALE Soundtrack",
-        "trackUri" : "spotify:track:1vIZ87PlB1PFABFX6W5DJ6"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Live Report",
-        "artistName" : "Toby Fox",
-        "albumName" : "UNDERTALE Soundtrack",
-        "trackUri" : "spotify:track:755DqpjjxuMQKAKdwvJ77Y"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Death Report",
-        "artistName" : "Toby Fox",
-        "albumName" : "UNDERTALE Soundtrack",
-        "trackUri" : "spotify:track:569EMDdG2cW670EchBfdfO"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Spider Dance",
-        "artistName" : "Toby Fox",
-        "albumName" : "UNDERTALE Soundtrack",
-        "trackUri" : "spotify:track:3aiGshuqYhdBBBhHqRf6jn"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Wrong Enemy !?",
-        "artistName" : "Toby Fox",
-        "albumName" : "UNDERTALE Soundtrack",
-        "trackUri" : "spotify:track:5R8oeZeq8AUiJuz5FIPR9m"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Oh! One True Love",
-        "artistName" : "Toby Fox",
-        "albumName" : "UNDERTALE Soundtrack",
-        "trackUri" : "spotify:track:4wBMMqeY2NnFnStBIPHxyG"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Oh! Dungeon",
-        "artistName" : "Toby Fox",
-        "albumName" : "UNDERTALE Soundtrack",
-        "trackUri" : "spotify:track:68QEE1JPRjEBbdhzpEIKGZ"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "It's Raining Somewhere Else",
-        "artistName" : "Toby Fox",
-        "albumName" : "UNDERTALE Soundtrack",
-        "trackUri" : "spotify:track:5z4vmar50qPl80GjIrPBXm"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "CORE Approach",
-        "artistName" : "Toby Fox",
-        "albumName" : "UNDERTALE Soundtrack",
-        "trackUri" : "spotify:track:1PVw70FUrm08BuED8bdiPb"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "CORE",
-        "artistName" : "Toby Fox",
-        "albumName" : "UNDERTALE Soundtrack",
-        "trackUri" : "spotify:track:5JyEFY05sV5Z8z5Bj7HQ1J"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Last Episode!",
-        "artistName" : "Toby Fox",
-        "albumName" : "UNDERTALE Soundtrack",
-        "trackUri" : "spotify:track:3zoav3LSItdvh7fj0iE43t"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Oh My...",
-        "artistName" : "Toby Fox",
-        "albumName" : "UNDERTALE Soundtrack",
-        "trackUri" : "spotify:track:6CBsGV6sv811sRb4sNBmcl"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Death By Glamour",
-        "artistName" : "Toby Fox",
-        "albumName" : "UNDERTALE Soundtrack",
-        "trackUri" : "spotify:track:7BGZ27yeaKR5OZOIxyegZi"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "For The Fans",
-        "artistName" : "Toby Fox",
-        "albumName" : "UNDERTALE Soundtrack",
-        "trackUri" : "spotify:track:39pQcPmAdzhvmmGwyyPatD"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Long Elevator",
-        "artistName" : "Toby Fox",
-        "albumName" : "UNDERTALE Soundtrack",
-        "trackUri" : "spotify:track:3bmbaQXM98fEAoQotiNu9Q"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Undertale",
-        "artistName" : "Toby Fox",
-        "albumName" : "UNDERTALE Soundtrack",
-        "trackUri" : "spotify:track:2FZ99j224ohiGLavqjijza"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Song That Might Play When You Fight Sans",
-        "artistName" : "Toby Fox",
-        "albumName" : "UNDERTALE Soundtrack",
-        "trackUri" : "spotify:track:4OOA9mtwTevG39jcALusOu"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "The Choice",
-        "artistName" : "Toby Fox",
-        "albumName" : "UNDERTALE Soundtrack",
-        "trackUri" : "spotify:track:6NhXSjpsasGw0dad5CxBYu"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Small Shock",
-        "artistName" : "Toby Fox",
-        "albumName" : "UNDERTALE Soundtrack",
-        "trackUri" : "spotify:track:7g2vS40kPg9PVMc8muxzBb"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Barrier",
-        "artistName" : "Toby Fox",
-        "albumName" : "UNDERTALE Soundtrack",
-        "trackUri" : "spotify:track:4UJoJcVKSuek1PaFdg238X"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Bergentrückung",
-        "artistName" : "Toby Fox",
-        "albumName" : "UNDERTALE Soundtrack",
-        "trackUri" : "spotify:track:7txouAZgjqHcIPQQTzojyv"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "ASGORE",
-        "artistName" : "Toby Fox",
-        "albumName" : "UNDERTALE Soundtrack",
-        "trackUri" : "spotify:track:0ybMBs8mKdAP9WSnFTiZvs"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "You Idiot",
-        "artistName" : "Toby Fox",
-        "albumName" : "UNDERTALE Soundtrack",
-        "trackUri" : "spotify:track:2RgL4ee5hWEik9TW6EHvbe"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Your Best Nightmare",
-        "artistName" : "Toby Fox",
-        "albumName" : "UNDERTALE Soundtrack",
-        "trackUri" : "spotify:track:723rnBXRc09umUfsasI6Cd"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Finale",
-        "artistName" : "Toby Fox",
-        "albumName" : "UNDERTALE Soundtrack",
-        "trackUri" : "spotify:track:4kNKL8kCCV3vt9U2k28Lyx"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "An Ending",
-        "artistName" : "Toby Fox",
-        "albumName" : "UNDERTALE Soundtrack",
-        "trackUri" : "spotify:track:6eTcxkl9G7C2mwejLJ7Amm"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "She's Playing Piano",
-        "artistName" : "Toby Fox",
-        "albumName" : "UNDERTALE Soundtrack",
-        "trackUri" : "spotify:track:3JoyM8nj4rQMha1uBAFgOB"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Here We Are",
-        "artistName" : "Toby Fox",
-        "albumName" : "UNDERTALE Soundtrack",
-        "trackUri" : "spotify:track:3BNy5x10fy5dG6JIgrimZI"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Amalgam",
-        "artistName" : "Toby Fox",
-        "albumName" : "UNDERTALE Soundtrack",
-        "trackUri" : "spotify:track:4uS9yFLe90uxnAz5VXqHQv"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Fallen Down (Reprise)",
-        "artistName" : "Toby Fox",
-        "albumName" : "UNDERTALE Soundtrack",
-        "trackUri" : "spotify:track:23b9BdZ2WZnDSeDzNUTVvZ"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Don't Give Up",
-        "artistName" : "Toby Fox",
-        "albumName" : "UNDERTALE Soundtrack",
-        "trackUri" : "spotify:track:4Yqrr5SMB84skeJ8cupJgs"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Hopes And Dreams",
-        "artistName" : "Toby Fox",
-        "albumName" : "UNDERTALE Soundtrack",
-        "trackUri" : "spotify:track:7CMVo848b9LsUtVavIoiXC"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Burn In Despair!",
-        "artistName" : "Toby Fox",
-        "albumName" : "UNDERTALE Soundtrack",
-        "trackUri" : "spotify:track:0bJIXo7oEFC7YuEAEd44SL"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "SAVE The World",
-        "artistName" : "Toby Fox",
-        "albumName" : "UNDERTALE Soundtrack",
-        "trackUri" : "spotify:track:0w5CRIokPrQAAq7OdIKesr"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "His Theme",
-        "artistName" : "Toby Fox",
-        "albumName" : "UNDERTALE Soundtrack",
-        "trackUri" : "spotify:track:46A71ZDLPRIFCppAdV2W6j"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Final Power",
-        "artistName" : "Toby Fox",
-        "albumName" : "UNDERTALE Soundtrack",
-        "trackUri" : "spotify:track:0t3tVUVhg7qOMeIzv8MwS0"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Reunited",
-        "artistName" : "Toby Fox",
-        "albumName" : "UNDERTALE Soundtrack",
-        "trackUri" : "spotify:track:4Gk2tZ5l4O3MG1UMm0dTcd"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Menu (Full)",
-        "artistName" : "Toby Fox",
-        "albumName" : "UNDERTALE Soundtrack",
-        "trackUri" : "spotify:track:1o7aArKOIkgCQucVQI7LvM"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Respite",
-        "artistName" : "Toby Fox",
-        "albumName" : "UNDERTALE Soundtrack",
-        "trackUri" : "spotify:track:4WYlewJtfeVhAoPlApq5fu"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Bring It In, Guys!",
-        "artistName" : "Toby Fox",
-        "albumName" : "UNDERTALE Soundtrack",
-        "trackUri" : "spotify:track:2uJGEsQ1pvi0pDqxTcDxIj"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Last Goodbye",
-        "artistName" : "Toby Fox",
-        "albumName" : "UNDERTALE Soundtrack",
-        "trackUri" : "spotify:track:3KsJYk6EDfkDZZM7CWcLWA"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "But The Earth Refused To Die",
-        "artistName" : "Toby Fox",
-        "albumName" : "UNDERTALE Soundtrack",
-        "trackUri" : "spotify:track:21Aur7G0jPU49v0Ag7ul4l"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Battle Against A True Hero",
-        "artistName" : "Toby Fox",
-        "albumName" : "UNDERTALE Soundtrack",
-        "trackUri" : "spotify:track:6YnPqvc66bdYGGOJIlDEz1"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Power Of \"NEO\"",
-        "artistName" : "Toby Fox",
-        "albumName" : "UNDERTALE Soundtrack",
-        "trackUri" : "spotify:track:0Juv2xdUtCPtCOVM3ADePa"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "MEGALOVANIA",
-        "artistName" : "Toby Fox",
-        "albumName" : "UNDERTALE Soundtrack",
-        "trackUri" : "spotify:track:1J03Vp93ybKIxfzYI4YJtL"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Good Night",
-        "artistName" : "Toby Fox",
-        "albumName" : "UNDERTALE Soundtrack",
-        "trackUri" : "spotify:track:6Z3K31BKi5YL9Tj0zD3yvq"
-      },
-      "addedDate" : "2024-10-26"
+      "addedDate" : "2026-07-14"
     } ],
     "numberOfFollowers" : 0
   }, {
-    "name" : "THE END OF EVANGELION (Original Soundtrack)",
-    "lastModifiedDate" : "2024-10-26",
+    "name" : "R&B",
+    "lastModifiedDate" : "2026-07-15",
     "collaborators" : [ ],
     "items" : [ {
       "track" : {
-        "trackName" : "Tanin no Kanshyou",
-        "artistName" : "Shiro SAGISU",
-        "albumName" : "THE END OF EVANGELION (Original Soundtrack)",
-        "trackUri" : "spotify:track:6rYOGEO5uIWbo2VOu8xvO8"
+        "trackName" : "DIE 4 YOU",
+        "artistName" : "DEAN",
+        "albumName" : "DIE 4 YOU",
+        "trackUri" : "spotify:track:7yZD4AVfQtAZD4cG8eRnPk"
       },
-      "addedDate" : "2024-10-26"
+      "addedDate" : "2026-07-14"
     }, {
       "track" : {
-        "trackName" : "Manatsu no Syuuen",
-        "artistName" : "Shiro SAGISU",
-        "albumName" : "THE END OF EVANGELION (Original Soundtrack)",
-        "trackUri" : "spotify:track:2Mlkiw1YRNif4JFfNaYpU0"
+        "trackName" : "luther (with sza)",
+        "artistName" : "Kendrick Lamar",
+        "albumName" : "GNX",
+        "trackUri" : "spotify:track:2CGNAOSuO1MEFCbBRgUzjd"
       },
-      "addedDate" : "2024-10-26"
+      "addedDate" : "2026-07-14"
     }, {
       "track" : {
-        "trackName" : "Taikou eno Kinkyuuhinan",
-        "artistName" : "Shiro SAGISU",
-        "albumName" : "THE END OF EVANGELION (Original Soundtrack)",
-        "trackUri" : "spotify:track:7qPbEK9pm18ginoupyyjNr"
+        "trackName" : "Kill Bill",
+        "artistName" : "SZA",
+        "albumName" : "SOS",
+        "trackUri" : "spotify:track:1Qrg8KqiBpW07V7PNxwwwL"
       },
-      "addedDate" : "2024-10-26"
+      "addedDate" : "2026-07-14"
     }, {
       "track" : {
-        "trackName" : "Itsuwarino Saisei (M-7Bnewremix)",
-        "artistName" : "Shiro SAGISU",
-        "albumName" : "THE END OF EVANGELION (Original Soundtrack)",
-        "trackUri" : "spotify:track:2k32ZlrV5UpRcLdCHy6Uau"
+        "trackName" : "One On One. (feat. Headband Henny) - Remix",
+        "artistName" : "Micah Dailey-White",
+        "albumName" : "Micah.",
+        "trackUri" : "spotify:track:3tK8OFi7R6lQBC00KClbZm"
       },
-      "addedDate" : "2024-10-26"
+      "addedDate" : "2026-07-14"
     }, {
       "track" : {
-        "trackName" : "Migawari no Sinnyuu",
-        "artistName" : "Shiro SAGISU",
-        "albumName" : "THE END OF EVANGELION (Original Soundtrack)",
-        "trackUri" : "spotify:track:2DMB49TF4oAJMx6XDgRRXb"
+        "trackName" : "Never Meant to Be",
+        "artistName" : "GIRIBOY",
+        "albumName" : "Never Meant to Be",
+        "trackUri" : "spotify:track:7BstEf1Z8koda0WPrba16o"
       },
-      "addedDate" : "2024-10-26"
+      "addedDate" : "2026-07-14"
     }, {
       "track" : {
-        "trackName" : "II Air [ORCHESTRAL SUITE No.3 in D Major, BWV. 1068]",
-        "artistName" : "Shiro SAGISU",
-        "albumName" : "THE END OF EVANGELION (Original Soundtrack)",
-        "trackUri" : "spotify:track:2HOZ5kRFgOKbCAJVwszRWq"
+        "trackName" : "30 For 30 (with Kendrick Lamar)",
+        "artistName" : "SZA",
+        "albumName" : "SOS Deluxe: LANA",
+        "trackUri" : "spotify:track:3aSWXU6owkZeVhh94XxEWO"
       },
-      "addedDate" : "2024-10-26"
+      "addedDate" : "2026-07-14"
     }, {
       "track" : {
-        "trackName" : "Munashiki Nagare",
-        "artistName" : "Shiro SAGISU",
-        "albumName" : "THE END OF EVANGELION (Original Soundtrack)",
-        "trackUri" : "spotify:track:083PwTLTDh9GEWJjIXgbPe"
+        "trackName" : "Happy Ending",
+        "artistName" : "Kelela",
+        "albumName" : "Raven",
+        "trackUri" : "spotify:track:1Szz2K6zjz3tbHJFfuIb4E"
       },
-      "addedDate" : "2024-10-26"
+      "addedDate" : "2026-07-15"
     }, {
       "track" : {
-        "trackName" : "THANATOS -IF I CAN'T BE YOURS-",
-        "artistName" : "Lorrain Briscoe",
-        "albumName" : "THE END OF EVANGELION (Original Soundtrack)",
-        "trackUri" : "spotify:track:6eQ5XQWLvzbSid7du8wLCy"
+        "trackName" : "아껴줄게",
+        "artistName" : "晨稀",
+        "albumName" : "夜半逃走",
+        "trackUri" : "spotify:track:65JlCLMcvJo76VoFHOcbtB"
       },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Hajimari eno Touhi",
-        "artistName" : "Shiro SAGISU",
-        "albumName" : "THE END OF EVANGELION (Original Soundtrack)",
-        "trackUri" : "spotify:track:4i8p6bmySsvqT5mrKeNsT1"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Huan to Mitsugetsu",
-        "artistName" : "Shiro SAGISU",
-        "albumName" : "THE END OF EVANGELION (Original Soundtrack)",
-        "trackUri" : "spotify:track:1W2N8bxTCoJr6SuvQEp1pa"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "KOMM, SUSSER TOD - M-10 Director's Edit Version",
-        "artistName" : "Arianne",
-        "albumName" : "THE END OF EVANGELION (Original Soundtrack)",
-        "trackUri" : "spotify:track:1fcR9f13hKGpC2u9r0iHQT"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Jesus bleibet meine Freude [Herz und Mund und Tat und Leben BWV.147] / Syuyo Hito no Nozomi no Yorokobiyo",
-        "artistName" : "Jan Panenka",
-        "albumName" : "THE END OF EVANGELION (Original Soundtrack)",
-        "trackUri" : "spotify:track:02MfRIboyTEkdb8F7ey9m7"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Heisoku no Kakudai",
-        "artistName" : "Shiro SAGISU",
-        "albumName" : "THE END OF EVANGELION (Original Soundtrack)",
-        "trackUri" : "spotify:track:0h9bXRskL4pHThzVNAZtfI"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Yume no Sukima",
-        "artistName" : "Shiro SAGISU",
-        "albumName" : "THE END OF EVANGELION (Original Soundtrack)",
-        "trackUri" : "spotify:track:5eVScv6Yck6YGblFyNK39e"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "M-9 Heisoku no Kakudai",
-        "artistName" : "Shiro SAGISU",
-        "albumName" : "THE END OF EVANGELION (Original Soundtrack)",
-        "trackUri" : "spotify:track:34z6PpuwiQGt5inFjLrztD"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "F02 version 0706",
-        "artistName" : "Shiro SAGISU",
-        "albumName" : "THE END OF EVANGELION (Original Soundtrack)",
-        "trackUri" : "spotify:track:0tXwkEg2ACBLEJYJ4IPYfg"
-      },
-      "addedDate" : "2024-10-26"
+      "addedDate" : "2026-07-15"
     } ],
     "numberOfFollowers" : 0
   }, {
-    "name" : "THE END OF EVANGELION (Original Soundtrack)",
-    "lastModifiedDate" : "2024-10-26",
+    "name" : "Disco | Dance",
+    "lastModifiedDate" : "2026-07-14",
     "collaborators" : [ ],
     "items" : [ {
       "track" : {
-        "trackName" : "Tanin no Kanshyou",
-        "artistName" : "Shiro SAGISU",
-        "albumName" : "THE END OF EVANGELION (Original Soundtrack)",
-        "trackUri" : "spotify:track:6rYOGEO5uIWbo2VOu8xvO8"
+        "trackName" : "Love Never Felt So Good",
+        "artistName" : "Michael Jackson",
+        "albumName" : "XSCAPE",
+        "trackUri" : "spotify:track:48td6xvpokdYwvbl3JIiXP"
       },
-      "addedDate" : "2024-10-26"
+      "addedDate" : "2026-07-14"
     }, {
       "track" : {
-        "trackName" : "Manatsu no Syuuen",
-        "artistName" : "Shiro SAGISU",
-        "albumName" : "THE END OF EVANGELION (Original Soundtrack)",
-        "trackUri" : "spotify:track:2Mlkiw1YRNif4JFfNaYpU0"
+        "trackName" : "Blame It on the Boogie",
+        "artistName" : "The Jacksons",
+        "albumName" : "Destiny",
+        "trackUri" : "spotify:track:3qI94hINNNeb4S7xQi18lS"
       },
-      "addedDate" : "2024-10-26"
+      "addedDate" : "2026-07-14"
     }, {
       "track" : {
-        "trackName" : "Taikou eno Kinkyuuhinan",
-        "artistName" : "Shiro SAGISU",
-        "albumName" : "THE END OF EVANGELION (Original Soundtrack)",
-        "trackUri" : "spotify:track:7qPbEK9pm18ginoupyyjNr"
+        "trackName" : "I Want You Back",
+        "artistName" : "The Jackson 5",
+        "albumName" : "Diana Ross Presents The Jackson 5",
+        "trackUri" : "spotify:track:5LxvwujISqiB8vpRYv887S"
       },
-      "addedDate" : "2024-10-26"
+      "addedDate" : "2026-07-14"
     }, {
       "track" : {
-        "trackName" : "Itsuwarino Saisei (M-7Bnewremix)",
-        "artistName" : "Shiro SAGISU",
-        "albumName" : "THE END OF EVANGELION (Original Soundtrack)",
-        "trackUri" : "spotify:track:2k32ZlrV5UpRcLdCHy6Uau"
+        "trackName" : "September",
+        "artistName" : "Earth, Wind & Fire",
+        "albumName" : "The Eternal Dance",
+        "trackUri" : "spotify:track:5nNmj1cLH3r4aA4XDJ2bgY"
       },
-      "addedDate" : "2024-10-26"
+      "addedDate" : "2026-07-14"
     }, {
       "track" : {
-        "trackName" : "Migawari no Sinnyuu",
-        "artistName" : "Shiro SAGISU",
-        "albumName" : "THE END OF EVANGELION (Original Soundtrack)",
-        "trackUri" : "spotify:track:2DMB49TF4oAJMx6XDgRRXb"
+        "trackName" : "Candle Flame",
+        "artistName" : "Jungle",
+        "albumName" : "Volcano",
+        "trackUri" : "spotify:track:1Ad2HcIX9zBqoWRvxtpYGf"
       },
-      "addedDate" : "2024-10-26"
+      "addedDate" : "2026-07-14"
     }, {
       "track" : {
-        "trackName" : "II Air [ORCHESTRAL SUITE No.3 in D Major, BWV. 1068]",
-        "artistName" : "Shiro SAGISU",
-        "albumName" : "THE END OF EVANGELION (Original Soundtrack)",
-        "trackUri" : "spotify:track:2HOZ5kRFgOKbCAJVwszRWq"
+        "trackName" : "I've Been In Love",
+        "artistName" : "Jungle",
+        "albumName" : "Volcano",
+        "trackUri" : "spotify:track:7j3zZ2jAjzFD60UjhldhHo"
       },
-      "addedDate" : "2024-10-26"
+      "addedDate" : "2026-07-14"
     }, {
       "track" : {
-        "trackName" : "Munashiki Nagare",
-        "artistName" : "Shiro SAGISU",
-        "albumName" : "THE END OF EVANGELION (Original Soundtrack)",
-        "trackUri" : "spotify:track:083PwTLTDh9GEWJjIXgbPe"
+        "trackName" : "I Love To Love",
+        "artistName" : "Bon Entendeur",
+        "albumName" : "I Love To Love",
+        "trackUri" : "spotify:track:0fdY1lEmxCVcl8wLvbTaO1"
       },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "THANATOS -IF I CAN'T BE YOURS-",
-        "artistName" : "Lorrain Briscoe",
-        "albumName" : "THE END OF EVANGELION (Original Soundtrack)",
-        "trackUri" : "spotify:track:6eQ5XQWLvzbSid7du8wLCy"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Hajimari eno Touhi",
-        "artistName" : "Shiro SAGISU",
-        "albumName" : "THE END OF EVANGELION (Original Soundtrack)",
-        "trackUri" : "spotify:track:4i8p6bmySsvqT5mrKeNsT1"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Huan to Mitsugetsu",
-        "artistName" : "Shiro SAGISU",
-        "albumName" : "THE END OF EVANGELION (Original Soundtrack)",
-        "trackUri" : "spotify:track:1W2N8bxTCoJr6SuvQEp1pa"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "KOMM, SUSSER TOD - M-10 Director's Edit Version",
-        "artistName" : "Arianne",
-        "albumName" : "THE END OF EVANGELION (Original Soundtrack)",
-        "trackUri" : "spotify:track:1fcR9f13hKGpC2u9r0iHQT"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Jesus bleibet meine Freude [Herz und Mund und Tat und Leben BWV.147] / Syuyo Hito no Nozomi no Yorokobiyo",
-        "artistName" : "Jan Panenka",
-        "albumName" : "THE END OF EVANGELION (Original Soundtrack)",
-        "trackUri" : "spotify:track:02MfRIboyTEkdb8F7ey9m7"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Heisoku no Kakudai",
-        "artistName" : "Shiro SAGISU",
-        "albumName" : "THE END OF EVANGELION (Original Soundtrack)",
-        "trackUri" : "spotify:track:0h9bXRskL4pHThzVNAZtfI"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Yume no Sukima",
-        "artistName" : "Shiro SAGISU",
-        "albumName" : "THE END OF EVANGELION (Original Soundtrack)",
-        "trackUri" : "spotify:track:5eVScv6Yck6YGblFyNK39e"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "M-9 Heisoku no Kakudai",
-        "artistName" : "Shiro SAGISU",
-        "albumName" : "THE END OF EVANGELION (Original Soundtrack)",
-        "trackUri" : "spotify:track:34z6PpuwiQGt5inFjLrztD"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "F02 version 0706",
-        "artistName" : "Shiro SAGISU",
-        "albumName" : "THE END OF EVANGELION (Original Soundtrack)",
-        "trackUri" : "spotify:track:0tXwkEg2ACBLEJYJ4IPYfg"
-      },
-      "addedDate" : "2024-10-26"
+      "addedDate" : "2026-07-14"
     } ],
     "numberOfFollowers" : 0
   }, {
-    "name" : "TRANSIT",
-    "lastModifiedDate" : "2024-10-26",
+    "name" : "Soul",
+    "lastModifiedDate" : "2026-07-15",
     "collaborators" : [ ],
     "items" : [ {
-      "track" : {
-        "trackName" : "恋1/2",
-        "artistName" : "Yasuha",
-        "albumName" : "TRANSIT",
-        "trackUri" : "spotify:track:5bNL41GXj9RC7YhLA753zq"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "モーニング・デート",
-        "artistName" : "Yasuha",
-        "albumName" : "TRANSIT",
-        "trackUri" : "spotify:track:3GK3MaQJZQqpWwnDwrfaPZ"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "ありきたりな筋書き",
-        "artistName" : "Yasuha",
-        "albumName" : "TRANSIT",
-        "trackUri" : "spotify:track:2yaHNTnenQTP2kzqgfFHHp"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Bye-Bye Lover",
-        "artistName" : "Yasuha",
-        "albumName" : "TRANSIT",
-        "trackUri" : "spotify:track:1nnSjpmFOHDZSBGacfyHOO"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "空中ブランコ",
-        "artistName" : "Yasuha",
-        "albumName" : "TRANSIT",
-        "trackUri" : "spotify:track:3fPE0L7dNMW0G5RkfctsXB"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "LOVE MAGIC",
-        "artistName" : "Yasuha",
-        "albumName" : "TRANSIT",
-        "trackUri" : "spotify:track:2NF2xkV5xTJzX6d0Ccpw6D"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Fly-day Chinatown",
-        "artistName" : "Yasuha",
-        "albumName" : "TRANSIT",
-        "trackUri" : "spotify:track:73yXCwINoNqUBJRAgPJPsY"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "ミッドナイト・トレイン",
-        "artistName" : "Yasuha",
-        "albumName" : "TRANSIT",
-        "trackUri" : "spotify:track:4lORRh79YosSXEyztMJLNm"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "アリスのレストラン",
-        "artistName" : "Yasuha",
-        "albumName" : "TRANSIT",
-        "trackUri" : "spotify:track:1h2Ev8cq1AjbZkQlYx0QEH"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Remember Summertime",
-        "artistName" : "Yasuha",
-        "albumName" : "TRANSIT",
-        "trackUri" : "spotify:track:2QcrJ1DEmNi6pfKe6LUiVV"
-      },
-      "addedDate" : "2024-10-26"
-    } ],
-    "numberOfFollowers" : 0
-  }, {
-    "name" : "Hollow Knight (Original Soundtrack)",
-    "lastModifiedDate" : "2024-10-26",
-    "collaborators" : [ ],
-    "items" : [ {
-      "track" : {
-        "trackName" : "Enter Hallownest",
-        "artistName" : "Christopher Larkin",
-        "albumName" : "Hollow Knight (Original Soundtrack)",
-        "trackUri" : "spotify:track:7tajvm3L4vnNsOyMBf3yq3"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Dirtmouth",
-        "artistName" : "Christopher Larkin",
-        "albumName" : "Hollow Knight (Original Soundtrack)",
-        "trackUri" : "spotify:track:4gCnaT6NKQmR3hqEeHp30t"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Crossroads",
-        "artistName" : "Christopher Larkin",
-        "albumName" : "Hollow Knight (Original Soundtrack)",
-        "trackUri" : "spotify:track:2fwLXYI6N8l4tOY4ntSiUZ"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "False Knight",
-        "artistName" : "Christopher Larkin",
-        "albumName" : "Hollow Knight (Original Soundtrack)",
-        "trackUri" : "spotify:track:3hG05dRDVtY1COn47oKDT4"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Greenpath",
-        "artistName" : "Christopher Larkin",
-        "albumName" : "Hollow Knight (Original Soundtrack)",
-        "trackUri" : "spotify:track:6fyI2QGPzUiqRHnuYD7oOp"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Hornet",
-        "artistName" : "Christopher Larkin",
-        "albumName" : "Hollow Knight (Original Soundtrack)",
-        "trackUri" : "spotify:track:4p6GbcE3GjJs7JzhVBv2uT"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Reflection",
-        "artistName" : "Christopher Larkin",
-        "albumName" : "Hollow Knight (Original Soundtrack)",
-        "trackUri" : "spotify:track:16obHUJN0KaqVyCaV3GwFX"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Mantis Lords",
-        "artistName" : "Christopher Larkin",
-        "albumName" : "Hollow Knight (Original Soundtrack)",
-        "trackUri" : "spotify:track:7uIyzCZKGk9K2EXnb3BtrR"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "City of Tears",
-        "artistName" : "Christopher Larkin",
-        "albumName" : "Hollow Knight (Original Soundtrack)",
-        "trackUri" : "spotify:track:0nD62ke95NJvAI8chsRjRg"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Dung Defender",
-        "artistName" : "Christopher Larkin",
-        "albumName" : "Hollow Knight (Original Soundtrack)",
-        "trackUri" : "spotify:track:5JWnXDqHFgGJZFIZ3PZh8G"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Crystal Peak",
-        "artistName" : "Christopher Larkin",
-        "albumName" : "Hollow Knight (Original Soundtrack)",
-        "trackUri" : "spotify:track:0OP7uPeLlDjPuPOkl4LcNu"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Fungal Wastes",
-        "artistName" : "Christopher Larkin",
-        "albumName" : "Hollow Knight (Original Soundtrack)",
-        "trackUri" : "spotify:track:372ottv1RRZdzqAkywYMpA"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Decisive Battle",
-        "artistName" : "Christopher Larkin",
-        "albumName" : "Hollow Knight (Original Soundtrack)",
-        "trackUri" : "spotify:track:0N3HxBdcDAEErIBm6aGZI9"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Soul Sanctum",
-        "artistName" : "Christopher Larkin",
-        "albumName" : "Hollow Knight (Original Soundtrack)",
-        "trackUri" : "spotify:track:3cKzY51GRiJngSVOnOfjgl"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Resting Grounds",
-        "artistName" : "Christopher Larkin",
-        "albumName" : "Hollow Knight (Original Soundtrack)",
-        "trackUri" : "spotify:track:3QaFRJIXefCIaKk99rReFC"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Queen's Gardens",
-        "artistName" : "Christopher Larkin",
-        "albumName" : "Hollow Knight (Original Soundtrack)",
-        "trackUri" : "spotify:track:1lJySpoTdGHcTV4OTaluls"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "The White Lady",
-        "artistName" : "Christopher Larkin",
-        "albumName" : "Hollow Knight (Original Soundtrack)",
-        "trackUri" : "spotify:track:0cjEeXxL95rqQH58gyqsCB"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Broken Vessel",
-        "artistName" : "Christopher Larkin",
-        "albumName" : "Hollow Knight (Original Soundtrack)",
-        "trackUri" : "spotify:track:7Epsqwic0O9yfbf0ll0z9w"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Kingdom's Edge",
-        "artistName" : "Christopher Larkin",
-        "albumName" : "Hollow Knight (Original Soundtrack)",
-        "trackUri" : "spotify:track:1IhyTWxNJZAwB7IL28HSux"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Nosk",
-        "artistName" : "Christopher Larkin",
-        "albumName" : "Hollow Knight (Original Soundtrack)",
-        "trackUri" : "spotify:track:77vkOcahVHbBpF4tdjerSW"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Dream",
-        "artistName" : "Christopher Larkin",
-        "albumName" : "Hollow Knight (Original Soundtrack)",
-        "trackUri" : "spotify:track:2hw0t9gmMhNCm16WlfU3xK"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Dream Battle",
-        "artistName" : "Christopher Larkin",
-        "albumName" : "Hollow Knight (Original Soundtrack)",
-        "trackUri" : "spotify:track:4TbcrjhOwuTAWBplSuOAz2"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "White Palace",
-        "artistName" : "Christopher Larkin",
-        "albumName" : "Hollow Knight (Original Soundtrack)",
-        "trackUri" : "spotify:track:1aIcb5s4idJeItJV4vaVtW"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Sealed Vessel",
-        "artistName" : "Christopher Larkin",
-        "albumName" : "Hollow Knight (Original Soundtrack)",
-        "trackUri" : "spotify:track:5LlqVViilxn216dQzcFyvy"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Radiance",
-        "artistName" : "Christopher Larkin",
-        "albumName" : "Hollow Knight (Original Soundtrack)",
-        "trackUri" : "spotify:track:1ygjvLVwydBF164HQsv2QD"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Hollow Knight",
-        "artistName" : "Christopher Larkin",
-        "albumName" : "Hollow Knight (Original Soundtrack)",
-        "trackUri" : "spotify:track:6SSjVwARTrXkCVVxSCUlwz"
-      },
-      "addedDate" : "2024-10-26"
-    } ],
-    "numberOfFollowers" : 0
-  }, {
-    "name" : "Wall Of Eyes",
-    "lastModifiedDate" : "2024-10-26",
-    "collaborators" : [ ],
-    "items" : [ {
-      "track" : {
-        "trackName" : "Wall Of Eyes",
-        "artistName" : "The Smile",
-        "albumName" : "Wall Of Eyes",
-        "trackUri" : "spotify:track:3tP2P4KybC9wYVI8Pe41GT"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Teleharmonic",
-        "artistName" : "The Smile",
-        "albumName" : "Wall Of Eyes",
-        "trackUri" : "spotify:track:6o2yIQVzajJjRrgICzcfAf"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Read The Room",
-        "artistName" : "The Smile",
-        "albumName" : "Wall Of Eyes",
-        "trackUri" : "spotify:track:4WlKWgWG030Cpatn5P6uGE"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Under Our Pillows",
-        "artistName" : "The Smile",
-        "albumName" : "Wall Of Eyes",
-        "trackUri" : "spotify:track:0S8AJYklLvEHIA6J2Mfirx"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Friend Of A Friend",
-        "artistName" : "The Smile",
-        "albumName" : "Wall Of Eyes",
-        "trackUri" : "spotify:track:4lTLmo9aTyMJ1SoHa63WA6"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "I Quit",
-        "artistName" : "The Smile",
-        "albumName" : "Wall Of Eyes",
-        "trackUri" : "spotify:track:1AwmHLaRPX4970KLkbetPb"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "Bending Hectic",
-        "artistName" : "The Smile",
-        "albumName" : "Wall Of Eyes",
-        "trackUri" : "spotify:track:1xnVnK5ZHZaGEZ166eFpNJ"
-      },
-      "addedDate" : "2024-10-26"
-    }, {
-      "track" : {
-        "trackName" : "You Know Me!",
-        "artistName" : "The Smile",
-        "albumName" : "Wall Of Eyes",
-        "trackUri" : "spotify:track:7CqPRDUeEPcaAzadljKd38"
-      },
-      "addedDate" : "2024-10-26"
-    } ],
-    "numberOfFollowers" : 0
-  }, {
-    "name" : "Soulful R&B",
-    "lastModifiedDate" : "2026-05-21",
-    "collaborators" : [ ],
-    "items" : [ {
-      "track" : {
-        "trackName" : "Float",
-        "artistName" : "Samm Henshaw",
-        "albumName" : "Float",
-        "trackUri" : "spotify:track:2vpTOT7QuPXTDnf9NpysUO"
-      },
-      "addedDate" : "2026-01-06"
-    }, {
       "track" : {
         "trackName" : "All I Do Is Think of You",
         "artistName" : "Troop",
@@ -1929,12 +537,36 @@
       "addedDate" : "2026-01-06"
     }, {
       "track" : {
-        "trackName" : "Open Arms",
-        "artistName" : "Boyz II Men",
-        "albumName" : "Love",
-        "trackUri" : "spotify:track:1DU71Xwrn0SlvDnjOzcq5b"
+        "trackName" : "Sunday",
+        "artistName" : "Annahstasia",
+        "albumName" : "Surface Tension",
+        "trackUri" : "spotify:track:4J95y5Goj21bbI5H0VDvLZ"
+      },
+      "addedDate" : "2026-07-01"
+    }, {
+      "track" : {
+        "trackName" : "Float",
+        "artistName" : "Samm Henshaw",
+        "albumName" : "Float",
+        "trackUri" : "spotify:track:2vpTOT7QuPXTDnf9NpysUO"
       },
       "addedDate" : "2026-01-06"
+    }, {
+      "track" : {
+        "trackName" : "Here To Stay",
+        "artistName" : "Jalen Ngonda",
+        "albumName" : "Here To Stay",
+        "trackUri" : "spotify:track:16sNdTQnKj1FI0H53LQTYc"
+      },
+      "addedDate" : "2026-07-14"
+    }, {
+      "track" : {
+        "trackName" : "So Glad I Found You",
+        "artistName" : "Jalen Ngonda",
+        "albumName" : "Come Around and Love Me",
+        "trackUri" : "spotify:track:4Egu9NllrAbdpNjW5ys8CM"
+      },
+      "addedDate" : "2026-05-29"
     }, {
       "track" : {
         "trackName" : "My Song",
@@ -1945,6 +577,38 @@
       "addedDate" : "2026-01-16"
     }, {
       "track" : {
+        "trackName" : "Come Around and Love Me",
+        "artistName" : "Jalen Ngonda",
+        "albumName" : "Come Around and Love Me",
+        "trackUri" : "spotify:track:5FFSlcb55C7pIFcOYapN1b"
+      },
+      "addedDate" : "2026-05-29"
+    }, {
+      "track" : {
+        "trackName" : "Dreaming",
+        "artistName" : "Taylor Williams",
+        "albumName" : "Dreaming / What About Me?",
+        "trackUri" : "spotify:track:4Hu2Wk5ywbKRHdMIiXbRhI"
+      },
+      "addedDate" : "2026-07-01"
+    }, {
+      "track" : {
+        "trackName" : "Kiss of Life",
+        "artistName" : "Sade",
+        "albumName" : "Love Deluxe",
+        "trackUri" : "spotify:track:4S0NYVAQdIb81uLoZoQmgq"
+      },
+      "addedDate" : "2026-05-29"
+    }, {
+      "track" : {
+        "trackName" : "What You Won't Do for Love",
+        "artistName" : "Bobby Caldwell",
+        "albumName" : "What You Won't Do for Love",
+        "trackUri" : "spotify:track:1lB6TCFlx4f50wdetOuGcT"
+      },
+      "addedDate" : "2026-07-01"
+    }, {
+      "track" : {
         "trackName" : "Mercy Mercy Me (The Ecology)",
         "artistName" : "Marvin Gaye",
         "albumName" : "What's Going On",
@@ -1953,25 +617,41 @@
       "addedDate" : "2026-05-21"
     }, {
       "track" : {
-        "trackName" : "Flower Moon",
-        "artistName" : "Durand Jones & The Indications",
-        "albumName" : "Flowers",
-        "trackUri" : "spotify:track:16fiL1QD7x9FeoGu8ktxrz"
+        "trackName" : "If You Don't Want My Love",
+        "artistName" : "Jalen Ngonda",
+        "albumName" : "Come Around and Love Me",
+        "trackUri" : "spotify:track:4A48ckONJNoXU5smWT9CeG"
       },
-      "addedDate" : "2026-05-21"
+      "addedDate" : "2026-07-14"
     }, {
       "track" : {
-        "trackName" : "If This World Were Mine (with Luther Vandross)",
-        "artistName" : "Cheryl Lynn",
-        "albumName" : "Instant Love (Expanded Edition)",
-        "trackUri" : "spotify:track:3DnJmpSvBNxngDOBeI5U0B"
+        "trackName" : "Easier Said Than Done",
+        "artistName" : "Thee Sacred Souls",
+        "albumName" : "Thee Sacred Souls",
+        "trackUri" : "spotify:track:4zIeRcsaho6lZuaXEYR1y3"
       },
-      "addedDate" : "2026-05-21"
+      "addedDate" : "2026-07-14"
+    }, {
+      "track" : {
+        "trackName" : "special",
+        "artistName" : "strongboi",
+        "albumName" : "special",
+        "trackUri" : "spotify:track:06pGjykKy9y55C5o9Unk0p"
+      },
+      "addedDate" : "2026-07-14"
+    }, {
+      "track" : {
+        "trackName" : "Live For You - A COLORS SHOW",
+        "artistName" : "Thee Sacred Souls",
+        "albumName" : "Live For You - A COLORS SHOW",
+        "trackUri" : "spotify:track:7whZdZMFCIe4d790dDjqnS"
+      },
+      "addedDate" : "2026-07-15"
     } ],
     "numberOfFollowers" : 0
   }, {
-    "name" : "Jazzy R&B",
-    "lastModifiedDate" : "2026-01-06",
+    "name" : "Jazz",
+    "lastModifiedDate" : "2026-07-14",
     "collaborators" : [ ],
     "items" : [ {
       "track" : {
@@ -1983,55 +663,33 @@
       "addedDate" : "2026-01-06"
     }, {
       "track" : {
-        "trackName" : "AMBRÈ'S INTERLUDE BUT JAZZ",
-        "artistName" : "DESTIN CONRAD",
-        "albumName" : "wHIMSY",
-        "trackUri" : "spotify:track:3iHewOUyVJEELv5r4YI7zf"
+        "trackName" : "What A Wonderful World",
+        "artistName" : "Louis Armstrong",
+        "albumName" : "Hello Louis - The Hit Years (1963-1969)",
+        "trackUri" : "spotify:track:6Z5XZ8fjmWGbkdahOgreVe"
       },
-      "addedDate" : "2026-01-06"
+      "addedDate" : "2026-07-14"
     }, {
       "track" : {
-        "trackName" : "BED STUY",
-        "artistName" : "DESTIN CONRAD",
-        "albumName" : "wHIMSY",
-        "trackUri" : "spotify:track:59UTESlMp8KFZ4Zy3xmeGq"
+        "trackName" : "A Brother (Just Like You)",
+        "artistName" : "Nnenna Freelon",
+        "albumName" : "The Sistering",
+        "trackUri" : "spotify:track:48cFE5zwgWAKDPQ7mgRLRL"
       },
-      "addedDate" : "2026-01-06"
+      "addedDate" : "2026-07-14"
     }, {
       "track" : {
-        "trackName" : "LOVE!",
-        "artistName" : "DESTIN CONRAD",
-        "albumName" : "wHIMSY",
-        "trackUri" : "spotify:track:5YdRkQBGqufdSK1pRLZ5Tm"
+        "trackName" : "My Way",
+        "artistName" : "Frank Sinatra",
+        "albumName" : "My Way",
+        "trackUri" : "spotify:track:3spdoTYpuCpmq19tuD0bOe"
       },
-      "addedDate" : "2026-01-06"
-    }, {
-      "track" : {
-        "trackName" : "wASH U AWAY",
-        "artistName" : "DESTIN CONRAD",
-        "albumName" : "wHIMSY",
-        "trackUri" : "spotify:track:6rrv9Ye4cQSGAjSSZOYp1x"
-      },
-      "addedDate" : "2026-01-06"
-    } ],
-    "numberOfFollowers" : 0
-  }, {
-    "name" : "City pop",
-    "lastModifiedDate" : "2026-01-06",
-    "collaborators" : [ ],
-    "items" : [ {
-      "track" : {
-        "trackName" : "왜그래",
-        "artistName" : "Kim Hyun Chul",
-        "albumName" : "김현철 Best + 총각파티",
-        "trackUri" : "spotify:track:1GGGuYr5rFbCI66qLOtyOB"
-      },
-      "addedDate" : "2026-01-06"
+      "addedDate" : "2026-07-14"
     } ],
     "numberOfFollowers" : 0
   }, {
     "name" : "Dreampop Modern",
-    "lastModifiedDate" : "2026-01-06",
+    "lastModifiedDate" : "2026-07-15",
     "collaborators" : [ ],
     "items" : [ {
       "track" : {
@@ -2039,14 +697,6 @@
         "artistName" : "The Marías",
         "albumName" : "Submarine",
         "trackUri" : "spotify:track:3siwsiaEoU4Kuuc9WKMUy5"
-      },
-      "addedDate" : "2026-01-06"
-    }, {
-      "track" : {
-        "trackName" : "What I'm Missing",
-        "artistName" : "Deep Sea Peach Tree",
-        "albumName" : "What I'm Missing",
-        "trackUri" : "spotify:track:231s2uIiN3tY2s9pSy5Niv"
       },
       "addedDate" : "2026-01-06"
     }, {
@@ -2063,14 +713,6 @@
         "artistName" : "TV Girl",
         "albumName" : "French Exit",
         "trackUri" : "spotify:track:1H7zdcRD0gLGQY0w5ejGgX"
-      },
-      "addedDate" : "2026-01-06"
-    }, {
-      "track" : {
-        "trackName" : "Myth",
-        "artistName" : "Beach House",
-        "albumName" : "Bloom",
-        "trackUri" : "spotify:track:2Zw3HNjaNV42LnQ2uY5JQs"
       },
       "addedDate" : "2026-01-06"
     }, {
@@ -2107,14 +749,6 @@
       "addedDate" : "2026-01-06"
     }, {
       "track" : {
-        "trackName" : "Everyone Adores You (at least I do)",
-        "artistName" : "Matt Maltese",
-        "albumName" : "Good Morning It's Now Tomorrow",
-        "trackUri" : "spotify:track:6klFWv2xDGeTDoiKTtx4hg"
-      },
-      "addedDate" : "2026-01-06"
-    }, {
-      "track" : {
         "trackName" : "Pink in the Night",
         "artistName" : "Mitski",
         "albumName" : "Be the Cowboy",
@@ -2147,25 +781,135 @@
       "addedDate" : "2026-01-06"
     }, {
       "track" : {
-        "trackName" : "Nobody",
+        "trackName" : "My Turn",
+        "artistName" : "Not For Radio",
+        "albumName" : "Melt",
+        "trackUri" : "spotify:track:0HrsOXHxl421JdkscJY1mE"
+      },
+      "addedDate" : "2026-07-14"
+    }, {
+      "track" : {
+        "trackName" : "Puddles",
+        "artistName" : "Not For Radio",
+        "albumName" : "Melt",
+        "trackUri" : "spotify:track:0cqrg8N4D0260NkHGUoS0z"
+      },
+      "addedDate" : "2026-07-14"
+    }, {
+      "track" : {
+        "trackName" : "Fog as a Bullet",
+        "artistName" : "The Marías",
+        "albumName" : "CINEMA",
+        "trackUri" : "spotify:track:4raL05JS5aNmXwClc2ATA8"
+      },
+      "addedDate" : "2026-07-14"
+    }, {
+      "track" : {
+        "trackName" : "Working for the Knife",
         "artistName" : "Mitski",
-        "albumName" : "Be the Cowboy",
-        "trackUri" : "spotify:track:2P5yIMu2DNeMXTyOANKS6k"
+        "albumName" : "Laurel Hell",
+        "trackUri" : "spotify:track:2ORVHijyYA8bAOCVaIbmdS"
+      },
+      "addedDate" : "2026-07-14"
+    }, {
+      "track" : {
+        "trackName" : "Crack Baby",
+        "artistName" : "Mitski",
+        "albumName" : "Puberty 2",
+        "trackUri" : "spotify:track:0I0MPzbmzsjpttpkqWgNyx"
+      },
+      "addedDate" : "2026-07-14"
+    }, {
+      "track" : {
+        "trackName" : "All I Did Was Dream of You (feat. The Marías)",
+        "artistName" : "beabadoobee",
+        "albumName" : "All I Did Was Dream of You (feat. The Marías)",
+        "trackUri" : "spotify:track:0qWoOHqTirzo59FQ9eoECH"
+      },
+      "addedDate" : "2026-07-14"
+    }, {
+      "track" : {
+        "trackName" : "Cigarette Butt",
+        "artistName" : "BUBBLE TEA AND CIGARETTES",
+        "albumName" : "There's Nothing But Pleasure",
+        "trackUri" : "spotify:track:370gZ4jCM9B0TGQxTJlWxq"
+      },
+      "addedDate" : "2026-07-14"
+    }, {
+      "track" : {
+        "trackName" : "Liz",
+        "artistName" : "BUBBLE TEA AND CIGARETTES",
+        "albumName" : "There's Nothing But Pleasure",
+        "trackUri" : "spotify:track:1qWkcfE3Gee1kY8cVh70Qf"
+      },
+      "addedDate" : "2026-07-14"
+    }, {
+      "track" : {
+        "trackName" : "Feel",
+        "artistName" : "Tokyo Tea Room",
+        "albumName" : "Worlds Apart (B Sides, Alternatives & Demos)",
+        "trackUri" : "spotify:track:45NLy6GoD4ZFC8nVLvAn6d"
+      },
+      "addedDate" : "2026-07-15"
+    } ],
+    "numberOfFollowers" : 0
+  }, {
+    "name" : "City pop",
+    "lastModifiedDate" : "2026-07-14",
+    "collaborators" : [ ],
+    "items" : [ {
+      "track" : {
+        "trackName" : "왜그래",
+        "artistName" : "Kim Hyun Chul",
+        "albumName" : "김현철 Best + 총각파티",
+        "trackUri" : "spotify:track:1GGGuYr5rFbCI66qLOtyOB"
       },
       "addedDate" : "2026-01-06"
     }, {
       "track" : {
-        "trackName" : "First Love/Late Spring",
-        "artistName" : "Mitski",
-        "albumName" : "Bury Me At Makeout Creek",
-        "trackUri" : "spotify:track:3sslYZcFKtUvIEWN9lADgr"
+        "trackName" : "Fly-day Chinatown",
+        "artistName" : "Yasuha",
+        "albumName" : "TRANSIT",
+        "trackUri" : "spotify:track:73yXCwINoNqUBJRAgPJPsY"
       },
-      "addedDate" : "2026-01-06"
+      "addedDate" : "2026-07-14"
+    }, {
+      "track" : {
+        "trackName" : "Dance in the memories",
+        "artistName" : "Meiko Nakahara",
+        "albumName" : "鏡の中のアクトレス",
+        "trackUri" : "spotify:track:1PZmcIaXlKRNL6qRakdxuC"
+      },
+      "addedDate" : "2026-07-14"
+    }, {
+      "track" : {
+        "trackName" : "何もきかないで",
+        "artistName" : "Yumi Arai",
+        "albumName" : "COBALT HOUR",
+        "trackUri" : "spotify:track:1TVytW8KF6lq6yFtJze61w"
+      },
+      "addedDate" : "2026-07-14"
+    }, {
+      "track" : {
+        "trackName" : "Yours",
+        "artistName" : "Yuki Saitou",
+        "albumName" : "Love",
+        "trackUri" : "spotify:track:1rzlkc8R3n5nLKneZXqRtf"
+      },
+      "addedDate" : "2026-07-14"
+    }, {
+      "track" : {
+        "trackName" : "Tokyo Fantasy",
+        "artistName" : "Alessandra M",
+        "albumName" : "Tokyo Fantasy",
+        "trackUri" : "spotify:track:6O7csPXBln7CihjbnwvZyy"
+      },
+      "addedDate" : "2026-07-14"
     } ],
     "numberOfFollowers" : 0
   }, {
     "name" : "Experimental pop",
-    "lastModifiedDate" : "2026-01-06",
+    "lastModifiedDate" : "2026-07-15",
     "collaborators" : [ ],
     "items" : [ {
       "track" : {
@@ -2181,22 +925,6 @@
         "artistName" : "Sevdaliza",
         "albumName" : "Ison",
         "trackUri" : "spotify:track:4PxGz2rLQ1jN1gZHjuoxOL"
-      },
-      "addedDate" : "2026-01-06"
-    }, {
-      "track" : {
-        "trackName" : "Mind Loaded (feat. Caroline Polachek, Lorde & Mustafa)",
-        "artistName" : "Blood Orange",
-        "albumName" : "Mind Loaded (feat. Caroline Polachek, Lorde & Mustafa)",
-        "trackUri" : "spotify:track:4gVsKMMK0f8dweHL7Vm9HC"
-      },
-      "addedDate" : "2026-01-06"
-    }, {
-      "track" : {
-        "trackName" : "The Field (feat. The Durutti Column, Tariq Al-Sabir, Caroline Polachek & Daniel Caesar)",
-        "artistName" : "Blood Orange",
-        "albumName" : "The Field (feat. The Durutti Column, Tariq Al-Sabir, Caroline Polachek & Daniel Caesar)",
-        "trackUri" : "spotify:track:5GVyBn2zUEweqnS6oeXlMp"
       },
       "addedDate" : "2026-01-06"
     }, {
@@ -2217,33 +945,25 @@
       "addedDate" : "2026-01-06"
     }, {
       "track" : {
-        "trackName" : "Homerun 2021",
-        "artistName" : "Jonah Yano",
-        "albumName" : "Homerun 2021",
-        "trackUri" : "spotify:track:4JZSfAfaOHxDOqVo76l2KL"
+        "trackName" : "Kerosene",
+        "artistName" : "Crystal Castles",
+        "albumName" : "(III)",
+        "trackUri" : "spotify:track:2K70ZV0Ls65Kkj0WUEfHlz"
       },
-      "addedDate" : "2026-01-06"
+      "addedDate" : "2026-07-14"
     }, {
       "track" : {
-        "trackName" : "Mind Loaded (feat. Caroline Polachek, Lorde & Mustafa)",
-        "artistName" : "Blood Orange",
-        "albumName" : "Essex Honey",
-        "trackUri" : "spotify:track:04KHyqdGs5sVEWX6UnukF2"
+        "trackName" : "You Never Knew",
+        "artistName" : "Neggy Gemmy",
+        "albumName" : "Body Work",
+        "trackUri" : "spotify:track:2WzmtLkAKKe1q61rfJCWS1"
       },
-      "addedDate" : "2026-01-06"
-    }, {
-      "track" : {
-        "trackName" : "The Field (feat. The Durutti Column, Tariq Al-Sabir, Caroline Polachek & Daniel Caesar)",
-        "artistName" : "Blood Orange",
-        "albumName" : "Essex Honey",
-        "trackUri" : "spotify:track:1XMBjGYUakFEjI4ZaISVt2"
-      },
-      "addedDate" : "2026-01-06"
+      "addedDate" : "2026-07-15"
     } ],
     "numberOfFollowers" : 0
   }, {
-    "name" : "Indie",
-    "lastModifiedDate" : "2026-01-06",
+    "name" : "Bedroom indiepop",
+    "lastModifiedDate" : "2026-07-15",
     "collaborators" : [ ],
     "items" : [ {
       "track" : {
@@ -2341,12 +1061,52 @@
         "trackUri" : "spotify:track:57RA3JGafJm5zRtKJiKPIm"
       },
       "addedDate" : "2026-01-06"
+    }, {
+      "track" : {
+        "trackName" : "Eroded",
+        "artistName" : "Morantee",
+        "albumName" : "Eroded",
+        "trackUri" : "spotify:track:109T7PHy8UGWfo3Dbky8r0"
+      },
+      "addedDate" : "2026-07-14"
+    }, {
+      "track" : {
+        "trackName" : "Seed Heart",
+        "artistName" : "Chesuqi",
+        "albumName" : "Seed Heart",
+        "trackUri" : "spotify:track:0ZdKVkdkBQ7Gn6iqZOJtSP"
+      },
+      "addedDate" : "2026-07-14"
+    }, {
+      "track" : {
+        "trackName" : "on est pareil",
+        "artistName" : "Céline Dessberg",
+        "albumName" : "Hödöö",
+        "trackUri" : "spotify:track:50J775otNAQ0Ni7CxJ2qqk"
+      },
+      "addedDate" : "2026-07-14"
+    }, {
+      "track" : {
+        "trackName" : "I wish for the rain",
+        "artistName" : "Liana Flores",
+        "albumName" : "Flower of the soul",
+        "trackUri" : "spotify:track:59ZkByVPAIPe0YhqIO723Y"
+      },
+      "addedDate" : "2026-07-14"
+    }, {
+      "track" : {
+        "trackName" : "Carried Away",
+        "artistName" : "Men I Trust",
+        "albumName" : "Equus Caballus",
+        "trackUri" : "spotify:track:50ASFow3YrVJJpqdzaM1YD"
+      },
+      "addedDate" : "2026-07-14"
     } ],
     "description" : "Just let me sleep or lie down - That hole in the clouds was so preety with the lights below...",
     "numberOfFollowers" : 0
   }, {
-    "name" : "Indietronica",
-    "lastModifiedDate" : "2026-01-16",
+    "name" : "Psych-pop",
+    "lastModifiedDate" : "2026-07-14",
     "collaborators" : [ ],
     "items" : [ {
       "track" : {
@@ -2382,30 +1142,6 @@
       "addedDate" : "2026-01-06"
     }, {
       "track" : {
-        "trackName" : "Ocean",
-        "artistName" : "Phoebe Rings",
-        "albumName" : "Phoebe Rings",
-        "trackUri" : "spotify:track:1UfOVqE7qtUhA6mjChEXUO"
-      },
-      "addedDate" : "2026-01-06"
-    }, {
-      "track" : {
-        "trackName" : "Nons",
-        "artistName" : "Vivienne Eastwood",
-        "albumName" : "Shook - EP",
-        "trackUri" : "spotify:track:3fgNOFWDU57lq05wxAFYNR"
-      },
-      "addedDate" : "2026-01-06"
-    }, {
-      "track" : {
-        "trackName" : "Demise",
-        "artistName" : "Vivienne Eastwood",
-        "albumName" : "Take Care",
-        "trackUri" : "spotify:track:4uHF5rUJkeYFgIKQbHGUXD"
-      },
-      "addedDate" : "2026-01-06"
-    }, {
-      "track" : {
         "trackName" : "All I Need (feat. Beth Hirsch)",
         "artistName" : "Air",
         "albumName" : "Moon Safari",
@@ -2422,35 +1158,121 @@
       "addedDate" : "2026-01-06"
     }, {
       "track" : {
-        "trackName" : "Some Time Alone, Alone",
-        "artistName" : "Melody's Echo Chamber",
-        "albumName" : "Melody's Echo Chamber",
-        "trackUri" : "spotify:track:1sEkQDvj0SurW8OUbQ8W3H"
-      },
-      "addedDate" : "2026-01-06"
-    }, {
-      "track" : {
         "trackName" : "tornado watch, by barrakain",
         "artistName" : "Jaysanityy",
         "albumName" : "shoot the messenger",
         "trackUri" : "spotify:track:6nNO705l33BweXzKHdeXC9"
       },
       "addedDate" : "2026-01-16"
+    }, {
+      "track" : {
+        "trackName" : "Come To Me",
+        "artistName" : "Björk",
+        "albumName" : "Debut",
+        "trackUri" : "spotify:track:17tCBb8odaNBZivCojHhvw"
+      },
+      "addedDate" : "2026-07-14"
+    }, {
+      "track" : {
+        "trackName" : "WAVELENGTHS",
+        "artistName" : "TOMORA",
+        "albumName" : "COME CLOSER",
+        "trackUri" : "spotify:track:5RKxMGzcvhdXtBQjOAC4Fu"
+      },
+      "addedDate" : "2026-07-14"
+    }, {
+      "track" : {
+        "trackName" : "Restless Song",
+        "artistName" : "Shadow Community",
+        "albumName" : "Restless Song / Halcyon's Coffin",
+        "trackUri" : "spotify:track:1zyW2TTiG82GKIrViXbTvK"
+      },
+      "addedDate" : "2026-07-14"
+    }, {
+      "track" : {
+        "trackName" : "Laputa",
+        "artistName" : "Panchiko",
+        "albumName" : "D>E>A>T>H>M>E>T>A>L",
+        "trackUri" : "spotify:track:2zYBRyHAy6dv1wb53JXFD7"
+      },
+      "addedDate" : "2026-07-14"
+    }, {
+      "track" : {
+        "trackName" : "D>E>A>T>H>M>E>T>A>L",
+        "artistName" : "Panchiko",
+        "albumName" : "D>E>A>T>H>M>E>T>A>L",
+        "trackUri" : "spotify:track:4sIFi8LpJWPvI5xviWFyA6"
+      },
+      "addedDate" : "2026-07-14"
+    }, {
+      "track" : {
+        "trackName" : "Hated Sunday",
+        "artistName" : "Black Box Recorder",
+        "albumName" : "England Made Me",
+        "trackUri" : "spotify:track:05qumfFnTC4UCdmgukMMV4"
+      },
+      "addedDate" : "2026-07-14"
+    }, {
+      "track" : {
+        "trackName" : "Black Milk",
+        "artistName" : "Massive Attack",
+        "albumName" : "Mezzanine",
+        "trackUri" : "spotify:track:1Rezzt36ybaT2ZbDZpv83D"
+      },
+      "addedDate" : "2026-07-14"
+    }, {
+      "track" : {
+        "trackName" : "Before We Begin",
+        "artistName" : "Broadcast",
+        "albumName" : "Haha Sound",
+        "trackUri" : "spotify:track:4yx0aYJgnWIy18akJtxmON"
+      },
+      "addedDate" : "2026-07-14"
+    }, {
+      "track" : {
+        "trackName" : "HARDLY EVER SMILE(without you)",
+        "artistName" : "POiSON GiRL FRiEND",
+        "albumName" : "MELTING MOMENT",
+        "trackUri" : "spotify:track:6dwCn6DV1Fbw46BC7VDZqp"
+      },
+      "addedDate" : "2026-07-14"
+    }, {
+      "track" : {
+        "trackName" : "Take Me There (with Homeshake)",
+        "artistName" : "Luna Li",
+        "albumName" : "When A Thought Grows Wings",
+        "trackUri" : "spotify:track:2AOP5599Hs6w7x3pO86g0I"
+      },
+      "addedDate" : "2026-07-14"
+    }, {
+      "track" : {
+        "trackName" : "Something Familiar",
+        "artistName" : "Unflirt",
+        "albumName" : "Fleeting",
+        "trackUri" : "spotify:track:0TnhIGm1YckATRrECYSF9I"
+      },
+      "addedDate" : "2026-07-14"
     } ],
     "numberOfFollowers" : 0
   }, {
-    "name" : "UKG / Hyperpop",
-    "lastModifiedDate" : "2026-03-16",
+    "name" : "House",
+    "lastModifiedDate" : "2026-07-14",
     "collaborators" : [ ],
     "items" : [ {
       "track" : {
-        "trackName" : "skinshine",
-        "artistName" : "phyllzx",
-        "albumName" : "skinshine",
-        "trackUri" : "spotify:track:777q1XhIikZdJKaZnPwXUs"
+        "trackName" : "Bet You Didn't Need",
+        "artistName" : "Daniel Allan",
+        "albumName" : "Bet You Didn't Need",
+        "trackUri" : "spotify:track:7rjtwubvFpMtchNnQf4Nwf"
       },
-      "addedDate" : "2026-01-06"
-    }, {
+      "addedDate" : "2026-07-14"
+    } ],
+    "numberOfFollowers" : 0
+  }, {
+    "name" : "UKG ",
+    "lastModifiedDate" : "2026-07-15",
+    "collaborators" : [ ],
+    "items" : [ {
       "track" : {
         "trackName" : "I Must Apologise",
         "artistName" : "PinkPantheress",
@@ -2474,11 +1296,51 @@
         "trackUri" : "spotify:track:5UBfLYnkImP1RKMMy4TGs8"
       },
       "addedDate" : "2026-03-16"
+    }, {
+      "track" : {
+        "trackName" : "Bet You Didn't Need",
+        "artistName" : "Daniel Allan",
+        "albumName" : "Bet You Didn't Need",
+        "trackUri" : "spotify:track:7rjtwubvFpMtchNnQf4Nwf"
+      },
+      "addedDate" : "2026-07-15"
+    }, {
+      "track" : {
+        "trackName" : "I Don't Give a F#@%!",
+        "artistName" : "King Felix",
+        "albumName" : "I Don't Give a F#@%!",
+        "trackUri" : "spotify:track:4raSHkq3U5vnF2vj05tkut"
+      },
+      "addedDate" : "2026-07-15"
+    }, {
+      "track" : {
+        "trackName" : "Run Away, My Lover",
+        "artistName" : "FiFi Zhang",
+        "albumName" : "FLEETING HEARTS",
+        "trackUri" : "spotify:track:2iGnUUYfvcxpza5thBS3iL"
+      },
+      "addedDate" : "2026-07-15"
+    }, {
+      "track" : {
+        "trackName" : "POP POP POP",
+        "artistName" : "Magi Merlin",
+        "albumName" : "POP POP POP",
+        "trackUri" : "spotify:track:0sIt7VbQHa9FWS3YHtuhGi"
+      },
+      "addedDate" : "2026-07-15"
+    }, {
+      "track" : {
+        "trackName" : "Green Light",
+        "artistName" : "Douvelle19",
+        "albumName" : "Green Light",
+        "trackUri" : "spotify:track:5jRqOsW7jVDOeby0ApqxoN"
+      },
+      "addedDate" : "2026-07-15"
     } ],
     "numberOfFollowers" : 0
   }, {
     "name" : "(ﾉ*ФωФ)ﾉ Jungle",
-    "lastModifiedDate" : "2026-01-06",
+    "lastModifiedDate" : "2026-07-14",
     "collaborators" : [ ],
     "items" : [ {
       "track" : {
@@ -2506,14 +1368,6 @@
       "addedDate" : "2026-01-06"
     }, {
       "track" : {
-        "trackName" : "Black Out Days - Subtronics Remix",
-        "artistName" : "Phantogram",
-        "albumName" : "Black Out Days",
-        "trackUri" : "spotify:track:0Tcy9RRWvcnqepvmVcqv05"
-      },
-      "addedDate" : "2026-01-06"
-    }, {
-      "track" : {
         "trackName" : "Wasn't Enough for You",
         "artistName" : "ONXIRIC",
         "albumName" : "Wasn't Enough for You",
@@ -2531,8 +1385,8 @@
     } ],
     "numberOfFollowers" : 0
   }, {
-    "name" : "ㄟ( ▔, ▔ )ㄏ Tech House",
-    "lastModifiedDate" : "2026-01-06",
+    "name" : "ㄟ( ▔, ▔ )ㄏ Club Electronic",
+    "lastModifiedDate" : "2026-07-15",
     "collaborators" : [ ],
     "items" : [ {
       "track" : {
@@ -2576,14 +1430,6 @@
       "addedDate" : "2020-01-19"
     }, {
       "track" : {
-        "trackName" : "Red Light Green Light - For Club Play Only, Pt. 6",
-        "artistName" : "Duke Dumont",
-        "albumName" : "Red Light Green Light",
-        "trackUri" : "spotify:track:5D1zGVDJTOqwaGSzYw5TtP"
-      },
-      "addedDate" : "2020-02-02"
-    }, {
-      "track" : {
         "trackName" : "SELECTA 19",
         "artistName" : "JOYRYDE",
         "albumName" : "SELECTA 19",
@@ -2608,17 +1454,41 @@
       "addedDate" : "2025-01-01"
     }, {
       "track" : {
-        "trackName" : "Amen",
-        "artistName" : "valenza",
-        "albumName" : "Amen",
-        "trackUri" : "spotify:track:18tA6EpOHgrQWY0XwbFTV6"
+        "trackName" : "Fine Day Anthem",
+        "artistName" : "Skrillex",
+        "albumName" : "Fine Day Anthem",
+        "trackUri" : "spotify:track:6tifCCTIVBLC2TmTquYG7G"
       },
-      "addedDate" : "2026-01-06"
+      "addedDate" : "2026-07-14"
+    }, {
+      "track" : {
+        "trackName" : "I Bring My Gun To The Function (with Boys Noize)",
+        "artistName" : "Brutalismus 3000",
+        "albumName" : "Harmony",
+        "trackUri" : "spotify:track:5WbwNHIPpDtjNETV6xRuDS"
+      },
+      "addedDate" : "2026-07-14"
+    }, {
+      "track" : {
+        "trackName" : "TRAFIK!",
+        "artistName" : "Käärijä",
+        "albumName" : "TRAFIK!",
+        "trackUri" : "spotify:track:3RYXQCkaSyBfSlE4Fw6J4Z"
+      },
+      "addedDate" : "2026-07-14"
+    }, {
+      "track" : {
+        "trackName" : "RING THE ALARM",
+        "artistName" : "TOMORA",
+        "albumName" : "COME CLOSER",
+        "trackUri" : "spotify:track:3i3Qa9DLMVeexn7ighFoVS"
+      },
+      "addedDate" : "2026-07-14"
     } ],
     "numberOfFollowers" : 0
   }, {
     "name" : "(#_<-)  EDM",
-    "lastModifiedDate" : "2026-01-07",
+    "lastModifiedDate" : "2026-07-14",
     "collaborators" : [ ],
     "items" : [ {
       "track" : {
@@ -2844,11 +1714,131 @@
         "trackUri" : "spotify:track:5XVjNRubJUW0iPhhSWpLCj"
       },
       "addedDate" : "2026-01-07"
+    }, {
+      "track" : {
+        "trackName" : "Heroes (we could be)",
+        "artistName" : "Alesso",
+        "albumName" : "Forever",
+        "trackUri" : "spotify:track:3zU9rdflI65tK4dkkNSp77"
+      },
+      "addedDate" : "2026-06-27"
+    }, {
+      "track" : {
+        "trackName" : "The Nights",
+        "artistName" : "Avicii",
+        "albumName" : "The Days / Nights",
+        "trackUri" : "spotify:track:0ct6r3EGTcMLPtrXHDvVjc"
+      },
+      "addedDate" : "2026-06-27"
+    }, {
+      "track" : {
+        "trackName" : "The Fox (What Does the Fox Say?)",
+        "artistName" : "Ylvis",
+        "albumName" : "The Fox (What Does the Fox Say?)",
+        "trackUri" : "spotify:track:5HOpkTTVcmZHnthgyxrIL8"
+      },
+      "addedDate" : "2026-06-27"
+    }, {
+      "track" : {
+        "trackName" : "La La La",
+        "artistName" : "Naughty Boy",
+        "albumName" : "La La La",
+        "trackUri" : "spotify:track:52gvlDnre9craz9dKGObp8"
+      },
+      "addedDate" : "2026-06-27"
+    }, {
+      "track" : {
+        "trackName" : "Waiting For Love",
+        "artistName" : "Avicii",
+        "albumName" : "Stories",
+        "trackUri" : "spotify:track:2P4OICZRVAQcYAV2JReRfj"
+      },
+      "addedDate" : "2026-06-27"
+    }, {
+      "track" : {
+        "trackName" : "Glad You Came",
+        "artistName" : "The Wanted",
+        "albumName" : "Battleground",
+        "trackUri" : "spotify:track:5yDL13y5giogKs2fSNf7sj"
+      },
+      "addedDate" : "2026-06-27"
+    }, {
+      "track" : {
+        "trackName" : "Call on Me - Ryan Riback Remix",
+        "artistName" : "Starley",
+        "albumName" : "Call on Me",
+        "trackUri" : "spotify:track:56RVUAFH9NF8zhTZ5A9KVF"
+      },
+      "addedDate" : "2026-06-27"
+    }, {
+      "track" : {
+        "trackName" : "In the Name of Love",
+        "artistName" : "Martin Garrix",
+        "albumName" : "In the Name of Love",
+        "trackUri" : "spotify:track:23L5CiUhw2jV1OIMwthR3S"
+      },
+      "addedDate" : "2026-06-27"
+    }, {
+      "track" : {
+        "trackName" : "My Way",
+        "artistName" : "Calvin Harris",
+        "albumName" : "My Way",
+        "trackUri" : "spotify:track:1vvNmPOiUuyCbgWmtc6yfm"
+      },
+      "addedDate" : "2026-06-27"
+    }, {
+      "track" : {
+        "trackName" : "In My Mind",
+        "artistName" : "Dynoro",
+        "albumName" : "In My Mind",
+        "trackUri" : "spotify:track:0E9ZjEAyAwOXZ7wJC0PD33"
+      },
+      "addedDate" : "2026-07-14"
+    }, {
+      "track" : {
+        "trackName" : "Children",
+        "artistName" : "Robert Miles",
+        "albumName" : "Children",
+        "trackUri" : "spotify:track:4wtR6HB3XekEengMX17cpc"
+      },
+      "addedDate" : "2026-07-14"
+    }, {
+      "track" : {
+        "trackName" : "Some Kinda Heaven",
+        "artistName" : "Memphis LK",
+        "albumName" : "Some Kinda Heaven",
+        "trackUri" : "spotify:track:6nlH3iGFED7iT2HYGVksCV"
+      },
+      "addedDate" : "2026-07-14"
+    }, {
+      "track" : {
+        "trackName" : "Call on Me - Ryan Riback Remix",
+        "artistName" : "Starley",
+        "albumName" : "Call On Me",
+        "trackUri" : "spotify:track:2L6orAlH8tBhiFTumIfMyF"
+      },
+      "addedDate" : "2026-07-14"
+    }, {
+      "track" : {
+        "trackName" : "Lullaby",
+        "artistName" : "R3HAB",
+        "albumName" : "Lullaby",
+        "trackUri" : "spotify:track:0DhkTGjEaIHaSxTfC14BFm"
+      },
+      "addedDate" : "2026-07-14"
+    }, {
+      "track" : {
+        "trackName" : "L'Amour Toujours",
+        "artistName" : "GIGI D'AGOSTINO",
+        "albumName" : "L'Amour Toujours",
+        "trackUri" : "spotify:track:52LJ3hyknOijCrE5gCD0rE"
+      },
+      "addedDate" : "2026-07-14"
     } ],
     "numberOfFollowers" : 0
   }, {
-    "name" : "ヾ(＠⌒ー⌒＠)ノDnB ",
-    "lastModifiedDate" : "2026-01-06",
+    "name" : "ヾ(＠⌒ー⌒＠)ノLiquid DnB ",
+    "lastModifiedDate" : "2026-07-15",
     "collaborators" : [ ],
     "items" : [ {
       "track" : {
@@ -2922,25 +1912,43 @@
         "trackUri" : "spotify:track:6IBTU2LAAg9Rvc1B7CnCAg"
       },
       "addedDate" : "2025-11-14"
-    } ],
-    "numberOfFollowers" : 0
-  }, {
-    "name" : "musica futura",
-    "lastModifiedDate" : "2026-01-26",
-    "collaborators" : [ ],
-    "items" : [ {
+    }, {
       "track" : {
-        "trackName" : "Schluss",
-        "artistName" : "Fanny Mendelssohn",
-        "albumName" : "Mendelssohn-Hensel, F.: Piano Sonatas in C and G minor",
-        "trackUri" : "spotify:track:3AjaC4WoQOdE6yn2ZRqFY1"
+        "trackName" : "Flim",
+        "artistName" : "Aphex Twin",
+        "albumName" : "Come To Daddy",
+        "trackUri" : "spotify:track:3JJ4BoL9WVHk4Yye2EGJC7"
       },
-      "addedDate" : "2026-01-26"
+      "addedDate" : "2026-07-14"
+    }, {
+      "track" : {
+        "trackName" : "Ancora",
+        "artistName" : "Karo",
+        "albumName" : "Ancora",
+        "trackUri" : "spotify:track:1pVA9BefRHD89wWHEK4OFR"
+      },
+      "addedDate" : "2026-07-14"
+    }, {
+      "track" : {
+        "trackName" : "Let U Know (feat. Charlotte Plank)",
+        "artistName" : "Danny Byrd",
+        "albumName" : "Let U Know (feat. Charlotte Plank)",
+        "trackUri" : "spotify:track:37KhWdLDRC4UMR8jxvVBdW"
+      },
+      "addedDate" : "2026-07-15"
+    }, {
+      "track" : {
+        "trackName" : "skinshine",
+        "artistName" : "phyllzx",
+        "albumName" : "skinshine",
+        "trackUri" : "spotify:track:777q1XhIikZdJKaZnPwXUs"
+      },
+      "addedDate" : "2026-07-15"
     } ],
     "numberOfFollowers" : 0
   }, {
-    "name" : "Romanticisme Piano + smth else",
-    "lastModifiedDate" : "2026-01-14",
+    "name" : "Chamber",
+    "lastModifiedDate" : "2026-07-15",
     "collaborators" : [ ],
     "items" : [ {
       "track" : {
@@ -2982,11 +1990,27 @@
         "trackUri" : "spotify:track:7uEwckYdZwNe644r0RHi9H"
       },
       "addedDate" : "2026-01-14"
+    }, {
+      "track" : {
+        "trackName" : "6 Piano Pieces, Op. 7: I. Love Song (Arr. Kocián for Violin & Piano)",
+        "artistName" : "Josef Suk",
+        "albumName" : "12 Stradivari",
+        "trackUri" : "spotify:track:0eBNODCqeUwNGx2a5nXEUG"
+      },
+      "addedDate" : "2026-07-15"
+    }, {
+      "track" : {
+        "trackName" : "Sonatina para Flauta y Piano: Negro Spiritual",
+        "artistName" : "Jose Fermin Gurbindo",
+        "albumName" : "Sagar Adarrean",
+        "trackUri" : "spotify:track:7tFjCU7TSlGofm1NvgN7lb"
+      },
+      "addedDate" : "2026-07-15"
     } ],
     "numberOfFollowers" : 0
   }, {
     "name" : "Concertos",
-    "lastModifiedDate" : "2026-01-06",
+    "lastModifiedDate" : "2026-07-15",
     "collaborators" : [ ],
     "items" : [ {
       "track" : {
@@ -3084,63 +2108,43 @@
         "trackUri" : "spotify:track:5MbhmnLkvcZDnUSsx2JJk6"
       },
       "addedDate" : "2026-01-06"
+    }, {
+      "track" : {
+        "trackName" : "Piano Concerto No. 2 in F Major, Op. 102: II. Andante",
+        "artistName" : "Dmitri Shostakovich",
+        "albumName" : "An Introduction to Dimitri Shostakovich",
+        "trackUri" : "spotify:track:4TbChby1lqtDCUjOtUVPqT"
+      },
+      "addedDate" : "2026-07-15"
+    }, {
+      "track" : {
+        "trackName" : "Le carnaval des animaux, R. 125: V. L'éléphant",
+        "artistName" : "Camille Saint-Saëns",
+        "albumName" : "Saint-Saëns: Le Carnaval des Animaux; Phaéton; Danse Macabre etc.",
+        "trackUri" : "spotify:track:21lk0NjSsITdtQRBQQmRf5"
+      },
+      "addedDate" : "2026-07-15"
+    }, {
+      "track" : {
+        "trackName" : "Sadko: Hindu Song (arr. N. Mercz): Hindu Song from the Opera 'Sadko'",
+        "artistName" : "Nora Mercz",
+        "albumName" : "Flute and Harp",
+        "trackUri" : "spotify:track:5WpGVggkaT3phJEwrVG3EC"
+      },
+      "addedDate" : "2026-07-15"
+    }, {
+      "track" : {
+        "trackName" : "Piano Concerto in B Minor, Op. 2: II. Langsam mit Empfindung",
+        "artistName" : "Eugen d'Albert",
+        "albumName" : "Albert: Piano Concertos Nos. 1 and 2 / Esther Overture",
+        "trackUri" : "spotify:track:5Qn8NK7cZwxPoMun57mO1C"
+      },
+      "addedDate" : "2026-07-15"
     } ],
     "numberOfFollowers" : 0
   }, {
-    "name" : "Jazzy",
-    "lastModifiedDate" : "2026-01-06",
-    "collaborators" : [ ],
-    "items" : [ {
-      "track" : {
-        "trackName" : "8 Concert Etudes, Op. 40: No. 6, Pastoral",
-        "artistName" : "Nikolai Kapustin",
-        "albumName" : "Kapustin: 8 Concert Etudes - 24 Preludes",
-        "trackUri" : "spotify:track:7oEKTPBBkZo45pzhEnd6Ql"
-      },
-      "addedDate" : "2026-01-06"
-    }, {
-      "track" : {
-        "trackName" : "24 Preludes, Op. 53: No. 5",
-        "artistName" : "Nikolai Kapustin",
-        "albumName" : "Obsessive Play",
-        "trackUri" : "spotify:track:19xpvmUTkDJET8v2S6gKbU"
-      },
-      "addedDate" : "2026-01-06"
-    }, {
-      "track" : {
-        "trackName" : "24 Preludes, Op. 53: No. 9 in E Major",
-        "artistName" : "Nikolai Kapustin",
-        "albumName" : "Kapustin:24 Preludes",
-        "trackUri" : "spotify:track:7vxB2YFXIVIutHUx4UObyi"
-      },
-      "addedDate" : "2026-01-06"
-    } ],
-    "numberOfFollowers" : 0
-  }, {
-    "name" : "Impresionisme",
-    "lastModifiedDate" : "2026-01-06",
-    "collaborators" : [ ],
-    "items" : [ {
-      "track" : {
-        "trackName" : "Clair de Lune, L. 32",
-        "artistName" : "Claude Debussy",
-        "albumName" : "Debussy: Clair De Lune and Other Piano Favourites",
-        "trackUri" : "spotify:track:5u5aVJKjSMJr4zesMPz7bL"
-      },
-      "addedDate" : "2026-01-06"
-    }, {
-      "track" : {
-        "trackName" : "Gymnopédie No. 1",
-        "artistName" : "Erik Satie",
-        "albumName" : "Erik Satie & Friends",
-        "trackUri" : "spotify:track:5NGtFXVpXSvwunEIGeviY3"
-      },
-      "addedDate" : "2026-01-06"
-    } ],
-    "numberOfFollowers" : 0
-  }, {
-    "name" : "Romanticisme solo piano",
-    "lastModifiedDate" : "2026-01-31",
+    "name" : "Piano Solo",
+    "lastModifiedDate" : "2026-07-14",
     "collaborators" : [ ],
     "items" : [ {
       "track" : {
@@ -3449,443 +2453,6 @@
     } ],
     "numberOfFollowers" : 2
   }, {
-    "name" : "Barroc",
-    "lastModifiedDate" : "2026-01-06",
-    "collaborators" : [ ],
-    "items" : [ {
-      "track" : {
-        "trackName" : "Air on a G String",
-        "artistName" : "Johann Sebastian Bach",
-        "albumName" : "Classic",
-        "trackUri" : "spotify:track:0mD1a7haZKdX9I0oPywrMb"
-      },
-      "addedDate" : "2026-01-06"
-    }, {
-      "track" : {
-        "trackName" : "The Well-Tempered Clavier: Book 1, BWV 846-869: 1. Prelude in C Major, BWV 846",
-        "artistName" : "Lang Lang",
-        "albumName" : "Bach Eternal",
-        "trackUri" : "spotify:track:18sIS6Wjegu9o3Z8m2M7jv"
-      },
-      "addedDate" : "2026-01-06"
-    }, {
-      "track" : {
-        "trackName" : "Cello Suite No. 1 in G Major, BWV 1007: I. Prélude",
-        "artistName" : "Johann Sebastian Bach",
-        "albumName" : "Bach: Cello Suites Nos. 1, 5 & 6",
-        "trackUri" : "spotify:track:17i5jLpzndlQhbS4SrTd0B"
-      },
-      "addedDate" : "2026-01-06"
-    }, {
-      "track" : {
-        "trackName" : "Minuet in G Major (Prev. Attrib. J.S. Bach as BWV Anh. 114)",
-        "artistName" : "Christian Petzold",
-        "albumName" : "Piano Book",
-        "trackUri" : "spotify:track:31OT71sADyqUXlW7ZKLn8R"
-      },
-      "addedDate" : "2026-01-06"
-    }, {
-      "track" : {
-        "trackName" : "Keyboard Concerto in F Minor, BWV 1056: II. Largo (Arr. A. Cortot for piano)",
-        "artistName" : "Johann Sebastian Bach",
-        "albumName" : "Alfred Cortot: 1929-1937 Recordings",
-        "trackUri" : "spotify:track:7wfxLuvY7dStd4InkiwtNz"
-      },
-      "addedDate" : "2026-01-06"
-    } ],
-    "numberOfFollowers" : 0
-  }, {
-    "name" : "☣︎ Jcyesc md Jceclbq fyq zylecpq yr jcyqr, pgefr??",
-    "lastModifiedDate" : "2025-04-06",
-    "collaborators" : [ ],
-    "items" : [ {
-      "track" : {
-        "trackName" : "The Call",
-        "artistName" : "League of Legends",
-        "albumName" : "The Call",
-        "trackUri" : "spotify:track:2iI556oF2qwtac9r1RzrXo"
-      },
-      "addedDate" : "2022-01-11"
-    }, {
-      "track" : {
-        "trackName" : "Take Over",
-        "artistName" : "League of Legends",
-        "albumName" : "Take Over",
-        "trackUri" : "spotify:track:7asFSf2pkWNEG3E5EuN1QR"
-      },
-      "addedDate" : "2020-09-17"
-    }, {
-      "track" : {
-        "trackName" : "Warriors",
-        "artistName" : "League of Legends",
-        "albumName" : "Warriors",
-        "trackUri" : "spotify:track:3f4fc8c8unrQeKecmUPEDR"
-      },
-      "addedDate" : "2020-09-15"
-    }, {
-      "track" : {
-        "trackName" : "GIANTS",
-        "artistName" : "True Damage",
-        "albumName" : "GIANTS",
-        "trackUri" : "spotify:track:5C0ivQMxes2lWuOANhvVAm"
-      },
-      "addedDate" : "2019-11-10"
-    }, {
-      "track" : {
-        "trackName" : "Phoenix",
-        "artistName" : "League of Legends",
-        "albumName" : "Phoenix",
-        "trackUri" : "spotify:track:6zAiRKvAMlXHxEtyO4yxIO"
-      },
-      "addedDate" : "2019-10-09"
-    }, {
-      "track" : {
-        "trackName" : "Awaken",
-        "artistName" : "League of Legends",
-        "albumName" : "Awaken",
-        "trackUri" : "spotify:track:3jevgr3fYdv9wYO3IDJq2a"
-      },
-      "addedDate" : "2019-11-05"
-    }, {
-      "track" : {
-        "trackName" : "RISE - Remix",
-        "artistName" : "League of Legends",
-        "albumName" : "RISE",
-        "trackUri" : "spotify:track:2u5UWeZlAiO60lSYYME7jU"
-      },
-      "addedDate" : "2019-02-05"
-    }, {
-      "track" : {
-        "trackName" : "POP/STARS",
-        "artistName" : "K/DA",
-        "albumName" : "POP/STARS",
-        "trackUri" : "spotify:track:5sbooPcNgIE22DwO0VNGUJ"
-      },
-      "addedDate" : "2019-10-08"
-    }, {
-      "track" : {
-        "trackName" : "Legends Never Die (feat. Against the Current)",
-        "artistName" : "League of Legends",
-        "albumName" : "Legends Never Die (feat. Against The Current)",
-        "trackUri" : "spotify:track:04pjfS3YIK6gXjxi1zHeZa"
-      },
-      "addedDate" : "2019-02-05"
-    }, {
-      "track" : {
-        "trackName" : "Ignite - 2016 League Of Legends World Championship",
-        "artistName" : "Zedd",
-        "albumName" : "Ignite",
-        "trackUri" : "spotify:track:39rqDP2s2hN1JtXptyeM3u"
-      },
-      "addedDate" : "2019-02-05"
-    }, {
-      "track" : {
-        "trackName" : "Worlds Collide",
-        "artistName" : "League of Legends",
-        "albumName" : "Worlds Collide",
-        "trackUri" : "spotify:track:6KMgPewrVRxzeFzRwkFa0M"
-      },
-      "addedDate" : "2019-11-05"
-    }, {
-      "track" : {
-        "trackName" : "Warriors",
-        "artistName" : "Imagine Dragons",
-        "albumName" : "Smoke + Mirrors",
-        "trackUri" : "spotify:track:1sWeSMifj6Z6kZyI6z3bRc"
-      },
-      "addedDate" : "2019-02-05"
-    }, {
-      "track" : {
-        "trackName" : "Playground (from the series Arcane League of Legends)",
-        "artistName" : "Bea Miller",
-        "albumName" : "Arcane League of Legends (Soundtrack from the Animated Series)",
-        "trackUri" : "spotify:track:5YTUCHSwfwJ4oHFDjFgpEe"
-      },
-      "addedDate" : "2022-01-11"
-    }, {
-      "track" : {
-        "trackName" : "Enemy (with JID) - from the series Arcane League of Legends",
-        "artistName" : "Imagine Dragons",
-        "albumName" : "Enemy (with JID)",
-        "trackUri" : "spotify:track:1r9xUipOqoNwggBpENDsvJ"
-      },
-      "addedDate" : "2021-11-05"
-    }, {
-      "track" : {
-        "trackName" : "Our Love (from the series Arcane League of Legends)",
-        "artistName" : "Curtis Harding",
-        "albumName" : "Arcane League of Legends (Soundtrack from the Animated Series)",
-        "trackUri" : "spotify:track:0OFSdfkFF5wLszOz0csftu"
-      },
-      "addedDate" : "2022-01-11"
-    }, {
-      "track" : {
-        "trackName" : "Goodbye (from the series Arcane League of Legends)",
-        "artistName" : "Ramsey",
-        "albumName" : "Arcane League of Legends (Soundtrack from the Animated Series)",
-        "trackUri" : "spotify:track:7hakBrWzzouKXpopdzq9DI"
-      },
-      "addedDate" : "2022-01-11"
-    }, {
-      "track" : {
-        "trackName" : "Dirty Little Animals (from the series Arcane League of Legends)",
-        "artistName" : "BONES UK",
-        "albumName" : "Arcane League of Legends (Soundtrack from the Animated Series)",
-        "trackUri" : "spotify:track:3GAkqaCeVaT4CxHR06Eztc"
-      },
-      "addedDate" : "2022-01-11"
-    }, {
-      "track" : {
-        "trackName" : "Guns for Hire (from the series Arcane League of Legends)",
-        "artistName" : "Woodkid",
-        "albumName" : "Arcane League of Legends (Soundtrack from the Animated Series)",
-        "trackUri" : "spotify:track:46ywPN36eLaRjQddouF83h"
-      },
-      "addedDate" : "2022-01-11"
-    }, {
-      "track" : {
-        "trackName" : "Misfit Toys (from the series Arcane League of Legends)",
-        "artistName" : "Pusha T",
-        "albumName" : "Arcane League of Legends (Soundtrack from the Animated Series)",
-        "trackUri" : "spotify:track:7HQSxHyORPbCQ1XtgV1k1P"
-      },
-      "addedDate" : "2022-01-11"
-    }, {
-      "track" : {
-        "trackName" : "Dynasties and Dystopia (from the series Arcane League of Legends)",
-        "artistName" : "Denzel Curry",
-        "albumName" : "Arcane League of Legends (Soundtrack from the Animated Series)",
-        "trackUri" : "spotify:track:2k2RPHMeyercU9PauiKNbU"
-      },
-      "addedDate" : "2022-01-11"
-    }, {
-      "track" : {
-        "trackName" : "Snakes (from the series Arcane League of Legends)",
-        "artistName" : "PVRIS",
-        "albumName" : "Arcane League of Legends (Soundtrack from the Animated Series)",
-        "trackUri" : "spotify:track:7AEvaz0EOmlqN27o6zpt3k"
-      },
-      "addedDate" : "2022-01-11"
-    }, {
-      "track" : {
-        "trackName" : "When Everything Went Wrong (from the series Arcane League of Legends)",
-        "artistName" : "Fantastic Negrito",
-        "albumName" : "Arcane League of Legends (Soundtrack from the Animated Series)",
-        "trackUri" : "spotify:track:6YCW1g7XwaDZX7sUSM8LWq"
-      },
-      "addedDate" : "2022-01-11"
-    }, {
-      "track" : {
-        "trackName" : "What Could Have Been feat. Ray Chen (from the series Arcane League of Legends)",
-        "artistName" : "Sting",
-        "albumName" : "Arcane League of Legends (Soundtrack from the Animated Series)",
-        "trackUri" : "spotify:track:4Oih3RDrSFg3afaOphBVuy"
-      },
-      "addedDate" : "2022-01-11"
-    }, {
-      "track" : {
-        "trackName" : "GODS",
-        "artistName" : "League of Legends",
-        "albumName" : "GODS",
-        "trackUri" : "spotify:track:210JJAa9nJOgNa0YNrsT5g"
-      },
-      "addedDate" : "2023-11-27"
-    }, {
-      "track" : {
-        "trackName" : "Heavy Is the Crown",
-        "artistName" : "Linkin Park",
-        "albumName" : "Heavy Is the Crown",
-        "trackUri" : "spotify:track:3fgehc497TFqKH1zBL2YNK"
-      },
-      "addedDate" : "2024-09-25"
-    }, {
-      "track" : {
-        "trackName" : "Heavy Is The Crown (Original Score) (from the series Arcane League of Legends)",
-        "artistName" : "Arcane",
-        "albumName" : "Arcane League of Legends: Season 2 (Soundtrack from the Animated Series)",
-        "trackUri" : "spotify:track:4TGZTPJ50VXfqCIEwf6Bmm"
-      },
-      "addedDate" : "2025-01-01"
-    }, {
-      "track" : {
-        "trackName" : "I Can't Hear It Now (from the series Arcane League of Legends)",
-        "artistName" : "Arcane",
-        "albumName" : "Arcane League of Legends: Season 2 (Soundtrack from the Animated Series)",
-        "trackUri" : "spotify:track:3p428gAKm9dBoMjBVOIvVu"
-      },
-      "addedDate" : "2025-01-01"
-    }, {
-      "track" : {
-        "trackName" : "Sucker (from the series Arcane League of Legends)",
-        "artistName" : "Arcane",
-        "albumName" : "Arcane League of Legends: Season 2 (Soundtrack from the Animated Series)",
-        "trackUri" : "spotify:track:0osQqNcvhl7pD6FtjOcT9T"
-      },
-      "addedDate" : "2025-01-01"
-    }, {
-      "track" : {
-        "trackName" : "Renegade (We Never Run) (from the series Arcane League of Legends)",
-        "artistName" : "Arcane",
-        "albumName" : "Arcane League of Legends: Season 2 (Soundtrack from the Animated Series)",
-        "trackUri" : "spotify:track:2GooZc6f3BlwjRtIx82J9n"
-      },
-      "addedDate" : "2025-01-01"
-    }, {
-      "track" : {
-        "trackName" : "Hellfire (from the series Arcane League of Legends)",
-        "artistName" : "Arcane",
-        "albumName" : "Arcane League of Legends: Season 2 (Soundtrack from the Animated Series)",
-        "trackUri" : "spotify:track:1aFVWIGU2MUJXaRqcxEaBQ"
-      },
-      "addedDate" : "2025-01-01"
-    }, {
-      "track" : {
-        "trackName" : "To Ashes and Blood (from the series Arcane League of Legends)",
-        "artistName" : "Arcane",
-        "albumName" : "Arcane League of Legends: Season 2 (Soundtrack from the Animated Series)",
-        "trackUri" : "spotify:track:1NzNNQuppVgVYrm2hvrPK2"
-      },
-      "addedDate" : "2025-01-01"
-    }, {
-      "track" : {
-        "trackName" : "Paint The Town Blue (from the series Arcane League of Legends)",
-        "artistName" : "Arcane",
-        "albumName" : "Arcane League of Legends: Season 2 (Soundtrack from the Animated Series)",
-        "trackUri" : "spotify:track:4cCeHTJcKQU9PCuQ2jiYlI"
-      },
-      "addedDate" : "2025-01-01"
-    }, {
-      "track" : {
-        "trackName" : "Remember Me (Intro) (from the series Arcane League of Legends)",
-        "artistName" : "Arcane",
-        "albumName" : "Arcane League of Legends: Season 2 (Soundtrack from the Animated Series)",
-        "trackUri" : "spotify:track:2pRtNNLoD4Ei1ELyzp3ATg"
-      },
-      "addedDate" : "2025-01-01"
-    }, {
-      "track" : {
-        "trackName" : "Remember Me (from the series Arcane League of Legends)",
-        "artistName" : "Arcane",
-        "albumName" : "Arcane League of Legends: Season 2 (Soundtrack from the Animated Series)",
-        "trackUri" : "spotify:track:2fQwoYSzWzChmIB2zZwrGL"
-      },
-      "addedDate" : "2025-01-01"
-    }, {
-      "track" : {
-        "trackName" : "这样很好 (Isha's Song) (from the series Arcane League of Legends)",
-        "artistName" : "Arcane",
-        "albumName" : "Arcane League of Legends: Season 2 (Soundtrack from the Animated Series)",
-        "trackUri" : "spotify:track:3cG6423elE49gy76onK3VK"
-      },
-      "addedDate" : "2025-01-01"
-    }, {
-      "track" : {
-        "trackName" : "Cocktail Molotov (from the series Arcane League of Legends)",
-        "artistName" : "Arcane",
-        "albumName" : "Arcane League of Legends: Season 2 (Soundtrack from the Animated Series)",
-        "trackUri" : "spotify:track:597xDoReZvNnlEoN0IVpVk"
-      },
-      "addedDate" : "2025-01-01"
-    }, {
-      "track" : {
-        "trackName" : "What Have They Done To Us (from the series Arcane League of Legends)",
-        "artistName" : "Arcane",
-        "albumName" : "Arcane League of Legends: Season 2 (Soundtrack from the Animated Series)",
-        "trackUri" : "spotify:track:2F27IYzFkhhrMChpfhVgPJ"
-      },
-      "addedDate" : "2025-01-01"
-    }, {
-      "track" : {
-        "trackName" : "Rebel Heart (from the series Arcane League of Legends)",
-        "artistName" : "Arcane",
-        "albumName" : "Arcane League of Legends: Season 2 (Soundtrack from the Animated Series)",
-        "trackUri" : "spotify:track:5xvjnyg8FHPGRSkbAhjJh6"
-      },
-      "addedDate" : "2025-01-01"
-    }, {
-      "track" : {
-        "trackName" : "The Beast (from the series Arcane League of Legends)",
-        "artistName" : "Arcane",
-        "albumName" : "Arcane League of Legends: Season 2 (Soundtrack from the Animated Series)",
-        "trackUri" : "spotify:track:0Sa8RvLw4OnhXYAL9FfStJ"
-      },
-      "addedDate" : "2025-01-01"
-    }, {
-      "track" : {
-        "trackName" : "Spin The Wheel (from the series Arcane League of Legends)",
-        "artistName" : "Arcane",
-        "albumName" : "Arcane League of Legends: Season 2 (Soundtrack from the Animated Series)",
-        "trackUri" : "spotify:track:3r1Fg9teKc6ZkZVtjJwCtV"
-      },
-      "addedDate" : "2025-01-01"
-    }, {
-      "track" : {
-        "trackName" : "Ma Meilleure Ennemie (from the series Arcane League of Legends)",
-        "artistName" : "Arcane",
-        "albumName" : "Arcane League of Legends: Season 2 (Soundtrack from the Animated Series)",
-        "trackUri" : "spotify:track:2LwsunYgfRoqyIsNtgOCQx"
-      },
-      "addedDate" : "2025-01-01"
-    }, {
-      "track" : {
-        "trackName" : "Fantastic (from the series Arcane League of Legends)",
-        "artistName" : "Arcane",
-        "albumName" : "Arcane League of Legends: Season 2 (Soundtrack from the Animated Series)",
-        "trackUri" : "spotify:track:071uK6V3dKj3BMNNzTEyRu"
-      },
-      "addedDate" : "2025-01-01"
-    }, {
-      "track" : {
-        "trackName" : "The Line (from the series Arcane League of Legends)",
-        "artistName" : "Arcane",
-        "albumName" : "Arcane League of Legends: Season 2 (Soundtrack from the Animated Series)",
-        "trackUri" : "spotify:track:1QJbDTZAO8rpGOMG4UahFM"
-      },
-      "addedDate" : "2025-01-01"
-    }, {
-      "track" : {
-        "trackName" : "Blood Sweat & Tears (from the series Arcane League of Legends)",
-        "artistName" : "Arcane",
-        "albumName" : "Arcane League of Legends: Season 2 (Soundtrack from the Animated Series)",
-        "trackUri" : "spotify:track:4yb2x8ZxKSszH0TX4rJI8M"
-      },
-      "addedDate" : "2025-01-01"
-    }, {
-      "track" : {
-        "trackName" : "Come Play (from the series Arcane League of Legends)",
-        "artistName" : "Stray Kids",
-        "albumName" : "Arcane League of Legends: Season 2 (Soundtrack from the Animated Series)",
-        "trackUri" : "spotify:track:2K7g8dvwkIGgPEYKivmatN"
-      },
-      "addedDate" : "2025-01-01"
-    }, {
-      "track" : {
-        "trackName" : "Wasteland (from the series Arcane League of Legends)",
-        "artistName" : "Arcane",
-        "albumName" : "Arcane League of Legends: Season 2 (Soundtrack from the Animated Series)",
-        "trackUri" : "spotify:track:5r9OlaHzqlOKkFAv0q5Gm3"
-      },
-      "addedDate" : "2025-01-01"
-    }, {
-      "track" : {
-        "trackName" : "Enemy with JID (Opening Title Version)",
-        "artistName" : "Arcane",
-        "albumName" : "Arcane League of Legends: Season 2 (Soundtrack from the Animated Series)",
-        "trackUri" : "spotify:track:4Je0R9mZ6gY7IjIkvxoq7r"
-      },
-      "addedDate" : "2025-01-01"
-    }, {
-      "track" : {
-        "trackName" : "Bite Marks",
-        "artistName" : "League of Legends Music",
-        "albumName" : "Bite Marks",
-        "trackUri" : "spotify:track:6zJoGHVeRHbfijJF95Q3pE"
-      },
-      "addedDate" : "2025-01-10"
-    } ],
-    "description" : "League songs are just bangers, ouch my time... - Luckly in uni classes I was no longer thinking hard &#x27;bout League",
-    "numberOfFollowers" : 0
-  }, {
     "name" : "\uD83E\uDD8B G'k qspc rfcpc gq lm ncpqmly rfyr jgqrclq rm rfgq",
     "lastModifiedDate" : "2026-01-06",
     "collaborators" : [ ],
@@ -4109,14 +2676,739 @@
     "description" : "I played persona originally because of the soundtracks. It changed me - After walking for hours off-road, finding one with these trees was nice",
     "numberOfFollowers" : 0
   }, {
-    "name" : "Folklorica",
-    "lastModifiedDate" : "2026-01-16",
+    "name" : "Dreamgaze",
+    "lastModifiedDate" : "2026-07-15",
     "collaborators" : [ ],
-    "items" : [ ],
+    "items" : [ {
+      "track" : {
+        "trackName" : "In Undertow",
+        "artistName" : "Alvvays",
+        "albumName" : "Antisocialites",
+        "trackUri" : "spotify:track:2A0Rzes11fJBmvvpG4tGfm"
+      },
+      "addedDate" : "2026-01-06"
+    }, {
+      "track" : {
+        "trackName" : "Haunt You Still",
+        "artistName" : "Softcult",
+        "albumName" : "Haunt You Still",
+        "trackUri" : "spotify:track:2Kgnj7OQEdaiFIayFmplKC"
+      },
+      "addedDate" : "2026-01-06"
+    }, {
+      "track" : {
+        "trackName" : "Charity",
+        "artistName" : "An April March",
+        "albumName" : "Lessons in Vengeance",
+        "trackUri" : "spotify:track:68qVHhvi86MDj86bOn238v"
+      },
+      "addedDate" : "2026-01-06"
+    }, {
+      "track" : {
+        "trackName" : "Mass Anasthesia",
+        "artistName" : "Mediavolo",
+        "albumName" : "A Secret Sound",
+        "trackUri" : "spotify:track:6JCdA9QYD5AH94jfS3ugG9"
+      },
+      "addedDate" : "2026-01-06"
+    }, {
+      "track" : {
+        "trackName" : "willow",
+        "artistName" : "she's green",
+        "albumName" : "willow",
+        "trackUri" : "spotify:track:5DVPSIVpyp8D80XsgRkmjN"
+      },
+      "addedDate" : "2026-01-06"
+    }, {
+      "track" : {
+        "trackName" : "Alison",
+        "artistName" : "Slowdive",
+        "albumName" : "Souvlaki",
+        "trackUri" : "spotify:track:33HRECrmuelZxOpid6XTNX"
+      },
+      "addedDate" : "2026-01-06"
+    }, {
+      "track" : {
+        "trackName" : "Dysphoria",
+        "artistName" : "Vox Humana",
+        "albumName" : "Desperations for the Modern Era",
+        "trackUri" : "spotify:track:4u8KIERUQfxyavuSqKWUF7"
+      },
+      "addedDate" : "2026-01-06"
+    }, {
+      "track" : {
+        "trackName" : "Enchanted",
+        "artistName" : "Reverbhunter",
+        "albumName" : "Enchanted",
+        "trackUri" : "spotify:track:5UfLyo7gQsXdr0lmR4qhrH"
+      },
+      "addedDate" : "2026-01-06"
+    }, {
+      "track" : {
+        "trackName" : "Love Song",
+        "artistName" : "Softcult",
+        "albumName" : "Love Song",
+        "trackUri" : "spotify:track:3rQaxZaozQfrUEQx1PzT14"
+      },
+      "addedDate" : "2026-01-06"
+    }, {
+      "track" : {
+        "trackName" : "Sea Salt",
+        "artistName" : "Vivienne Eastwood",
+        "albumName" : "Shook - EP",
+        "trackUri" : "spotify:track:1MYsdbgU23zH16xXPQi8fw"
+      },
+      "addedDate" : "2026-01-06"
+    }, {
+      "track" : {
+        "trackName" : "I Love Me After You",
+        "artistName" : "Mitski",
+        "albumName" : "The Land Is Inhospitable and So Are We",
+        "trackUri" : "spotify:track:55Y5p2XyPaYBPGtzj1f9fE"
+      },
+      "addedDate" : "2026-01-06"
+    }, {
+      "track" : {
+        "trackName" : "meduzy",
+        "artistName" : "duszno",
+        "albumName" : "okruszki",
+        "trackUri" : "spotify:track:7zoybj2an1JdptIUSDGfXx"
+      },
+      "addedDate" : "2026-01-06"
+    }, {
+      "track" : {
+        "trackName" : "By Your Hand",
+        "artistName" : "Ricochet Star",
+        "albumName" : "Every Moon",
+        "trackUri" : "spotify:track:2s2PAUG9QlQjwK0HM2ibRE"
+      },
+      "addedDate" : "2026-01-06"
+    }, {
+      "track" : {
+        "trackName" : "Every Moon",
+        "artistName" : "Ricochet Star",
+        "albumName" : "Every Moon",
+        "trackUri" : "spotify:track:60SybYrNDTNMuu7ihkhgfh"
+      },
+      "addedDate" : "2026-01-06"
+    }, {
+      "track" : {
+        "trackName" : "mandy",
+        "artistName" : "she's green",
+        "albumName" : "wisteria",
+        "trackUri" : "spotify:track:48WjoS8xixdToSxYDujDmb"
+      },
+      "addedDate" : "2026-01-06"
+    }, {
+      "track" : {
+        "trackName" : "Get back to me",
+        "artistName" : "Wisp",
+        "albumName" : "If Not Winter",
+        "trackUri" : "spotify:track:78pm31xao0IlTAVtcbYyud"
+      },
+      "addedDate" : "2026-07-14"
+    }, {
+      "track" : {
+        "trackName" : "papierki i okruszki",
+        "artistName" : "duszno",
+        "albumName" : "papierki i okruszki",
+        "trackUri" : "spotify:track:1OWV17h7CqaY70tr9E9FNC"
+      },
+      "addedDate" : "2026-07-14"
+    }, {
+      "track" : {
+        "trackName" : "Lilies and Sea",
+        "artistName" : "Attic Ocean",
+        "albumName" : "Retriever",
+        "trackUri" : "spotify:track:2uO1bQo8pXEJwaoLqhuXBp"
+      },
+      "addedDate" : "2026-07-14"
+    }, {
+      "track" : {
+        "trackName" : "Helium",
+        "artistName" : "Newmoon",
+        "albumName" : "Space",
+        "trackUri" : "spotify:track:4kYxJBu0QAEnXYjmfmnoS6"
+      },
+      "addedDate" : "2026-07-14"
+    }, {
+      "track" : {
+        "trackName" : "ENDLESS DEATHLESS",
+        "artistName" : "Just Mustard",
+        "albumName" : "ENDLESS DEATHLESS",
+        "trackUri" : "spotify:track:6TmdbHXUuwNbO7gOeuRmVG"
+      },
+      "addedDate" : "2026-07-14"
+    }, {
+      "track" : {
+        "trackName" : "Splendor",
+        "artistName" : "Glixen",
+        "albumName" : "Splendor",
+        "trackUri" : "spotify:track:3cE923w64jGhkQZtprJ2lY"
+      },
+      "addedDate" : "2026-07-14"
+    }, {
+      "track" : {
+        "trackName" : "Delayed Gratification",
+        "artistName" : "Flooding",
+        "albumName" : "Flooding",
+        "trackUri" : "spotify:track:1ViYbQX1ubJ97EyAkSW033"
+      },
+      "addedDate" : "2026-07-14"
+    }, {
+      "track" : {
+        "trackName" : "ENDLESS DEATHLESS",
+        "artistName" : "Just Mustard",
+        "albumName" : "WE WERE JUST HERE",
+        "trackUri" : "spotify:track:02gEdH8T6snWsU5v48QZR4"
+      },
+      "addedDate" : "2026-07-14"
+    }, {
+      "track" : {
+        "trackName" : "Call Off The Day",
+        "artistName" : "Scarlet Rae",
+        "albumName" : "No Heavy Goodbyes",
+        "trackUri" : "spotify:track:7nDfsNgfaxcX803hq1iceG"
+      },
+      "addedDate" : "2026-07-14"
+    }, {
+      "track" : {
+        "trackName" : "Wallow",
+        "artistName" : "Forsaken Autumn",
+        "albumName" : "Whenere",
+        "trackUri" : "spotify:track:3Xb7YUrClEKSXCZ2WkSv4p"
+      },
+      "addedDate" : "2026-07-14"
+    }, {
+      "track" : {
+        "trackName" : "Who Wanted",
+        "artistName" : "Neggy Gemmy",
+        "albumName" : "She Comes from Nowhere",
+        "trackUri" : "spotify:track:5pnEWwp2xGKta4UMEBkkV6"
+      },
+      "addedDate" : "2026-07-15"
+    } ],
     "numberOfFollowers" : 0
   }, {
-    "name" : "Rock middle",
-    "lastModifiedDate" : "2026-01-06",
+    "name" : "Shoegaze",
+    "lastModifiedDate" : "2026-07-14",
+    "collaborators" : [ ],
+    "items" : [ {
+      "track" : {
+        "trackName" : "texas instruments",
+        "artistName" : "They Are Gutting a Body of Water",
+        "albumName" : "Destiny XL",
+        "trackUri" : "spotify:track:12R6mQQQbNM0oDACqDrOW7"
+      },
+      "addedDate" : "2024-12-19"
+    }, {
+      "track" : {
+        "trackName" : "Jeremy Parker",
+        "artistName" : "Swirlies",
+        "albumName" : "Blonder Tongue Audio Baton",
+        "trackUri" : "spotify:track:0pVgFjjojISSczzmj66FTA"
+      },
+      "addedDate" : "2024-12-11"
+    }, {
+      "track" : {
+        "trackName" : "when you sleep",
+        "artistName" : "my bloody valentine",
+        "albumName" : "loveless",
+        "trackUri" : "spotify:track:2KylN9C0wNbzLgZNTG9oiU"
+      },
+      "addedDate" : "2025-06-10"
+    }, {
+      "track" : {
+        "trackName" : "Floating",
+        "artistName" : "Glare",
+        "albumName" : "Floating",
+        "trackUri" : "spotify:track:5dwbmjYCDkBWOgoS7yMEhJ"
+      },
+      "addedDate" : "2024-12-19"
+    }, {
+      "track" : {
+        "trackName" : "Alone for You",
+        "artistName" : "Audiobaton",
+        "albumName" : "Alone for You",
+        "trackUri" : "spotify:track:2HPSoQGW4Bw5k75Xa1VP1E"
+      },
+      "addedDate" : "2024-12-12"
+    }, {
+      "track" : {
+        "trackName" : "nothing to prove",
+        "artistName" : "Audiobaton",
+        "albumName" : "nothing to prove // new windows",
+        "trackUri" : "spotify:track:6bIbDb1MPYucc8xfWs7yvz"
+      },
+      "addedDate" : "2024-12-12"
+    }, {
+      "track" : {
+        "trackName" : "to here knows when",
+        "artistName" : "my bloody valentine",
+        "albumName" : "loveless",
+        "trackUri" : "spotify:track:2Qt7TmKGuet6bKJzhNM0YA"
+      },
+      "addedDate" : "2025-06-10"
+    }, {
+      "track" : {
+        "trackName" : "One Weak Moment",
+        "artistName" : "The Nightblooms",
+        "albumName" : "EP",
+        "trackUri" : "spotify:track:707KXJqTn479rCOI7Y5QXL"
+      },
+      "addedDate" : "2024-12-24"
+    }, {
+      "track" : {
+        "trackName" : "douglasland.v1",
+        "artistName" : "Her New Knife",
+        "albumName" : "douglasland.v1",
+        "trackUri" : "spotify:track:41pG2ePMU39tqpY5cVoYCu"
+      },
+      "addedDate" : "2024-12-19"
+    }, {
+      "track" : {
+        "trackName" : "Blue Marbles",
+        "artistName" : "The Nightblooms",
+        "albumName" : "EP",
+        "trackUri" : "spotify:track:2lW1LLODAahnQq7I4B3VyH"
+      },
+      "addedDate" : "2024-12-24"
+    }, {
+      "track" : {
+        "trackName" : "Ruin",
+        "artistName" : "Her New Knife",
+        "albumName" : "lead dreams/flayed so light",
+        "trackUri" : "spotify:track:1JA5vrIorgCyM29tZsMIEj"
+      },
+      "addedDate" : "2024-12-19"
+    }, {
+      "track" : {
+        "trackName" : "new windows",
+        "artistName" : "Audiobaton",
+        "albumName" : "nothing to prove // new windows",
+        "trackUri" : "spotify:track:2FkblN5Y3Khizcns5lAZBu"
+      },
+      "addedDate" : "2024-12-12"
+    }, {
+      "track" : {
+        "trackName" : "i only said",
+        "artistName" : "my bloody valentine",
+        "albumName" : "loveless",
+        "trackUri" : "spotify:track:7HVaCZKjnMgWi3tvdMZfzY"
+      },
+      "addedDate" : "2024-12-12"
+    }, {
+      "track" : {
+        "trackName" : "Brown Paper Bag",
+        "artistName" : "DIIV",
+        "albumName" : "Frog In Boiling Water",
+        "trackUri" : "spotify:track:32XDJzfjcsrgY9xfRq3FQN"
+      },
+      "addedDate" : "2026-01-06"
+    }, {
+      "track" : {
+        "trackName" : "Beautiful World",
+        "artistName" : "Parannoul",
+        "albumName" : "To See the Next Part of the Dream",
+        "trackUri" : "spotify:track:6dNk7wme2WgW7Sd6lYcCbL"
+      },
+      "addedDate" : "2026-07-14"
+    }, {
+      "track" : {
+        "trackName" : "Valorians",
+        "artistName" : "Kairon; IRSE!",
+        "albumName" : "Ujubasajuba",
+        "trackUri" : "spotify:track:01TavLoCPvbs4YbBIMIsvy"
+      },
+      "addedDate" : "2026-07-14"
+    }, {
+      "track" : {
+        "trackName" : "Peanut Butter",
+        "artistName" : "Lazy Legs",
+        "albumName" : "Moth Mother",
+        "trackUri" : "spotify:track:6g0D3Ht1gqG54UdwMezSjK"
+      },
+      "addedDate" : "2026-07-14"
+    } ],
+    "description" : "From a random recommendation to finding a whole supernice genre, thanks algorithms - Seeing this abandoned place shine so much was pleasing",
+    "numberOfFollowers" : 2
+  }, {
+    "name" : "Jangle",
+    "lastModifiedDate" : "2026-07-14",
+    "collaborators" : [ ],
+    "items" : [ {
+      "track" : {
+        "trackName" : "Everlastingly Yours",
+        "artistName" : "Piroshka",
+        "albumName" : "Brickbat",
+        "trackUri" : "spotify:track:1vl66qSV9BlAALu9eANF7J"
+      },
+      "addedDate" : "2026-01-06"
+    }, {
+      "track" : {
+        "trackName" : "Don't Dream It's Over",
+        "artistName" : "Crowded House",
+        "albumName" : "Crowded House",
+        "trackUri" : "spotify:track:7G7tgVYORlDuVprcYHuFJh"
+      },
+      "addedDate" : "2026-01-04"
+    }, {
+      "track" : {
+        "trackName" : "Adult Diversion",
+        "artistName" : "Alvvays",
+        "albumName" : "Alvvays",
+        "trackUri" : "spotify:track:0GBG7b2BuF336A6lk6spGw"
+      },
+      "addedDate" : "2026-01-04"
+    }, {
+      "track" : {
+        "trackName" : "Sunday Morning",
+        "artistName" : "The Velvet Underground",
+        "albumName" : "The Velvet Underground & Nico 45th Anniversary",
+        "trackUri" : "spotify:track:11607FzqoipskTsXrwEHnJ"
+      },
+      "addedDate" : "2026-01-06"
+    }, {
+      "track" : {
+        "trackName" : "Friday I'm In Love",
+        "artistName" : "The Cure",
+        "albumName" : "Wish",
+        "trackUri" : "spotify:track:4QlzkaRHtU8gAdwqjWmO8n"
+      },
+      "addedDate" : "2025-11-05"
+    }, {
+      "track" : {
+        "trackName" : "Bright As Yellow",
+        "artistName" : "The Innocence Mission",
+        "albumName" : "Glow",
+        "trackUri" : "spotify:track:6rbGpy1s1TniuQXsIBaQym"
+      },
+      "addedDate" : "2025-08-16"
+    }, {
+      "track" : {
+        "trackName" : "You're Not The Only One I Know",
+        "artistName" : "The Sundays",
+        "albumName" : "Reading Writing And Arithmetic",
+        "trackUri" : "spotify:track:3nbFVNHVYCMCdD9vBo3udv"
+      },
+      "addedDate" : "2025-01-24"
+    }, {
+      "track" : {
+        "trackName" : "Halah",
+        "artistName" : "Mazzy Star",
+        "albumName" : "She Hangs Brightly",
+        "trackUri" : "spotify:track:6JuEshIRliNXRU1LXctRjZ"
+      },
+      "addedDate" : "2025-01-24"
+    }, {
+      "track" : {
+        "trackName" : "Sunday",
+        "artistName" : "The Cranberries",
+        "albumName" : "Everybody Else Is Doing It, So Why Can't We?",
+        "trackUri" : "spotify:track:4zEvxRDaKDoFlHxK7Hy0wg"
+      },
+      "addedDate" : "2025-08-15"
+    }, {
+      "track" : {
+        "trackName" : "Light From A Dead Star",
+        "artistName" : "Lush",
+        "albumName" : "Split",
+        "trackUri" : "spotify:track:6Q0GTFuMlUj98CC1VWnFAs"
+      },
+      "addedDate" : "2025-08-22"
+    }, {
+      "track" : {
+        "trackName" : "Archie, Marry Me",
+        "artistName" : "Alvvays",
+        "albumName" : "Alvvays",
+        "trackUri" : "spotify:track:5GAB1X0AJq2EZjxXP9zMFt"
+      },
+      "addedDate" : "2025-08-15"
+    }, {
+      "track" : {
+        "trackName" : "Here's Where the Story Ends",
+        "artistName" : "The Sundays",
+        "albumName" : "Reading Writing And Arithmetic",
+        "trackUri" : "spotify:track:5gSHlT2SI0dtjeHrjj96A1"
+      },
+      "addedDate" : "2025-01-24"
+    }, {
+      "track" : {
+        "trackName" : "Suzanne",
+        "artistName" : "Hope Sandoval & The Warm Inventions",
+        "albumName" : "Bavarian Fruit Bread",
+        "trackUri" : "spotify:track:0K9iwmos5IKhO7kK4sQJwl"
+      },
+      "addedDate" : "2025-08-15"
+    }, {
+      "track" : {
+        "trackName" : "Linger",
+        "artistName" : "The Cranberries",
+        "albumName" : "Everybody Else Is Doing It, So Why Can't We?",
+        "trackUri" : "spotify:track:0gEyKnHvgkrkBM6fbeHdwK"
+      },
+      "addedDate" : "2025-04-22"
+    }, {
+      "track" : {
+        "trackName" : "Call It Fate, Call It Karma",
+        "artistName" : "The Strokes",
+        "albumName" : "Comedown Machine",
+        "trackUri" : "spotify:track:3Y4rUyw7XBCK6hGHCOt6rp"
+      },
+      "addedDate" : "2026-01-04"
+    }, {
+      "track" : {
+        "trackName" : "High",
+        "artistName" : "The Cure",
+        "albumName" : "Wish",
+        "trackUri" : "spotify:track:1G5cCZhEI67suiGvSWAiZz"
+      },
+      "addedDate" : "2026-01-04"
+    }, {
+      "track" : {
+        "trackName" : "Village of the Damned",
+        "artistName" : "Piroshka",
+        "albumName" : "Brickbat",
+        "trackUri" : "spotify:track:6VWqlDpLDA5D1lWoZXREWx"
+      },
+      "addedDate" : "2025-08-15"
+    }, {
+      "track" : {
+        "trackName" : "Floating",
+        "artistName" : "Julee Cruise",
+        "albumName" : "Floating Into The Night",
+        "trackUri" : "spotify:track:55Wm3y6wUy5xS1thd0Zial"
+      },
+      "addedDate" : "2026-01-04"
+    }, {
+      "track" : {
+        "trackName" : "Love Songs on the Radio",
+        "artistName" : "Mojave 3",
+        "albumName" : "Ask Me Tomorrow",
+        "trackUri" : "spotify:track:3FzK2g50oLcx8vqETwOn07"
+      },
+      "addedDate" : "2026-01-04"
+    }, {
+      "track" : {
+        "trackName" : "Just Like Heaven - Remastered 2006",
+        "artistName" : "The Cure",
+        "albumName" : "Kiss Me Kiss Me Kiss Me",
+        "trackUri" : "spotify:track:4NnWuGQujzWUEg0uZokO5M"
+      },
+      "addedDate" : "2026-01-04"
+    }, {
+      "track" : {
+        "trackName" : "I Have the Moon",
+        "artistName" : "Lush",
+        "albumName" : "Topolino",
+        "trackUri" : "spotify:track:298kgP95oJvq6FNDLqu6Lf"
+      },
+      "addedDate" : "2025-01-24"
+    }, {
+      "track" : {
+        "trackName" : "Eyes Without A Face",
+        "artistName" : "Billy Idol",
+        "albumName" : "Rebel Yell",
+        "trackUri" : "spotify:track:0pUVeEgZuNyFzIMKp67RbS"
+      },
+      "addedDate" : "2026-01-04"
+    }, {
+      "track" : {
+        "trackName" : "Atop a Cake",
+        "artistName" : "Alvvays",
+        "albumName" : "Alvvays",
+        "trackUri" : "spotify:track:65mtOjEf0eYDb3YpdjrwMR"
+      },
+      "addedDate" : "2026-01-04"
+    }, {
+      "track" : {
+        "trackName" : "Portal",
+        "artistName" : "Fine",
+        "albumName" : "Portal",
+        "trackUri" : "spotify:track:7LYCoMFe1ciXBMdwZLmvG2"
+      },
+      "addedDate" : "2026-01-04"
+    }, {
+      "track" : {
+        "trackName" : "Dreams",
+        "artistName" : "The Cranberries",
+        "albumName" : "Everybody Else Is Doing It, So Why Can't We?",
+        "trackUri" : "spotify:track:4JGKZS7h4Qa16gOU3oNETV"
+      },
+      "addedDate" : "2025-08-15"
+    }, {
+      "track" : {
+        "trackName" : "Sight of You",
+        "artistName" : "Pale Saints",
+        "albumName" : "The Comforts of Madness",
+        "trackUri" : "spotify:track:7fectUUMiPjZijOJIJaN3S"
+      },
+      "addedDate" : "2026-07-14"
+    }, {
+      "track" : {
+        "trackName" : "Kinky Love",
+        "artistName" : "Pale Saints",
+        "albumName" : "Flesh Balloon",
+        "trackUri" : "spotify:track:5hUCTgttGB1eS4GJdPEQEM"
+      },
+      "addedDate" : "2026-07-14"
+    }, {
+      "track" : {
+        "trackName" : "Illusory Me",
+        "artistName" : "Love Spirals Downwards",
+        "albumName" : "Idylls [Remastered Reissue]",
+        "trackUri" : "spotify:track:68KsdOjFquTlApwPL7f6Cr"
+      },
+      "addedDate" : "2026-07-14"
+    } ],
+    "numberOfFollowers" : 1
+  }, {
+    "name" : "Grungegaze",
+    "lastModifiedDate" : "2026-01-14",
+    "collaborators" : [ ],
+    "items" : [ {
+      "track" : {
+        "trackName" : "All the Same",
+        "artistName" : "Audiobaton",
+        "albumName" : "Medicine Nights",
+        "trackUri" : "spotify:track:4VOMPVOPYKAAyxq0AEwBVx"
+      },
+      "addedDate" : "2026-01-06"
+    }, {
+      "track" : {
+        "trackName" : "kit",
+        "artistName" : "julie",
+        "albumName" : "starjump / kit",
+        "trackUri" : "spotify:track:4OIFIhRhT2XRCqsvJASYSx"
+      },
+      "addedDate" : "2026-01-06"
+    }, {
+      "track" : {
+        "trackName" : "lochness",
+        "artistName" : "julie",
+        "albumName" : "pushing daisies",
+        "trackUri" : "spotify:track:0kU19o73JmFA5HS2kuYFWe"
+      },
+      "addedDate" : "2026-01-06"
+    }, {
+      "track" : {
+        "trackName" : "Flesh",
+        "artistName" : "Sleepwalk",
+        "albumName" : "Splatter",
+        "trackUri" : "spotify:track:4LP9nAAiWGF9Z343uIopF5"
+      },
+      "addedDate" : "2026-01-06"
+    }, {
+      "track" : {
+        "trackName" : "The Sign",
+        "artistName" : "Deafcult",
+        "albumName" : "The Sign",
+        "trackUri" : "spotify:track:2G0sJqNehlJBveHtzM297z"
+      },
+      "addedDate" : "2026-01-06"
+    }, {
+      "track" : {
+        "trackName" : "clairbourne practice",
+        "artistName" : "julie",
+        "albumName" : "clairbourne practice",
+        "trackUri" : "spotify:track:0WOkDmX7J2SGm8MDe2rWBc"
+      },
+      "addedDate" : "2026-01-06"
+    }, {
+      "track" : {
+        "trackName" : "Crystal Eyes",
+        "artistName" : "The Nightblooms",
+        "albumName" : "EP",
+        "trackUri" : "spotify:track:4vRQfD0gFjvwqrkRCVTyz9"
+      },
+      "addedDate" : "2026-01-06"
+    }, {
+      "track" : {
+        "trackName" : "thunder disc",
+        "artistName" : "eli's ladder",
+        "albumName" : "thunder disc",
+        "trackUri" : "spotify:track:6orQnfhusS9tDy2d3BOj2z"
+      },
+      "addedDate" : "2026-01-06"
+    }, {
+      "track" : {
+        "trackName" : "medicine bow",
+        "artistName" : "Glixen",
+        "albumName" : "medicine bow",
+        "trackUri" : "spotify:track:0uMeWfuWryl4SRvskme3Hs"
+      },
+      "addedDate" : "2026-01-06"
+    } ],
+    "numberOfFollowers" : 0
+  }, {
+    "name" : "Metal",
+    "lastModifiedDate" : "2026-07-14",
+    "collaborators" : [ ],
+    "items" : [ {
+      "track" : {
+        "trackName" : "Journey",
+        "artistName" : "Red Moon Architect",
+        "albumName" : "Return of the Black Butterflies",
+        "trackUri" : "spotify:track:6Micn1rqTaT3v0cnwaUJjL"
+      },
+      "addedDate" : "2026-07-14"
+    } ],
+    "numberOfFollowers" : 0
+  }, {
+    "name" : "Punk",
+    "lastModifiedDate" : "2026-07-14",
+    "collaborators" : [ ],
+    "items" : [ {
+      "track" : {
+        "trackName" : "Sockets",
+        "artistName" : "SOFT PLAY",
+        "albumName" : "Sockets",
+        "trackUri" : "spotify:track:0kLjSnXM36ezPbSMjkPpay"
+      },
+      "addedDate" : "2026-07-14"
+    }, {
+      "track" : {
+        "trackName" : "BIRDS",
+        "artistName" : "Turnstile",
+        "albumName" : "SEEIN’ STARS / BIRDS",
+        "trackUri" : "spotify:track:0k9JIBszlCqCa4SpXI353F"
+      },
+      "addedDate" : "2026-07-14"
+    }, {
+      "track" : {
+        "trackName" : "Lobotomize Me",
+        "artistName" : "The Rat Utopia Experiment",
+        "albumName" : "Lobotomize Me",
+        "trackUri" : "spotify:track:7I1NaF9iuckI7GDdcGdu2y"
+      },
+      "addedDate" : "2026-07-14"
+    }, {
+      "track" : {
+        "trackName" : "Blast!",
+        "artistName" : "The Rat Utopia Experiment",
+        "albumName" : "Blast!",
+        "trackUri" : "spotify:track:2gt0aKQhRUTlY1d7MpIjMF"
+      },
+      "addedDate" : "2026-07-14"
+    } ],
+    "numberOfFollowers" : 0
+  }, {
+    "name" : "Electronic Rock",
+    "lastModifiedDate" : "2026-07-14",
+    "collaborators" : [ ],
+    "items" : [ {
+      "track" : {
+        "trackName" : "Fuse",
+        "artistName" : "House of Protection",
+        "albumName" : "GALORE",
+        "trackUri" : "spotify:track:0UYOncanPfTJVemojPksIP"
+      },
+      "addedDate" : "2026-07-14"
+    } ],
+    "numberOfFollowers" : 0
+  }, {
+    "name" : "Indie Rock",
+    "lastModifiedDate" : "2026-07-15",
     "collaborators" : [ ],
     "items" : [ {
       "track" : {
@@ -4174,11 +3466,43 @@
         "trackUri" : "spotify:track:6YokS9sLLeB1bLBq1Szcc9"
       },
       "addedDate" : "2026-01-06"
+    }, {
+      "track" : {
+        "trackName" : "Some Time Alone, Alone",
+        "artistName" : "Melody's Echo Chamber",
+        "albumName" : "Melody's Echo Chamber",
+        "trackUri" : "spotify:track:1sEkQDvj0SurW8OUbQ8W3H"
+      },
+      "addedDate" : "2026-07-14"
+    }, {
+      "track" : {
+        "trackName" : "Swing Lynn",
+        "artistName" : "Harmless",
+        "albumName" : "I'm Sure",
+        "trackUri" : "spotify:track:3VCXx37jNGNOMns6z2OnvJ"
+      },
+      "addedDate" : "2026-07-15"
+    }, {
+      "track" : {
+        "trackName" : "Hello",
+        "artistName" : "GROUPLOVE",
+        "albumName" : "I Want It All Right Now",
+        "trackUri" : "spotify:track:7IH898LJRwuh0m2x29N0fm"
+      },
+      "addedDate" : "2026-07-15"
+    }, {
+      "track" : {
+        "trackName" : "Colours",
+        "artistName" : "GROUPLOVE",
+        "albumName" : "Never Trust a Happy Song",
+        "trackUri" : "spotify:track:6gSKswfcoWvaadqvuMF3Y7"
+      },
+      "addedDate" : "2026-07-15"
     } ],
     "numberOfFollowers" : 0
   }, {
-    "name" : "Rock encantador",
-    "lastModifiedDate" : "2026-01-06",
+    "name" : "Twee",
+    "lastModifiedDate" : "2026-07-15",
     "collaborators" : [ ],
     "items" : [ {
       "track" : {
@@ -4332,6 +3656,62 @@
         "trackUri" : "spotify:track:6pTSHhupVbWJmO5hGymxkL"
       },
       "addedDate" : "2026-01-06"
+    }, {
+      "track" : {
+        "trackName" : "Grand New Spin",
+        "artistName" : "Gold Celeste",
+        "albumName" : "The Glow",
+        "trackUri" : "spotify:track:00iaYc8mwe0QRMQBBJWUoM"
+      },
+      "addedDate" : "2026-07-14"
+    }, {
+      "track" : {
+        "trackName" : "Demise",
+        "artistName" : "Vivienne Eastwood",
+        "albumName" : "Take Care",
+        "trackUri" : "spotify:track:4uHF5rUJkeYFgIKQbHGUXD"
+      },
+      "addedDate" : "2026-07-14"
+    }, {
+      "track" : {
+        "trackName" : "bird",
+        "artistName" : "Blue Smiley",
+        "albumName" : "return",
+        "trackUri" : "spotify:track:6aC2oJJirBozj0cT6E2g1t"
+      },
+      "addedDate" : "2026-07-14"
+    }, {
+      "track" : {
+        "trackName" : "With Strangers",
+        "artistName" : "Little Joy",
+        "albumName" : "Little Joy",
+        "trackUri" : "spotify:track:0eWNkNTMpXTtvWdxoMkOSp"
+      },
+      "addedDate" : "2026-07-14"
+    }, {
+      "track" : {
+        "trackName" : "All In The Game",
+        "artistName" : "Moreish Idols",
+        "albumName" : "All In The Game",
+        "trackUri" : "spotify:track:5XBUiVkYaDuKhtSV3Fx32f"
+      },
+      "addedDate" : "2026-07-14"
+    }, {
+      "track" : {
+        "trackName" : "Marseille",
+        "artistName" : "Oracle Sisters",
+        "albumName" : "Divinations",
+        "trackUri" : "spotify:track:43qx8PEmvj1r7xO9BKjS3a"
+      },
+      "addedDate" : "2026-07-14"
+    }, {
+      "track" : {
+        "trackName" : "Wingman",
+        "artistName" : "pencil",
+        "albumName" : "Wingman",
+        "trackUri" : "spotify:track:4XA4i4BT5hgy2Gxdh7jCDJ"
+      },
+      "addedDate" : "2026-07-14"
     } ],
     "numberOfFollowers" : 0
   }, {
@@ -4606,7 +3986,7 @@
     "numberOfFollowers" : 0
   }, {
     "name" : "대한민국 - Kpop",
-    "lastModifiedDate" : "2026-01-10",
+    "lastModifiedDate" : "2026-07-15",
     "collaborators" : [ ],
     "items" : [ {
       "track" : {
@@ -4704,11 +4084,59 @@
         "trackUri" : "spotify:track:54mnwt3kO0uYsy0ceg14JP"
       },
       "addedDate" : "2026-01-10"
+    }, {
+      "track" : {
+        "trackName" : "GALA",
+        "artistName" : "XG",
+        "albumName" : "THE CORE - 核",
+        "trackUri" : "spotify:track:748Uvc654IhPLrmiBGlPhd"
+      },
+      "addedDate" : "2026-07-14"
+    }, {
+      "track" : {
+        "trackName" : "404 (New Era)",
+        "artistName" : "KiiiKiii",
+        "albumName" : "Delulu Pack",
+        "trackUri" : "spotify:track:24rDDbSlFY9OHrlJb48CRh"
+      },
+      "addedDate" : "2026-07-14"
+    }, {
+      "track" : {
+        "trackName" : "Delulu",
+        "artistName" : "KiiiKiii",
+        "albumName" : "Delulu Pack",
+        "trackUri" : "spotify:track:3BWXNAPGGWhCJwsOFolnBB"
+      },
+      "addedDate" : "2026-07-14"
+    }, {
+      "track" : {
+        "trackName" : "It's Me",
+        "artistName" : "ILLIT",
+        "albumName" : "MAMIHLAPINATAPAI",
+        "trackUri" : "spotify:track:1D5L58KLBbceOynTP4DQnY"
+      },
+      "addedDate" : "2026-07-14"
+    }, {
+      "track" : {
+        "trackName" : "GRWM (Get Ready With Me)",
+        "artistName" : "ILLIT",
+        "albumName" : "MAMIHLAPINATAPAI",
+        "trackUri" : "spotify:track:06c1p8O0RF26U0jSGJ7Rbc"
+      },
+      "addedDate" : "2026-07-14"
+    }, {
+      "track" : {
+        "trackName" : "SOURPATCH",
+        "artistName" : "HITGS",
+        "albumName" : "The 1st Single Album - Things we love : H",
+        "trackUri" : "spotify:track:6fuMhofxOh5ZmDWUYZnfaO"
+      },
+      "addedDate" : "2026-07-15"
     } ],
     "numberOfFollowers" : 0
   }, {
     "name" : "España - Classicas",
-    "lastModifiedDate" : "2026-01-06",
+    "lastModifiedDate" : "2026-07-14",
     "collaborators" : [ ],
     "items" : [ {
       "track" : {
@@ -4886,6 +4314,22 @@
         "trackUri" : "spotify:track:6cJLfIqwh0tCKRjYM3WpZ5"
       },
       "addedDate" : "2020-08-31"
+    }, {
+      "track" : {
+        "trackName" : "Balada",
+        "artistName" : "Gusttavo Lima",
+        "albumName" : "Caribe 2012: Ai Se o Verão Te Pega!",
+        "trackUri" : "spotify:track:6d63QA85w4FXhlXYtz7nco"
+      },
+      "addedDate" : "2026-07-14"
+    }, {
+      "track" : {
+        "trackName" : "Time of Our Lives",
+        "artistName" : "Pitbull",
+        "albumName" : "Globalization",
+        "trackUri" : "spotify:track:2bJvI42r8EF3wxjOuDav4r"
+      },
+      "addedDate" : "2026-07-14"
     } ],
     "numberOfFollowers" : 1
   }, {
@@ -4927,7 +4371,7 @@
     }, {
       "track" : {
         "trackName" : "Je ne veux pas travailler",
-        "artistName" : "Sole Gimenez",
+        "artistName" : "Sole Giménez",
         "albumName" : "El cielo de Paris",
         "trackUri" : "spotify:track:2iHMlhebiSk5TXx9F6QPKl"
       },
@@ -5563,26 +5007,70 @@
     } ],
     "numberOfFollowers" : 1
   }, {
-    "name" : "HipHop Soft",
-    "lastModifiedDate" : "2026-01-06",
+    "name" : "Dark Hip Hop",
+    "lastModifiedDate" : "2026-07-14",
     "collaborators" : [ ],
     "items" : [ {
       "track" : {
-        "trackName" : "Mother I Sober (feat. Beth Gibbons of Portishead)",
-        "artistName" : "Kendrick Lamar",
-        "albumName" : "Mr. Morale & The Big Steppers",
-        "trackUri" : "spotify:track:346SJSEbB6pNZMpwovxDiu"
+        "trackName" : "Sauvage",
+        "artistName" : "billy woods",
+        "albumName" : "Aethiopes",
+        "trackUri" : "spotify:track:0RlL5xoEKoXVlNfSHvioZJ"
       },
-      "addedDate" : "2026-01-06"
+      "addedDate" : "2026-07-14"
+    } ],
+    "numberOfFollowers" : 0
+  }, {
+    "name" : "Sample Hip Hop",
+    "lastModifiedDate" : "2026-07-14",
+    "collaborators" : [ ],
+    "items" : [ {
+      "track" : {
+        "trackName" : "Luv(sic.) pt3 (feat. Shing02)",
+        "artistName" : "Nujabes",
+        "albumName" : "Modal Soul",
+        "trackUri" : "spotify:track:4xlpJ99yL9xYQtzG6c3hwk"
+      },
+      "addedDate" : "2026-07-14"
     }, {
       "track" : {
-        "trackName" : "Sing About Me, I'm Dying Of Thirst",
-        "artistName" : "Kendrick Lamar",
-        "albumName" : "good kid, m.A.A.d city",
-        "trackUri" : "spotify:track:1Z2FvDFZSDQ23s4BDqpWqZ"
+        "trackName" : "Lady Brown (feat. Cise Starr from CYNE)",
+        "artistName" : "Nujabes",
+        "albumName" : "Metaphorical Music",
+        "trackUri" : "spotify:track:0JL9TZip7mL7iwC5EOkALS"
       },
-      "addedDate" : "2026-01-06"
+      "addedDate" : "2026-07-14"
     }, {
+      "track" : {
+        "trackName" : "THAT'S THAT",
+        "artistName" : "MF DOOM",
+        "albumName" : "BORN LIKE THIS",
+        "trackUri" : "spotify:track:2Vy16OMt19FH30uQNTFdLk"
+      },
+      "addedDate" : "2026-07-14"
+    }, {
+      "track" : {
+        "trackName" : "Lavender Buds",
+        "artistName" : "MF DOOM",
+        "albumName" : "Metal Fingers Presents: Special Herbs Vol. 5 & 6",
+        "trackUri" : "spotify:track:5j42r1PmIbM6fZSe11O08C"
+      },
+      "addedDate" : "2026-07-14"
+    }, {
+      "track" : {
+        "trackName" : "Doomsday",
+        "artistName" : "MF DOOM",
+        "albumName" : "Operation: Doomsday (Complete)",
+        "trackUri" : "spotify:track:7EQvdUJqZ2i7SWvSB2VqGA"
+      },
+      "addedDate" : "2026-07-14"
+    } ],
+    "numberOfFollowers" : 0
+  }, {
+    "name" : "Melodic Hip Hop",
+    "lastModifiedDate" : "2026-07-14",
+    "collaborators" : [ ],
+    "items" : [ {
       "track" : {
         "trackName" : "See You Again (feat. Kali Uchis)",
         "artistName" : "Tyler, The Creator",
@@ -5616,22 +5104,6 @@
       "addedDate" : "2024-11-03"
     }, {
       "track" : {
-        "trackName" : "Auntie Diaries",
-        "artistName" : "Kendrick Lamar",
-        "albumName" : "Mr. Morale & The Big Steppers",
-        "trackUri" : "spotify:track:1uY1X8YeBixs1FdQ3fQ7d4"
-      },
-      "addedDate" : "2026-01-06"
-    }, {
-      "track" : {
-        "trackName" : "luther (with sza)",
-        "artistName" : "Kendrick Lamar",
-        "albumName" : "GNX",
-        "trackUri" : "spotify:track:2CGNAOSuO1MEFCbBRgUzjd"
-      },
-      "addedDate" : "2025-03-26"
-    }, {
-      "track" : {
         "trackName" : "EARFQUAKE",
         "artistName" : "Tyler, The Creator",
         "albumName" : "IGOR",
@@ -5654,14 +5126,36 @@
         "trackUri" : "spotify:track:3s7MCdXyWmwjdcWh7GWXas"
       },
       "addedDate" : "2023-12-11"
+    } ],
+    "numberOfFollowers" : 1
+  }, {
+    "name" : "Lyrical Hip Hop",
+    "lastModifiedDate" : "2026-07-14",
+    "collaborators" : [ ],
+    "items" : [ {
+      "track" : {
+        "trackName" : "Mother I Sober (feat. Beth Gibbons of Portishead)",
+        "artistName" : "Kendrick Lamar",
+        "albumName" : "Mr. Morale & The Big Steppers",
+        "trackUri" : "spotify:track:346SJSEbB6pNZMpwovxDiu"
+      },
+      "addedDate" : "2026-07-14"
     }, {
       "track" : {
-        "trackName" : "30 For 30 (with Kendrick Lamar)",
-        "artistName" : "SZA",
-        "albumName" : "SOS Deluxe: LANA",
-        "trackUri" : "spotify:track:3aSWXU6owkZeVhh94XxEWO"
+        "trackName" : "Sing About Me, I'm Dying Of Thirst",
+        "artistName" : "Kendrick Lamar",
+        "albumName" : "good kid, m.A.A.d city",
+        "trackUri" : "spotify:track:1Z2FvDFZSDQ23s4BDqpWqZ"
       },
-      "addedDate" : "2025-03-26"
+      "addedDate" : "2026-07-14"
+    }, {
+      "track" : {
+        "trackName" : "Auntie Diaries",
+        "artistName" : "Kendrick Lamar",
+        "albumName" : "Mr. Morale & The Big Steppers",
+        "trackUri" : "spotify:track:1uY1X8YeBixs1FdQ3fQ7d4"
+      },
+      "addedDate" : "2026-07-14"
     }, {
       "track" : {
         "trackName" : "slang hope",
@@ -5669,7 +5163,7 @@
         "albumName" : "shoot the messenger",
         "trackUri" : "spotify:track:1IF0EMMotUZHApB3EIVFSK"
       },
-      "addedDate" : "2026-01-06"
+      "addedDate" : "2026-07-14"
     }, {
       "track" : {
         "trackName" : "4myself",
@@ -5677,7 +5171,7 @@
         "albumName" : "shoot the messenger",
         "trackUri" : "spotify:track:4qCRO8ZTnWkx8p7t7wK4Rf"
       },
-      "addedDate" : "2026-01-06"
+      "addedDate" : "2026-07-14"
     }, {
       "track" : {
         "trackName" : "Orchards",
@@ -5685,21 +5179,7 @@
         "albumName" : "Orchards",
         "trackUri" : "spotify:track:1dmoGY1oIcXIckpycDXz0c"
       },
-      "addedDate" : "2026-01-06"
-    } ],
-    "numberOfFollowers" : 1
-  }, {
-    "name" : "Rap mid",
-    "lastModifiedDate" : "2026-01-06",
-    "collaborators" : [ ],
-    "items" : [ {
-      "track" : {
-        "trackName" : "United In Grief",
-        "artistName" : "Kendrick Lamar",
-        "albumName" : "Mr. Morale & The Big Steppers",
-        "trackUri" : "spotify:track:5Gt9bxniM1SxN61yRzRhXL"
-      },
-      "addedDate" : "2026-01-06"
+      "addedDate" : "2026-07-14"
     }, {
       "track" : {
         "trackName" : "Wet Dreamz",
@@ -5707,553 +5187,16 @@
         "albumName" : "2014 Forest Hills Drive",
         "trackUri" : "spotify:track:4tqcoej1zPvwePZCzuAjJd"
       },
-      "addedDate" : "2026-01-06"
+      "addedDate" : "2026-07-14"
+    }, {
+      "track" : {
+        "trackName" : "United In Grief",
+        "artistName" : "Kendrick Lamar",
+        "albumName" : "Mr. Morale & The Big Steppers",
+        "trackUri" : "spotify:track:5Gt9bxniM1SxN61yRzRhXL"
+      },
+      "addedDate" : "2026-07-14"
     } ],
     "numberOfFollowers" : 0
-  }, {
-    "name" : "Grungegaze",
-    "lastModifiedDate" : "2026-01-14",
-    "collaborators" : [ ],
-    "items" : [ {
-      "track" : {
-        "trackName" : "All the Same",
-        "artistName" : "Audiobaton",
-        "albumName" : "Medicine Nights",
-        "trackUri" : "spotify:track:4VOMPVOPYKAAyxq0AEwBVx"
-      },
-      "addedDate" : "2026-01-06"
-    }, {
-      "track" : {
-        "trackName" : "kit",
-        "artistName" : "julie",
-        "albumName" : "starjump / kit",
-        "trackUri" : "spotify:track:4OIFIhRhT2XRCqsvJASYSx"
-      },
-      "addedDate" : "2026-01-06"
-    }, {
-      "track" : {
-        "trackName" : "lochness",
-        "artistName" : "julie",
-        "albumName" : "pushing daisies",
-        "trackUri" : "spotify:track:0kU19o73JmFA5HS2kuYFWe"
-      },
-      "addedDate" : "2026-01-06"
-    }, {
-      "track" : {
-        "trackName" : "Flesh",
-        "artistName" : "Sleepwalk",
-        "albumName" : "Splatter",
-        "trackUri" : "spotify:track:4LP9nAAiWGF9Z343uIopF5"
-      },
-      "addedDate" : "2026-01-06"
-    }, {
-      "track" : {
-        "trackName" : "The Sign",
-        "artistName" : "Deafcult",
-        "albumName" : "The Sign",
-        "trackUri" : "spotify:track:2G0sJqNehlJBveHtzM297z"
-      },
-      "addedDate" : "2026-01-06"
-    }, {
-      "track" : {
-        "trackName" : "clairbourne practice",
-        "artistName" : "julie",
-        "albumName" : "clairbourne practice",
-        "trackUri" : "spotify:track:0WOkDmX7J2SGm8MDe2rWBc"
-      },
-      "addedDate" : "2026-01-06"
-    }, {
-      "track" : {
-        "trackName" : "Crystal Eyes",
-        "artistName" : "The Nightblooms",
-        "albumName" : "EP",
-        "trackUri" : "spotify:track:4vRQfD0gFjvwqrkRCVTyz9"
-      },
-      "addedDate" : "2026-01-06"
-    }, {
-      "track" : {
-        "trackName" : "thunder disc",
-        "artistName" : "eli's ladder",
-        "albumName" : "thunder disc",
-        "trackUri" : "spotify:track:6orQnfhusS9tDy2d3BOj2z"
-      },
-      "addedDate" : "2026-01-06"
-    }, {
-      "track" : {
-        "trackName" : "medicine bow",
-        "artistName" : "Glixen",
-        "albumName" : "medicine bow",
-        "trackUri" : "spotify:track:0uMeWfuWryl4SRvskme3Hs"
-      },
-      "addedDate" : "2026-01-06"
-    } ],
-    "numberOfFollowers" : 0
-  }, {
-    "name" : "Dreamgaze",
-    "lastModifiedDate" : "2026-01-06",
-    "collaborators" : [ ],
-    "items" : [ {
-      "track" : {
-        "trackName" : "In Undertow",
-        "artistName" : "Alvvays",
-        "albumName" : "Antisocialites",
-        "trackUri" : "spotify:track:2A0Rzes11fJBmvvpG4tGfm"
-      },
-      "addedDate" : "2026-01-06"
-    }, {
-      "track" : {
-        "trackName" : "Haunt You Still",
-        "artistName" : "Softcult",
-        "albumName" : "Haunt You Still",
-        "trackUri" : "spotify:track:2Kgnj7OQEdaiFIayFmplKC"
-      },
-      "addedDate" : "2026-01-06"
-    }, {
-      "track" : {
-        "trackName" : "Charity",
-        "artistName" : "An April March",
-        "albumName" : "Lessons in Vengeance",
-        "trackUri" : "spotify:track:68qVHhvi86MDj86bOn238v"
-      },
-      "addedDate" : "2026-01-06"
-    }, {
-      "track" : {
-        "trackName" : "Mass Anasthesia",
-        "artistName" : "Mediavolo",
-        "albumName" : "A Secret Sound",
-        "trackUri" : "spotify:track:6JCdA9QYD5AH94jfS3ugG9"
-      },
-      "addedDate" : "2026-01-06"
-    }, {
-      "track" : {
-        "trackName" : "willow",
-        "artistName" : "she's green",
-        "albumName" : "willow",
-        "trackUri" : "spotify:track:5DVPSIVpyp8D80XsgRkmjN"
-      },
-      "addedDate" : "2026-01-06"
-    }, {
-      "track" : {
-        "trackName" : "Alison",
-        "artistName" : "Slowdive",
-        "albumName" : "Souvlaki",
-        "trackUri" : "spotify:track:33HRECrmuelZxOpid6XTNX"
-      },
-      "addedDate" : "2026-01-06"
-    }, {
-      "track" : {
-        "trackName" : "Dysphoria",
-        "artistName" : "Vox Humana",
-        "albumName" : "Desperations for the Modern Era",
-        "trackUri" : "spotify:track:4u8KIERUQfxyavuSqKWUF7"
-      },
-      "addedDate" : "2026-01-06"
-    }, {
-      "track" : {
-        "trackName" : "Enchanted",
-        "artistName" : "Reverbhunter",
-        "albumName" : "Enchanted",
-        "trackUri" : "spotify:track:5UfLyo7gQsXdr0lmR4qhrH"
-      },
-      "addedDate" : "2026-01-06"
-    }, {
-      "track" : {
-        "trackName" : "Love Song",
-        "artistName" : "Softcult",
-        "albumName" : "Love Song",
-        "trackUri" : "spotify:track:3rQaxZaozQfrUEQx1PzT14"
-      },
-      "addedDate" : "2026-01-06"
-    }, {
-      "track" : {
-        "trackName" : "Sea Salt",
-        "artistName" : "Vivienne Eastwood",
-        "albumName" : "Shook - EP",
-        "trackUri" : "spotify:track:1MYsdbgU23zH16xXPQi8fw"
-      },
-      "addedDate" : "2026-01-06"
-    }, {
-      "track" : {
-        "trackName" : "I Love Me After You",
-        "artistName" : "Mitski",
-        "albumName" : "The Land Is Inhospitable and So Are We",
-        "trackUri" : "spotify:track:55Y5p2XyPaYBPGtzj1f9fE"
-      },
-      "addedDate" : "2026-01-06"
-    }, {
-      "track" : {
-        "trackName" : "meduzy",
-        "artistName" : "duszno",
-        "albumName" : "okruszki",
-        "trackUri" : "spotify:track:7zoybj2an1JdptIUSDGfXx"
-      },
-      "addedDate" : "2026-01-06"
-    }, {
-      "track" : {
-        "trackName" : "By Your Hand",
-        "artistName" : "Ricochet Star",
-        "albumName" : "Every Moon",
-        "trackUri" : "spotify:track:2s2PAUG9QlQjwK0HM2ibRE"
-      },
-      "addedDate" : "2026-01-06"
-    }, {
-      "track" : {
-        "trackName" : "Every Moon",
-        "artistName" : "Ricochet Star",
-        "albumName" : "Every Moon",
-        "trackUri" : "spotify:track:60SybYrNDTNMuu7ihkhgfh"
-      },
-      "addedDate" : "2026-01-06"
-    }, {
-      "track" : {
-        "trackName" : "mandy",
-        "artistName" : "she's green",
-        "albumName" : "wisteria",
-        "trackUri" : "spotify:track:48WjoS8xixdToSxYDujDmb"
-      },
-      "addedDate" : "2026-01-06"
-    } ],
-    "numberOfFollowers" : 0
-  }, {
-    "name" : "Dream Pop 90's",
-    "lastModifiedDate" : "2026-01-06",
-    "collaborators" : [ ],
-    "items" : [ {
-      "track" : {
-        "trackName" : "Everlastingly Yours",
-        "artistName" : "Piroshka",
-        "albumName" : "Brickbat",
-        "trackUri" : "spotify:track:1vl66qSV9BlAALu9eANF7J"
-      },
-      "addedDate" : "2026-01-06"
-    }, {
-      "track" : {
-        "trackName" : "Don't Dream It's Over",
-        "artistName" : "Crowded House",
-        "albumName" : "Crowded House",
-        "trackUri" : "spotify:track:7G7tgVYORlDuVprcYHuFJh"
-      },
-      "addedDate" : "2026-01-04"
-    }, {
-      "track" : {
-        "trackName" : "Adult Diversion",
-        "artistName" : "Alvvays",
-        "albumName" : "Alvvays",
-        "trackUri" : "spotify:track:0GBG7b2BuF336A6lk6spGw"
-      },
-      "addedDate" : "2026-01-04"
-    }, {
-      "track" : {
-        "trackName" : "Sunday Morning",
-        "artistName" : "The Velvet Underground",
-        "albumName" : "The Velvet Underground & Nico 45th Anniversary",
-        "trackUri" : "spotify:track:11607FzqoipskTsXrwEHnJ"
-      },
-      "addedDate" : "2026-01-06"
-    }, {
-      "track" : {
-        "trackName" : "Friday I'm In Love",
-        "artistName" : "The Cure",
-        "albumName" : "Wish",
-        "trackUri" : "spotify:track:4QlzkaRHtU8gAdwqjWmO8n"
-      },
-      "addedDate" : "2025-11-05"
-    }, {
-      "track" : {
-        "trackName" : "Song To The Siren",
-        "artistName" : "This Mortal Coil",
-        "albumName" : "Lilliput",
-        "trackUri" : "spotify:track:0bM3fUvaZHBFUXyFNjCx1R"
-      },
-      "addedDate" : "2025-08-16"
-    }, {
-      "track" : {
-        "trackName" : "Bright As Yellow",
-        "artistName" : "The Innocence Mission",
-        "albumName" : "Glow",
-        "trackUri" : "spotify:track:6rbGpy1s1TniuQXsIBaQym"
-      },
-      "addedDate" : "2025-08-16"
-    }, {
-      "track" : {
-        "trackName" : "You're Not The Only One I Know",
-        "artistName" : "The Sundays",
-        "albumName" : "Reading Writing And Arithmetic",
-        "trackUri" : "spotify:track:3nbFVNHVYCMCdD9vBo3udv"
-      },
-      "addedDate" : "2025-01-24"
-    }, {
-      "track" : {
-        "trackName" : "Halah",
-        "artistName" : "Mazzy Star",
-        "albumName" : "She Hangs Brightly",
-        "trackUri" : "spotify:track:6JuEshIRliNXRU1LXctRjZ"
-      },
-      "addedDate" : "2025-01-24"
-    }, {
-      "track" : {
-        "trackName" : "Sunday",
-        "artistName" : "The Cranberries",
-        "albumName" : "Everybody Else Is Doing It, So Why Can't We?",
-        "trackUri" : "spotify:track:4zEvxRDaKDoFlHxK7Hy0wg"
-      },
-      "addedDate" : "2025-08-15"
-    }, {
-      "track" : {
-        "trackName" : "Light From A Dead Star",
-        "artistName" : "Lush",
-        "albumName" : "Split",
-        "trackUri" : "spotify:track:6Q0GTFuMlUj98CC1VWnFAs"
-      },
-      "addedDate" : "2025-08-22"
-    }, {
-      "track" : {
-        "trackName" : "Helium",
-        "artistName" : "Newmoon",
-        "albumName" : "Space",
-        "trackUri" : "spotify:track:4kYxJBu0QAEnXYjmfmnoS6"
-      },
-      "addedDate" : "2026-01-06"
-    }, {
-      "track" : {
-        "trackName" : "Archie, Marry Me",
-        "artistName" : "Alvvays",
-        "albumName" : "Alvvays",
-        "trackUri" : "spotify:track:5GAB1X0AJq2EZjxXP9zMFt"
-      },
-      "addedDate" : "2025-08-15"
-    }, {
-      "track" : {
-        "trackName" : "Here's Where the Story Ends",
-        "artistName" : "The Sundays",
-        "albumName" : "Reading Writing And Arithmetic",
-        "trackUri" : "spotify:track:5gSHlT2SI0dtjeHrjj96A1"
-      },
-      "addedDate" : "2025-01-24"
-    }, {
-      "track" : {
-        "trackName" : "Suzanne",
-        "artistName" : "Hope Sandoval & The Warm Inventions",
-        "albumName" : "Bavarian Fruit Bread",
-        "trackUri" : "spotify:track:0K9iwmos5IKhO7kK4sQJwl"
-      },
-      "addedDate" : "2025-08-15"
-    }, {
-      "track" : {
-        "trackName" : "Linger",
-        "artistName" : "The Cranberries",
-        "albumName" : "Everybody Else Is Doing It, So Why Can't We?",
-        "trackUri" : "spotify:track:0gEyKnHvgkrkBM6fbeHdwK"
-      },
-      "addedDate" : "2025-04-22"
-    }, {
-      "track" : {
-        "trackName" : "Call It Fate, Call It Karma",
-        "artistName" : "The Strokes",
-        "albumName" : "Comedown Machine",
-        "trackUri" : "spotify:track:3Y4rUyw7XBCK6hGHCOt6rp"
-      },
-      "addedDate" : "2026-01-04"
-    }, {
-      "track" : {
-        "trackName" : "High",
-        "artistName" : "The Cure",
-        "albumName" : "Wish",
-        "trackUri" : "spotify:track:1G5cCZhEI67suiGvSWAiZz"
-      },
-      "addedDate" : "2026-01-04"
-    }, {
-      "track" : {
-        "trackName" : "Village of the Damned",
-        "artistName" : "Piroshka",
-        "albumName" : "Brickbat",
-        "trackUri" : "spotify:track:6VWqlDpLDA5D1lWoZXREWx"
-      },
-      "addedDate" : "2025-08-15"
-    }, {
-      "track" : {
-        "trackName" : "Floating",
-        "artistName" : "Julee Cruise",
-        "albumName" : "Floating Into The Night",
-        "trackUri" : "spotify:track:55Wm3y6wUy5xS1thd0Zial"
-      },
-      "addedDate" : "2026-01-04"
-    }, {
-      "track" : {
-        "trackName" : "Love Songs on the Radio",
-        "artistName" : "Mojave 3",
-        "albumName" : "Ask Me Tomorrow",
-        "trackUri" : "spotify:track:3FzK2g50oLcx8vqETwOn07"
-      },
-      "addedDate" : "2026-01-04"
-    }, {
-      "track" : {
-        "trackName" : "Just Like Heaven - Remastered 2006",
-        "artistName" : "The Cure",
-        "albumName" : "Kiss Me Kiss Me Kiss Me",
-        "trackUri" : "spotify:track:4NnWuGQujzWUEg0uZokO5M"
-      },
-      "addedDate" : "2026-01-04"
-    }, {
-      "track" : {
-        "trackName" : "I Have the Moon",
-        "artistName" : "Lush",
-        "albumName" : "Topolino",
-        "trackUri" : "spotify:track:298kgP95oJvq6FNDLqu6Lf"
-      },
-      "addedDate" : "2025-01-24"
-    }, {
-      "track" : {
-        "trackName" : "Eyes Without A Face",
-        "artistName" : "Billy Idol",
-        "albumName" : "Rebel Yell",
-        "trackUri" : "spotify:track:0pUVeEgZuNyFzIMKp67RbS"
-      },
-      "addedDate" : "2026-01-04"
-    }, {
-      "track" : {
-        "trackName" : "Atop a Cake",
-        "artistName" : "Alvvays",
-        "albumName" : "Alvvays",
-        "trackUri" : "spotify:track:65mtOjEf0eYDb3YpdjrwMR"
-      },
-      "addedDate" : "2026-01-04"
-    }, {
-      "track" : {
-        "trackName" : "Portal",
-        "artistName" : "Fine",
-        "albumName" : "Portal",
-        "trackUri" : "spotify:track:7LYCoMFe1ciXBMdwZLmvG2"
-      },
-      "addedDate" : "2026-01-04"
-    }, {
-      "track" : {
-        "trackName" : "Dreams",
-        "artistName" : "The Cranberries",
-        "albumName" : "Everybody Else Is Doing It, So Why Can't We?",
-        "trackUri" : "spotify:track:4JGKZS7h4Qa16gOU3oNETV"
-      },
-      "addedDate" : "2025-08-15"
-    } ],
-    "numberOfFollowers" : 1
-  }, {
-    "name" : "Shoegaze",
-    "lastModifiedDate" : "2026-01-06",
-    "collaborators" : [ ],
-    "items" : [ {
-      "track" : {
-        "trackName" : "texas instruments",
-        "artistName" : "They Are Gutting a Body of Water",
-        "albumName" : "Destiny XL",
-        "trackUri" : "spotify:track:12R6mQQQbNM0oDACqDrOW7"
-      },
-      "addedDate" : "2024-12-19"
-    }, {
-      "track" : {
-        "trackName" : "Jeremy Parker",
-        "artistName" : "Swirlies",
-        "albumName" : "Blonder Tongue Audio Baton",
-        "trackUri" : "spotify:track:0pVgFjjojISSczzmj66FTA"
-      },
-      "addedDate" : "2024-12-11"
-    }, {
-      "track" : {
-        "trackName" : "when you sleep",
-        "artistName" : "my bloody valentine",
-        "albumName" : "loveless",
-        "trackUri" : "spotify:track:2KylN9C0wNbzLgZNTG9oiU"
-      },
-      "addedDate" : "2025-06-10"
-    }, {
-      "track" : {
-        "trackName" : "Floating",
-        "artistName" : "Glare",
-        "albumName" : "Floating",
-        "trackUri" : "spotify:track:5dwbmjYCDkBWOgoS7yMEhJ"
-      },
-      "addedDate" : "2024-12-19"
-    }, {
-      "track" : {
-        "trackName" : "Alone for You",
-        "artistName" : "Audiobaton",
-        "albumName" : "Alone for You",
-        "trackUri" : "spotify:track:2HPSoQGW4Bw5k75Xa1VP1E"
-      },
-      "addedDate" : "2024-12-12"
-    }, {
-      "track" : {
-        "trackName" : "nothing to prove",
-        "artistName" : "Audiobaton",
-        "albumName" : "nothing to prove // new windows",
-        "trackUri" : "spotify:track:6bIbDb1MPYucc8xfWs7yvz"
-      },
-      "addedDate" : "2024-12-12"
-    }, {
-      "track" : {
-        "trackName" : "to here knows when",
-        "artistName" : "my bloody valentine",
-        "albumName" : "loveless",
-        "trackUri" : "spotify:track:2Qt7TmKGuet6bKJzhNM0YA"
-      },
-      "addedDate" : "2025-06-10"
-    }, {
-      "track" : {
-        "trackName" : "One Weak Moment",
-        "artistName" : "The Nightblooms",
-        "albumName" : "EP",
-        "trackUri" : "spotify:track:707KXJqTn479rCOI7Y5QXL"
-      },
-      "addedDate" : "2024-12-24"
-    }, {
-      "track" : {
-        "trackName" : "douglasland.v1",
-        "artistName" : "Her New Knife",
-        "albumName" : "douglasland.v1",
-        "trackUri" : "spotify:track:41pG2ePMU39tqpY5cVoYCu"
-      },
-      "addedDate" : "2024-12-19"
-    }, {
-      "track" : {
-        "trackName" : "Blue Marbles",
-        "artistName" : "The Nightblooms",
-        "albumName" : "EP",
-        "trackUri" : "spotify:track:2lW1LLODAahnQq7I4B3VyH"
-      },
-      "addedDate" : "2024-12-24"
-    }, {
-      "track" : {
-        "trackName" : "Ruin",
-        "artistName" : "Her New Knife",
-        "albumName" : "lead dreams/flayed so light",
-        "trackUri" : "spotify:track:1JA5vrIorgCyM29tZsMIEj"
-      },
-      "addedDate" : "2024-12-19"
-    }, {
-      "track" : {
-        "trackName" : "new windows",
-        "artistName" : "Audiobaton",
-        "albumName" : "nothing to prove // new windows",
-        "trackUri" : "spotify:track:2FkblN5Y3Khizcns5lAZBu"
-      },
-      "addedDate" : "2024-12-12"
-    }, {
-      "track" : {
-        "trackName" : "i only said",
-        "artistName" : "my bloody valentine",
-        "albumName" : "loveless",
-        "trackUri" : "spotify:track:7HVaCZKjnMgWi3tvdMZfzY"
-      },
-      "addedDate" : "2024-12-12"
-    }, {
-      "track" : {
-        "trackName" : "Brown Paper Bag",
-        "artistName" : "DIIV",
-        "albumName" : "Frog In Boiling Water",
-        "trackUri" : "spotify:track:32XDJzfjcsrgY9xfRq3FQN"
-      },
-      "addedDate" : "2026-01-06"
-    } ],
-    "description" : "From a random recommendation to finding a whole supernice genre, thanks algorithms - Seeing this abandoned place shine so much was pleasing",
-    "numberOfFollowers" : 2
   } ]
 }

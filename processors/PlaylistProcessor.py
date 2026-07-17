@@ -13,6 +13,10 @@ SCHEMA_PATH = os.path.join(PROCESSED_DIR, "schema.sql")
 
 def process_playlists():
     files = sorted(glob.glob(os.path.join(RAW_DIR, "Playlist*.json")))
+    return _parse_playlist_files(files), len(files) > 0
+
+
+def _parse_playlist_files(files):
     playlists = []
     for path in files:
         with open(path) as f:
@@ -31,15 +35,21 @@ def process_playlists():
     return playlists
 
 
-def save_to_db(con, playlists):
-    """Playlists are matched by name and reused across runs, and tracks are
-    inserted with INSERT OR IGNORE against the UNIQUE constraint, so
-    re-processing only adds newly-added tracks rather than duplicating the
-    playlist or its existing tracks."""
+def save_to_db(con, playlists, prune_missing=True):
+    """The uploaded Playlist*.json files are treated as the full, current
+    set of the user's playlists. On each import: existing playlists are
+    matched by name and have their tracks replaced (so removed/reordered
+    tracks are reflected), new playlists are created, and - when
+    prune_missing is set - any previously stored playlist absent from this
+    import is deleted along with its tracks, so re-uploading overrides
+    rather than only ever adding. prune_missing should be False when no
+    Playlist*.json files were present at all, so an unrelated upload (e.g.
+    history-only) doesn't wipe out existing playlists."""
     before_playlists = con.execute("SELECT COUNT(*) FROM playlists").fetchone()[0]
     before_tracks = con.execute("SELECT COUNT(*) FROM playlist_tracks").fetchone()[0]
 
     cur = con.cursor()
+    seen_ids = []
     for pl in playlists:
         row = cur.execute("SELECT id FROM playlists WHERE name = ?", (pl["name"],)).fetchone()
         if row:
@@ -47,11 +57,28 @@ def save_to_db(con, playlists):
         else:
             cur.execute("INSERT INTO playlists (name) VALUES (?)", (pl["name"],))
             playlist_id = cur.lastrowid
+        seen_ids.append(playlist_id)
+        cur.execute("DELETE FROM playlist_tracks WHERE playlist_id = ?", (playlist_id,))
         cur.executemany(
             "INSERT OR IGNORE INTO playlist_tracks "
             "(playlist_id, track_name, artist_name, spotify_track_uri) VALUES (?, ?, ?, ?)",
             [(playlist_id, t["trackName"], t["artistName"], t["trackUri"]) for t in pl["tracks"]],
         )
+
+    if prune_missing:
+        placeholders = ",".join("?" * len(seen_ids))
+        stale_ids = [
+            row[0]
+            for row in cur.execute(
+                f"SELECT id FROM playlists WHERE id NOT IN ({placeholders})"
+                if seen_ids else "SELECT id FROM playlists",
+                seen_ids,
+            )
+        ]
+        for playlist_id in stale_ids:
+            cur.execute("DELETE FROM playlist_tracks WHERE playlist_id = ?", (playlist_id,))
+            cur.execute("DELETE FROM playlists WHERE id = ?", (playlist_id,))
+
     con.commit()
 
     return {
@@ -63,7 +90,7 @@ def save_to_db(con, playlists):
 
 
 def main():
-    playlists = process_playlists()
+    playlists, found_files = process_playlists()
     print(f"Found {len(playlists)} playlists\n")
     for pl in playlists:
         print(f"Playlist: {pl['name']}  ({len(pl['tracks'])} tracks)")
@@ -74,7 +101,7 @@ def main():
     con = sqlite3.connect(DB_PATH)
     with open(SCHEMA_PATH) as f:
         con.executescript(f.read())
-    counts = save_to_db(con, playlists)
+    counts = save_to_db(con, playlists, prune_missing=found_files)
     con.close()
 
     print(f"Added {counts['new_playlists']} new playlists, "

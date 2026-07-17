@@ -40,27 +40,57 @@ def _count(con, table):
     return con.execute(f"SELECT COUNT(*) FROM {table}").fetchone()[0]
 
 
+def _sync_table(cur, table, key_cols, uri_col, items, key_values_fn):
+    """Upsert each item by its unique key columns, then delete any existing
+    row whose key isn't present in this snapshot - so unliking a track/album/
+    artist on Spotify removes it locally too, instead of only ever adding."""
+    key_where = " AND ".join(f"{c} = ?" for c in key_cols)
+    seen_ids = []
+    for item in items:
+        keys = key_values_fn(item)
+        row = cur.execute(f"SELECT id FROM {table} WHERE {key_where}", keys).fetchone()
+        if row:
+            item_id = row[0]
+            if item["uri"] is not None:
+                cur.execute(f"UPDATE {table} SET {uri_col} = ? WHERE id = ?", (item["uri"], item_id))
+        else:
+            cols = ", ".join(key_cols + [uri_col])
+            placeholders = ", ".join("?" * (len(key_cols) + 1))
+            cur.execute(
+                f"INSERT INTO {table} ({cols}) VALUES ({placeholders})",
+                keys + (item["uri"],),
+            )
+            item_id = cur.lastrowid
+        seen_ids.append(item_id)
+
+    placeholders = ",".join("?" * len(seen_ids))
+    cur.execute(
+        f"DELETE FROM {table} WHERE id NOT IN ({placeholders})" if seen_ids else f"DELETE FROM {table}",
+        seen_ids,
+    )
+
+
 def save_to_db(con, tracks, albums, artists):
-    """YourLibrary.json always reflects the full current state, so re-running
-    against it should only add genuinely new liked items (INSERT OR IGNORE
-    against the UNIQUE constraints) rather than duplicating unchanged ones."""
+    """YourLibrary.json always reflects the full current state of the
+    user's library, so each import fully syncs the DB to match it: existing
+    liked items are kept/updated, new ones are added, and ones no longer in
+    the file (unliked) are removed."""
     before_tracks = _count(con, "library_tracks")
     before_albums = _count(con, "library_albums")
     before_artists = _count(con, "library_artists")
 
-    con.executemany(
-        "INSERT OR IGNORE INTO library_tracks (track_name, artist_name, spotify_track_uri) "
-        "VALUES (?, ?, ?)",
-        [(t["track_name"], t["artist_name"], t["uri"]) for t in tracks],
+    cur = con.cursor()
+    _sync_table(
+        cur, "library_tracks", ["track_name", "artist_name"], "spotify_track_uri",
+        tracks, lambda t: (t["track_name"], t["artist_name"]),
     )
-    con.executemany(
-        "INSERT OR IGNORE INTO library_albums (album_name, artist_name, spotify_album_uri) "
-        "VALUES (?, ?, ?)",
-        [(a["album_name"], a["artist_name"], a["uri"]) for a in albums],
+    _sync_table(
+        cur, "library_albums", ["album_name", "artist_name"], "spotify_album_uri",
+        albums, lambda a: (a["album_name"], a["artist_name"]),
     )
-    con.executemany(
-        "INSERT OR IGNORE INTO library_artists (artist_name, spotify_artist_uri) VALUES (?, ?)",
-        [(a["artist_name"], a["uri"]) for a in artists],
+    _sync_table(
+        cur, "library_artists", ["artist_name"], "spotify_artist_uri",
+        artists, lambda a: (a["artist_name"],),
     )
     con.commit()
 
