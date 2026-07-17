@@ -7,7 +7,7 @@ from fastapi.responses import HTMLResponse
 from src.constants import MONTHS
 from src.database import DBDep
 from src.heatmap import build_heatmap_html
-from src.html import detail_layout, hero_image, infinite_scroll_trigger, page, row
+from src.html import card, detail_layout, grid, hero_image, infinite_scroll_trigger, page, row
 from src.utils import aggregate_plays
 
 from . import service
@@ -20,11 +20,17 @@ ARTIST_TRACKS_BATCH = 20
 
 
 def _artist_tracks_html(con, artist_name: str, offset: int) -> str:
+    """Returns raw cards (+ a trailing infinite-scroll sentinel) with no
+    grid wrapper - the initial page render wraps this in grid() itself,
+    but the /tracks pagination fragment below must NOT be re-wrapped, since
+    it replaces the sentinel's outerHTML and needs its cards to land as
+    direct children of the *existing* grid for the CSS grid layout to
+    apply to them."""
     tracks = service.load_artist_tracks_page(con, artist_name, offset, ARTIST_TRACKS_BATCH)
     has_more = len(tracks) > ARTIST_TRACKS_BATCH
     tracks = tracks[:ARTIST_TRACKS_BATCH]
-    rows_html = "".join(
-        row(
+    cards_html = "".join(
+        card(
             t["name"],
             f"/track/{quote(t['name'])}?artist={quote(artist_name)}",
             note=f"×{t['cnt']}",
@@ -34,8 +40,8 @@ def _artist_tracks_html(con, artist_name: str, offset: int) -> str:
     )
     if has_more:
         next_href = f"/artist/{quote(artist_name)}/tracks?offset={offset + ARTIST_TRACKS_BATCH}"
-        rows_html += infinite_scroll_trigger(next_href)
-    return rows_html
+        cards_html += infinite_scroll_trigger(next_href)
+    return cards_html
 
 
 @router.get(
@@ -83,7 +89,7 @@ def artist_detail(artist_name: str, request: Request, con: DBDep):
             for name, _, count in aggregated
         )
 
-    tracks_html = _artist_tracks_html(con, artist_name, 0)
+    tracks_html = grid(_artist_tracks_html(con, artist_name, 0), compact=True)
 
     header = f"""
 {hero_image(service.get_artist_image(con, artist_name))}

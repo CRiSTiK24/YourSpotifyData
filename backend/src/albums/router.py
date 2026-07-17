@@ -46,6 +46,8 @@ def album_detail(album_name: str, request: Request, con: DBDep, artist: str = ""
             for name, singer, count in aggregated
         )
 
+    aggregated_tracks = aggregate_plays(history)
+    max_plays = max((count for _, _, count in aggregated_tracks), default=0)
     tracks_html = "".join(
         row(
             name,
@@ -53,8 +55,9 @@ def album_detail(album_name: str, request: Request, con: DBDep, artist: str = ""
             singer or artist,
             f"/artist/{quote(singer or artist)}" if (singer or artist) else None,
             note=f"×{count}",
+            bar_fraction=(count / max_plays) if max_plays else 0,
         )
-        for name, singer, count in aggregate_plays(history)
+        for name, singer, count in aggregated_tracks
     )
 
     artist_line = (

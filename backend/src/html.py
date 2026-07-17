@@ -120,7 +120,12 @@ def row(
     note: str | None = None,
     *,
     image_url: str | None = None,
+    bar_fraction: float | None = None,
 ) -> str:
+    """bar_fraction (0.0-1.0) replaces the plain `note` text with a filled
+    bar sized to that fraction, with `note` rendered as a label inside it -
+    e.g. a track's play count relative to the most-played track in the same
+    list, so the list itself reads as a mini bar chart."""
     cover_src = _cover_src(image_url, size=64)
     thumb = f"<img class='row-thumb' src='{escape(cover_src)}' loading='lazy'>" if cover_src else ""
     left = f"<a class='row-primary' href='{escape(primary_href)}'>{escape(primary_label)}</a>"
@@ -129,7 +134,15 @@ def row(
             f" <span class='sep'>—</span> "
             f"<a class='row-secondary' href='{escape(secondary_href)}'>{escape(secondary_label)}</a>"
         )
-    right = f"<span class='note'>{escape(note)}</span>" if note else ""
+    if bar_fraction is not None:
+        fill_pct = max(0.0, min(1.0, bar_fraction)) * 100
+        label = f"<span class='row-bar-label'>{escape(note)}</span>" if note else ""
+        right = (
+            f"<div class='row-bar'><div class='row-bar-fill' style='width:{fill_pct:.1f}%'></div>"
+            f"{label}</div>"
+        )
+    else:
+        right = f"<span class='note'>{escape(note)}</span>" if note else ""
     return f"<div class='row'><div class='left'>{thumb}{left}</div>{right}</div>"
 
 
@@ -138,13 +151,15 @@ def card(
     primary_href: str,
     secondary_label: str | None = None,
     secondary_href: str | None = None,
+    note: str | None = None,
     *,
     image_url: str | None = None,
 ) -> str:
-    """A grid tile: cover art with a title (and optional secondary link)
-    below it - the card/grid counterpart to row()'s list-item layout, used
-    where cover art benefits from more room (liked songs/albums, playlists)
-    than row()'s 32px thumbnail affords."""
+    """A grid tile: cover art with a title (and optional secondary link, or
+    a plain-text note e.g. a play count) below it - the card/grid
+    counterpart to row()'s list-item layout, used where cover art benefits
+    from more room (liked songs/albums, playlists) than row()'s 32px
+    thumbnail affords."""
     cover_src = _cover_src(image_url, size=320)
     thumb = (
         f"<img class='card-thumb' src='{escape(cover_src)}' loading='lazy'>"
@@ -156,16 +171,23 @@ def card(
         if secondary_label and secondary_href
         else ""
     )
+    note_html = f"<span class='card-note'>{escape(note)}</span>" if note else ""
     return f"""
 <div class="card">
   <a class="card-cover" href="{escape(primary_href)}">{thumb}</a>
   <a class="card-title" href="{escape(primary_href)}">{escape(primary_label)}</a>
   {secondary}
+  {note_html}
 </div>"""
 
 
-def grid(cards_html: str) -> str:
-    return f"<div class='grid'>{cards_html}</div>"
+def grid(cards_html: str, *, compact: bool = False) -> str:
+    """compact uses a smaller minimum tile size (see .grid-compact in
+    style.css) - for grids inside a detail page's narrower side panel,
+    where the full-size grid's minimum column width would collapse to a
+    single oversized column instead of actually filling the space."""
+    cls = "grid grid-compact" if compact else "grid"
+    return f"<div class='{cls}'>{cards_html}</div>"
 
 
 def hero_image(image_url: str | None) -> str:

@@ -29,9 +29,9 @@
     /* cover art (/cover) is duotone-mapped onto the palette above server-side,
        which reads as flat/muted on its own - these punch it up client-side,
        adjustable from the theme settings page rather than fixed per image. */
-    --cover-saturate: 160%;
-    --cover-brightness: 115%;
-    --cover-hue: 0deg;
+    --cover-saturate: 80%;
+    --cover-brightness: 200%;
+    --cover-hue: -20deg;
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -147,6 +147,33 @@ h2 { font-size: 18px; font-weight: 600; margin: 20px 0 10px; color: var(--color-
     min-width: 70px;
     text-align: right;
 }
+
+.row-bar {
+    position: relative;
+    width: 100px;
+    height: 20px;
+    flex-shrink: 0;
+    border-radius: 4px;
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    overflow: hidden;
+}
+.row-bar-fill {
+    position: absolute;
+    inset: 0;
+    height: 100%;
+    background: var(--color-accent);
+}
+.row-bar-label {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    font-size: 11px;
+    color: var(--color-text);
+}
 .row .sep { color: var(--color-text); opacity: 0.7; flex-shrink: 0; }
 
 .row-thumb {
@@ -178,6 +205,12 @@ h2 { font-size: 18px; font-weight: 600; margin: 20px 0 10px; color: var(--color-
     gap: 20px;
     margin-top: 16px;
 }
+
+.grid-compact {
+    grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+    gap: 12px;
+}
+.grid-compact .card-title, .grid-compact .card-secondary { font-size: 12px; }
 
 .card { display: flex; flex-direction: column; min-width: 0; }
 
@@ -221,6 +254,13 @@ h2 { font-size: 18px; font-weight: 600; margin: 20px 0 10px; color: var(--color-
     text-overflow: ellipsis;
 }
 .card-secondary:hover { text-decoration: underline; }
+
+.card-note {
+    display: block;
+    font-size: 12px;
+    color: var(--color-text);
+    opacity: 0.55;
+}
 
 .search-form { display: flex; gap: 8px; margin: 20px 0; }
 .search-form input {

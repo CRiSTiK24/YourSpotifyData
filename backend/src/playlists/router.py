@@ -7,7 +7,7 @@ from fastapi.responses import HTMLResponse
 from src.constants import MONTHS
 from src.database import DBDep
 from src.heatmap import build_heatmap_html
-from src.html import detail_layout, hero_image, page, row
+from src.html import card, detail_layout, grid, hero_image, page, row
 from src.utils import aggregate_plays
 
 from . import service
@@ -57,20 +57,31 @@ def playlist_detail(playlist_id: int, request: Request, con: DBDep, name: str = 
             for n, s, c in aggregated
         )
 
-    tracks_html = "".join(
-        row(
-            t["track_name"],
-            f"/track/{quote(t['track_name'])}?artist={quote(t['artist_name'])}",
-            t["artist_name"],
-            f"/artist/{quote(t['artist_name'])}",
-            image_url=t["image_url"],
-        )
-        for t in tracks
+    tracks_html = grid(
+        "".join(
+            card(
+                t["track_name"],
+                f"/track/{quote(t['track_name'])}?artist={quote(t['artist_name'])}",
+                t["artist_name"],
+                f"/artist/{quote(t['artist_name'])}",
+                image_url=t["image_url"],
+            )
+            for t in tracks
+        ),
+        compact=True,
+    )
+
+    playlist = service.get_playlist(con, playlist_id)
+    description_html = (
+        f"<p class='subtitle'>{escape(playlist['description'])}</p>"
+        if playlist and playlist["description"]
+        else ""
     )
 
     header = f"""
-{hero_image(service.get_playlist_image(con, playlist_id))}
+{hero_image(playlist["image_url"] if playlist else None)}
 <h1>{escape(name)}</h1>
+{description_html}
 <p class="subtitle">{len(tracks)} track{"s" if len(tracks) != 1 else ""} &nbsp;·&nbsp; {len(history)} total plays</p>
 """
     return page(detail_layout(header, heatmap_html + period_html, "Tracks", tracks_html))

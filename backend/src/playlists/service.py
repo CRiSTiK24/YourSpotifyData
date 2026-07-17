@@ -9,17 +9,22 @@ def playlist_exists(con: sqlite3.Connection, playlist_id: int) -> bool:
     return con.execute("SELECT 1 FROM playlists WHERE id = ?", (playlist_id,)).fetchone() is not None
 
 
-def get_playlist_image(con: sqlite3.Connection, playlist_id: int) -> str | None:
-    row = con.execute(
-        "SELECT image_url FROM playlists WHERE id = ?", (playlist_id,)
+def get_playlist(con: sqlite3.Connection, playlist_id: int) -> sqlite3.Row | None:
+    return con.execute(
+        "SELECT image_url, description FROM playlists WHERE id = ?", (playlist_id,)
     ).fetchone()
-    return row["image_url"] if row else None
 
 
 def load_playlist_tracks(con: sqlite3.Connection, playlist_id: int) -> list[sqlite3.Row]:
+    """play_count is a correlated subquery (not a join+GROUP BY count) since
+    a track can join track_history/album_images on multiple rows already -
+    counting via a plain COUNT() here would double-count against that join,
+    same convention as aggregate_plays() elsewhere in the app."""
     return con.execute(
         """
-        SELECT pt.track_name, pt.artist_name, ai.image_url
+        SELECT pt.track_name, pt.artist_name, ai.image_url,
+               (SELECT COUNT(*) FROM track_history th2
+                WHERE th2.name = pt.track_name AND th2.singer = pt.artist_name) AS play_count
         FROM playlist_tracks pt
         LEFT JOIN track_history th ON th.name = pt.track_name AND th.singer = pt.artist_name
         LEFT JOIN album_images ai ON ai.artist_name = pt.artist_name AND ai.album_name = th.album

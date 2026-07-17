@@ -44,7 +44,7 @@ def ensure_schema_columns(con):
     existing = {row[1] for row in con.execute("PRAGMA table_info(playlists)")}
     if not existing:
         return  # table doesn't exist yet (no upload/export has run) - nothing to migrate
-    for col in ("spotify_playlist_id", "spotify_snapshot_id", "image_url"):
+    for col in ("spotify_playlist_id", "spotify_snapshot_id", "image_url", "description"):
         if col not in existing:
             con.execute(f"ALTER TABLE playlists ADD COLUMN {col} TEXT")
     con.commit()
@@ -93,8 +93,14 @@ def save_to_db(con, playlists, prune_missing=True):
         if pl.get("spotifyPlaylistId") is not None:
             cur.execute(
                 "UPDATE playlists SET spotify_playlist_id = ?, spotify_snapshot_id = ?, "
-                "image_url = COALESCE(?, image_url) WHERE id = ?",
-                (pl["spotifyPlaylistId"], pl.get("spotifySnapshotId"), pl.get("imageUrl"), playlist_id),
+                "image_url = COALESCE(?, image_url), description = ? WHERE id = ?",
+                (
+                    pl["spotifyPlaylistId"],
+                    pl.get("spotifySnapshotId"),
+                    pl.get("imageUrl"),
+                    pl.get("description"),
+                    playlist_id,
+                ),
             )
 
         if pl.get("unchanged"):

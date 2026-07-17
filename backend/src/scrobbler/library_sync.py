@@ -81,12 +81,24 @@ def _paginate_cursor(access_token: str, url: str) -> list[dict]:
     return items
 
 
-def _fetch_playlists(con: sqlite3.Connection, access_token: str) -> list[dict]:
+def _fetch_current_user_id(access_token: str) -> str:
+    return _api_get(access_token, f"{API_BASE}/me")["id"]
+
+
+def _fetch_playlists(con: sqlite3.Connection, access_token: str, my_user_id: str) -> list[dict]:
     """Fetching every track of every playlist on every run is the bulk of
     this sync's request volume. Spotify's playlist snapshot_id changes
     whenever a playlist's contents change, so a playlist whose snapshot_id
     still matches what's stored from last sync is skipped entirely (no
-    tracks call at all) - same approach used by other Spotify sync tools."""
+    tracks call at all) - same approach used by other Spotify sync tools.
+
+    /me/playlists returns every playlist the account follows, not just ones
+    it owns (Spotify-curated playlists, other users' public/shared
+    playlists you've saved, etc.) - those aren't "your" playlists in the
+    sense this app tracks, so only playlists owned by my_user_id are kept.
+    A playlist that was previously synced and is no longer owned (or was
+    never yours to begin with) simply won't appear here, and the caller's
+    prune_missing=True then removes it - same mechanism as an unlike."""
     _playlist_processor.ensure_schema_columns(con)
     known_snapshots = _playlist_processor.get_snapshot_ids(con)
 
@@ -94,12 +106,16 @@ def _fetch_playlists(con: sqlite3.Connection, access_token: str) -> list[dict]:
     for pl in _paginate(access_token, f"{API_BASE}/me/playlists?limit=50"):
         if pl is None:
             continue
+        owner = pl.get("owner") or {}
+        if owner.get("id") != my_user_id:
+            continue
         images = pl.get("images") or []
         entry = {
             "name": pl["name"],
             "spotifyPlaylistId": pl["id"],
             "spotifySnapshotId": pl.get("snapshot_id"),
             "imageUrl": images[0]["url"] if images else None,
+            "description": pl.get("description") or None,
         }
         if pl.get("snapshot_id") is not None and known_snapshots.get(pl["name"]) == pl["snapshot_id"]:
             entry["unchanged"] = True
@@ -174,8 +190,9 @@ def sync_once(con: sqlite3.Connection) -> dict:
     current set (the Spotify API doesn't offer a delta/changes-since
     endpoint), so pruning of removed items is always safe."""
     access_token = scrobbler_service._ensure_access_token(con)
+    my_user_id = _fetch_current_user_id(access_token)
 
-    playlists = _fetch_playlists(con, access_token)
+    playlists = _fetch_playlists(con, access_token, my_user_id)
     counts = _playlist_processor.save_to_db(con, playlists, prune_missing=True)
 
     tracks = _fetch_liked_tracks(access_token)

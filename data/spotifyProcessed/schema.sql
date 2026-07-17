@@ -3,7 +3,8 @@ CREATE TABLE IF NOT EXISTS playlists (
     name                  TEXT NOT NULL UNIQUE,
     spotify_playlist_id   TEXT,
     spotify_snapshot_id   TEXT,
-    image_url             TEXT
+    image_url             TEXT,
+    description           TEXT
 );
 
 CREATE TABLE IF NOT EXISTS track_history (
