@@ -1,15 +1,15 @@
 import sqlite3
 from urllib.parse import quote
 
-from src.html import row
+from src.html import card, grid
 
 from . import service
 
 
 def playlists_content(con: sqlite3.Connection) -> str:
     pls = service.load_playlists(con)
-    rows_html = "".join(
-        row(
+    cards_html = "".join(
+        card(
             pl["name"],
             f"/playlist/{pl['id']}?name={quote(pl['name'])}",
             image_url=pl["image_url"],
@@ -19,5 +19,5 @@ def playlists_content(con: sqlite3.Connection) -> str:
     return f"""
 <h1>Playlists ({len(pls)})</h1>
 <hr class="divider">
-{rows_html}
+{grid(cards_html)}
 """

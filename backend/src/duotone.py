@@ -32,7 +32,7 @@ def _gradient_luts(palette_hex: list[str]) -> tuple[list[int], list[int], list[i
     return lut_r, lut_g, lut_b
 
 
-def recolor_image(image_bytes: bytes, palette_hex: list[str]) -> bytes:
+def recolor_image(image_bytes: bytes, palette_hex: list[str], size: int | None = None) -> bytes:
     """Converts an image to grayscale, then remaps that grayscale gradient
     onto the site's own palette (dark palette colors for shadows, light
     palette colors for highlights) - so every cover art image reads as part
@@ -40,10 +40,21 @@ def recolor_image(image_bytes: bytes, palette_hex: list[str]) -> bytes:
     with it. Saturation/brightness punch-up is applied client-side (see
     --cover-saturate/--cover-brightness in the theme settings) rather than
     baked in here, so it stays user-adjustable rather than fixed per image.
+
+    If size is given, the source is center-cropped and resized to exactly
+    size x size before recoloring (same effect as the CSS object-fit:cover
+    the frontend was relying on, but baked into the served bytes so every
+    caller gets a real, consistent, smaller image instead of the source's
+    original resolution scaled down by the browser). Cropping happens
+    before the grayscale/palette mapping since that mapping is a pure
+    per-pixel function - resizing first is equivalent and cheaper.
+
     Returns PNG bytes."""
-    from PIL import Image
+    from PIL import Image, ImageOps
 
     img = Image.open(io.BytesIO(image_bytes)).convert("L")
+    if size:
+        img = ImageOps.fit(img, (size, size), Image.LANCZOS)
     lut_r, lut_g, lut_b = _gradient_luts(palette_hex)
     out = Image.merge("RGB", (img.point(lut_r), img.point(lut_g), img.point(lut_b)))
     buf = io.BytesIO()

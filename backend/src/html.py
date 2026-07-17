@@ -97,14 +97,19 @@ def search_form(
 </form>"""
 
 
-def _cover_src(image_url: str | None) -> str | None:
+def _cover_src(image_url: str | None, size: int | None = None) -> str | None:
     """Every album/artist/playlist cover is served through /cover, which
     recolors it into the site's own palette rather than showing Spotify's
     original colors as-is - a single choke point so this applies uniformly
-    everywhere a cover image renders."""
+    everywhere a cover image renders. size requests a real server-side
+    resize (roughly 2x the CSS display size, for retina) instead of
+    shipping the source's full resolution for the browser to scale down."""
     if not image_url:
         return None
-    return f"/cover?src={quote(image_url, safe='')}"
+    src = f"/cover?src={quote(image_url, safe='')}"
+    if size:
+        src += f"&size={size}"
+    return src
 
 
 def row(
@@ -116,7 +121,7 @@ def row(
     *,
     image_url: str | None = None,
 ) -> str:
-    cover_src = _cover_src(image_url)
+    cover_src = _cover_src(image_url, size=64)
     thumb = f"<img class='row-thumb' src='{escape(cover_src)}' loading='lazy'>" if cover_src else ""
     left = f"<a class='row-primary' href='{escape(primary_href)}'>{escape(primary_label)}</a>"
     if secondary_label and secondary_href:
@@ -128,8 +133,43 @@ def row(
     return f"<div class='row'><div class='left'>{thumb}{left}</div>{right}</div>"
 
 
+def card(
+    primary_label: str,
+    primary_href: str,
+    secondary_label: str | None = None,
+    secondary_href: str | None = None,
+    *,
+    image_url: str | None = None,
+) -> str:
+    """A grid tile: cover art with a title (and optional secondary link)
+    below it - the card/grid counterpart to row()'s list-item layout, used
+    where cover art benefits from more room (liked songs/albums, playlists)
+    than row()'s 32px thumbnail affords."""
+    cover_src = _cover_src(image_url, size=320)
+    thumb = (
+        f"<img class='card-thumb' src='{escape(cover_src)}' loading='lazy'>"
+        if cover_src
+        else "<div class='card-thumb card-thumb-empty'></div>"
+    )
+    secondary = (
+        f"<a class='card-secondary' href='{escape(secondary_href)}'>{escape(secondary_label)}</a>"
+        if secondary_label and secondary_href
+        else ""
+    )
+    return f"""
+<div class="card">
+  <a class="card-cover" href="{escape(primary_href)}">{thumb}</a>
+  <a class="card-title" href="{escape(primary_href)}">{escape(primary_label)}</a>
+  {secondary}
+</div>"""
+
+
+def grid(cards_html: str) -> str:
+    return f"<div class='grid'>{cards_html}</div>"
+
+
 def hero_image(image_url: str | None) -> str:
-    cover_src = _cover_src(image_url)
+    cover_src = _cover_src(image_url, size=320)
     if not cover_src:
         return ""
     return f"<img class='hero-image' src='{escape(cover_src)}' loading='lazy'>"
