@@ -25,6 +25,13 @@
     --color-accent: var(--purple);
     --color-accent-soft: var(--light-purple);
     --color-selected: var(--dark-purple);
+
+    /* cover art (/cover) is duotone-mapped onto the palette above server-side,
+       which reads as flat/muted on its own - these punch it up client-side,
+       adjustable from the theme settings page rather than fixed per image. */
+    --cover-saturate: 160%;
+    --cover-brightness: 115%;
+    --cover-hue: 0deg;
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -150,6 +157,7 @@ h2 { font-size: 18px; font-weight: 600; margin: 20px 0 10px; color: var(--color-
     background: var(--color-surface);
     border: 1px solid var(--color-border);
     flex-shrink: 0;
+    filter: saturate(var(--cover-saturate)) brightness(var(--cover-brightness)) hue-rotate(var(--cover-hue));
 }
 
 .hero-image {
@@ -161,6 +169,7 @@ h2 { font-size: 18px; font-weight: 600; margin: 20px 0 10px; color: var(--color-
     border: 1px solid var(--color-border);
     display: block;
     margin-bottom: 12px;
+    filter: saturate(var(--cover-saturate)) brightness(var(--cover-brightness)) hue-rotate(var(--cover-hue));
 }
 
 .search-form { display: flex; gap: 8px; margin: 20px 0; }
@@ -315,3 +324,12 @@ h2 { font-size: 18px; font-weight: 600; margin: 20px 0 10px; color: var(--color-
     cursor: pointer;
 }
 .theme-clear:hover { background: var(--color-surface); }
+.theme-range { flex-shrink: 0; }
+.theme-range-value {
+    display: inline-block;
+    min-width: 64px;
+    text-align: right;
+    font-family: monospace;
+    font-size: 13px;
+    flex-shrink: 0;
+}

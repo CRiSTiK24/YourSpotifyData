@@ -9,7 +9,12 @@ from . import service
 def playlists_content(con: sqlite3.Connection) -> str:
     pls = service.load_playlists(con)
     rows_html = "".join(
-        row(pl["name"], f"/playlist/{pl['id']}?name={quote(pl['name'])}") for pl in pls
+        row(
+            pl["name"],
+            f"/playlist/{pl['id']}?name={quote(pl['name'])}",
+            image_url=pl["image_url"],
+        )
+        for pl in pls
     )
     return f"""
 <h1>Playlists ({len(pls)})</h1>

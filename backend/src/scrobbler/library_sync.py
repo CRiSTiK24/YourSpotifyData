@@ -41,6 +41,15 @@ _playlist_processor = _load_processor("PlaylistProcessor")
 _library_processor = _load_processor("YourLibraryProcessor")
 
 
+def ensure_migrations(con: sqlite3.Connection) -> None:
+    """Adds the playlists columns this sync needs (and that /playlists'
+    read path now also selects) if they're missing. Called unconditionally
+    at app startup, not just when a sync actually runs, so browsing
+    /playlists doesn't 'no such column' on a DB that predates these
+    columns and has never run a library sync."""
+    _playlist_processor.ensure_schema_columns(con)
+
+
 def _api_get(access_token: str, url: str) -> dict:
     while True:
         req = urllib.request.Request(url, headers={"Authorization": f"Bearer {access_token}"})
@@ -85,10 +94,12 @@ def _fetch_playlists(con: sqlite3.Connection, access_token: str) -> list[dict]:
     for pl in _paginate(access_token, f"{API_BASE}/me/playlists?limit=50"):
         if pl is None:
             continue
+        images = pl.get("images") or []
         entry = {
             "name": pl["name"],
             "spotifyPlaylistId": pl["id"],
             "spotifySnapshotId": pl.get("snapshot_id"),
+            "imageUrl": images[0]["url"] if images else None,
         }
         if pl.get("snapshot_id") is not None and known_snapshots.get(pl["name"]) == pl["snapshot_id"]:
             entry["unchanged"] = True

@@ -2,11 +2,18 @@ import sqlite3
 
 
 def load_playlists(con: sqlite3.Connection) -> list[sqlite3.Row]:
-    return con.execute("SELECT id, name FROM playlists ORDER BY name").fetchall()
+    return con.execute("SELECT id, name, image_url FROM playlists ORDER BY name").fetchall()
 
 
 def playlist_exists(con: sqlite3.Connection, playlist_id: int) -> bool:
     return con.execute("SELECT 1 FROM playlists WHERE id = ?", (playlist_id,)).fetchone() is not None
+
+
+def get_playlist_image(con: sqlite3.Connection, playlist_id: int) -> str | None:
+    row = con.execute(
+        "SELECT image_url FROM playlists WHERE id = ?", (playlist_id,)
+    ).fetchone()
+    return row["image_url"] if row else None
 
 
 def load_playlist_tracks(con: sqlite3.Connection, playlist_id: int) -> list[sqlite3.Row]:

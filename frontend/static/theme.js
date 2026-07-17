@@ -43,7 +43,52 @@
     return rgbToHex(getComputedStyle(probe).color);
   }
 
-  document.querySelectorAll(".theme-row").forEach(function (row) {
+  // Numeric custom properties (e.g. "160%", "30deg") resolve fine as plain
+  // text via getComputedStyle on :root itself - no probe trick needed like
+  // the color tokens above, since we're not asking the browser to parse
+  // them as a color.
+  function resolvedNumber(varName) {
+    var raw = getComputedStyle(document.documentElement).getPropertyValue(varName).trim();
+    return parseFloat(raw) || 0;
+  }
+
+  document.querySelectorAll(".theme-range-row").forEach(function (row) {
+    var varName = row.dataset.var;
+    var unit = row.dataset.unit;
+    var range = row.querySelector(".theme-range");
+    var valueLabel = row.querySelector(".theme-range-value");
+    var clearBtn = row.querySelector(".theme-clear");
+
+    function refresh() {
+      var v = resolvedNumber(varName);
+      range.value = v;
+      valueLabel.textContent = v + unit;
+    }
+    refresh();
+
+    function apply(value) {
+      var withUnit = value + unit;
+      document.documentElement.style.setProperty(varName, withUnit);
+      valueLabel.textContent = withUnit;
+      var overrides = getOverrides();
+      overrides[varName] = withUnit;
+      setOverrides(overrides);
+    }
+
+    range.addEventListener("input", function () {
+      apply(range.value);
+    });
+
+    clearBtn.addEventListener("click", function () {
+      document.documentElement.style.removeProperty(varName);
+      var overrides = getOverrides();
+      delete overrides[varName];
+      setOverrides(overrides);
+      refresh();
+    });
+  });
+
+  document.querySelectorAll(".theme-row:not(.theme-range-row)").forEach(function (row) {
     var varName = row.dataset.var;
     var swatch = row.querySelector(".theme-swatch");
     var hexInput = row.querySelector(".theme-hex");
@@ -92,11 +137,17 @@
   if (resetAll) {
     resetAll.addEventListener("click", function () {
       localStorage.removeItem(STORAGE_KEY);
-      document.querySelectorAll(".theme-row").forEach(function (row) {
+      document.querySelectorAll(".theme-row:not(.theme-range-row)").forEach(function (row) {
         document.documentElement.style.removeProperty(row.dataset.var);
         var v = resolvedHex(row.dataset.var);
         row.querySelector(".theme-swatch").value = v;
         row.querySelector(".theme-hex").value = v;
+      });
+      document.querySelectorAll(".theme-range-row").forEach(function (row) {
+        document.documentElement.style.removeProperty(row.dataset.var);
+        var v = resolvedNumber(row.dataset.var);
+        row.querySelector(".theme-range").value = v;
+        row.querySelector(".theme-range-value").textContent = v + row.dataset.unit;
       });
     });
   }

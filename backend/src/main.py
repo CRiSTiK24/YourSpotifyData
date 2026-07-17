@@ -10,6 +10,7 @@ from src.artists.router import router as artists_router
 from src.auth import service as auth_service
 from src.auth.exceptions import NotAuthenticated, not_authenticated_handler
 from src.auth.router import router as auth_router
+from src.covers.router import router as covers_router
 from src.database import get_connection
 from src.exceptions import http_exception_handler
 from src.home import router as home_router
@@ -34,12 +35,18 @@ _STATIC_DIR = os.path.join(
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     sync_css_palette()
+    con = get_connection()
+    try:
+        library_sync_service.ensure_migrations(con)
+    finally:
+        con.close()
     poll_task = asyncio.create_task(scrobbler_service.poll_loop())
     library_sync_task = asyncio.create_task(library_sync_service.sync_loop())
-    # image_task disabled temporarily while checking scrobbler scope/API usage
+    image_task = asyncio.create_task(images_service.image_fetch_loop())
     yield
     poll_task.cancel()
     library_sync_task.cancel()
+    image_task.cancel()
 
 
 app = FastAPI(title="Your Spotify Data", version="1.0.0", lifespan=lifespan)
@@ -64,6 +71,7 @@ app.include_router(artists_router)
 app.include_router(albums_router)
 app.include_router(tracks_router)
 app.include_router(auth_router)
+app.include_router(covers_router)
 app.include_router(upload_router)
 app.include_router(scrobbler_router)
 app.include_router(theme_router)

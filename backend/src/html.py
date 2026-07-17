@@ -1,6 +1,7 @@
 import os
 from contextvars import ContextVar
 from html import escape
+from urllib.parse import quote
 
 from fastapi.responses import HTMLResponse
 
@@ -96,6 +97,16 @@ def search_form(
 </form>"""
 
 
+def _cover_src(image_url: str | None) -> str | None:
+    """Every album/artist/playlist cover is served through /cover, which
+    recolors it into the site's own palette rather than showing Spotify's
+    original colors as-is - a single choke point so this applies uniformly
+    everywhere a cover image renders."""
+    if not image_url:
+        return None
+    return f"/cover?src={quote(image_url, safe='')}"
+
+
 def row(
     primary_label: str,
     primary_href: str,
@@ -105,7 +116,8 @@ def row(
     *,
     image_url: str | None = None,
 ) -> str:
-    thumb = f"<img class='row-thumb' src='{escape(image_url)}' loading='lazy'>" if image_url else ""
+    cover_src = _cover_src(image_url)
+    thumb = f"<img class='row-thumb' src='{escape(cover_src)}' loading='lazy'>" if cover_src else ""
     left = f"<a class='row-primary' href='{escape(primary_href)}'>{escape(primary_label)}</a>"
     if secondary_label and secondary_href:
         left += (
@@ -117,9 +129,10 @@ def row(
 
 
 def hero_image(image_url: str | None) -> str:
-    if not image_url:
+    cover_src = _cover_src(image_url)
+    if not cover_src:
         return ""
-    return f"<img class='hero-image' src='{escape(image_url)}' loading='lazy'>"
+    return f"<img class='hero-image' src='{escape(cover_src)}' loading='lazy'>"
 
 
 def detail_layout(
