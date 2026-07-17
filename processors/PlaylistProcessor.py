@@ -35,6 +35,28 @@ def _parse_playlist_files(files):
     return playlists
 
 
+def ensure_schema_columns(con):
+    """The zip-upload schema.sql only CREATE TABLE IF NOT EXISTS's, so an
+    already-existing playlists table (from before spotify_playlist_id /
+    spotify_snapshot_id existed) never picks up the new columns from it.
+    Called by the API-based library sync, which is the only caller that
+    needs these columns, before it reads/writes them."""
+    existing = {row[1] for row in con.execute("PRAGMA table_info(playlists)")}
+    for col in ("spotify_playlist_id", "spotify_snapshot_id"):
+        if col not in existing:
+            con.execute(f"ALTER TABLE playlists ADD COLUMN {col} TEXT")
+    con.commit()
+
+
+def get_snapshot_ids(con) -> dict:
+    """name -> stored spotify_snapshot_id, for the API sync to decide which
+    playlists' tracks actually need refetching."""
+    return {
+        row[0]: row[1]
+        for row in con.execute("SELECT name, spotify_snapshot_id FROM playlists")
+    }
+
+
 def save_to_db(con, playlists, prune_missing=True):
     """The uploaded Playlist*.json files are treated as the full, current
     set of the user's playlists. On each import: existing playlists are
@@ -44,7 +66,14 @@ def save_to_db(con, playlists, prune_missing=True):
     import is deleted along with its tracks, so re-uploading overrides
     rather than only ever adding. prune_missing should be False when no
     Playlist*.json files were present at all, so an unrelated upload (e.g.
-    history-only) doesn't wipe out existing playlists."""
+    history-only) doesn't wipe out existing playlists.
+
+    A playlist dict may optionally carry "spotifyPlaylistId"/"spotifySnapshotId"
+    (stored for change detection) and "unchanged": True (set by the API sync
+    when the snapshot id matches what's already stored, meaning its track
+    list is skipped entirely rather than re-fetched and re-written - the
+    dict then omits "tracks"). Zip uploads never set these, so their
+    behavior is unchanged."""
     before_playlists = con.execute("SELECT COUNT(*) FROM playlists").fetchone()[0]
     before_tracks = con.execute("SELECT COUNT(*) FROM playlist_tracks").fetchone()[0]
 
@@ -58,6 +87,17 @@ def save_to_db(con, playlists, prune_missing=True):
             cur.execute("INSERT INTO playlists (name) VALUES (?)", (pl["name"],))
             playlist_id = cur.lastrowid
         seen_ids.append(playlist_id)
+
+        if pl.get("spotifyPlaylistId") is not None:
+            cur.execute(
+                "UPDATE playlists SET spotify_playlist_id = ?, spotify_snapshot_id = ? "
+                "WHERE id = ?",
+                (pl["spotifyPlaylistId"], pl.get("spotifySnapshotId"), playlist_id),
+            )
+
+        if pl.get("unchanged"):
+            continue
+
         cur.execute("DELETE FROM playlist_tracks WHERE playlist_id = ?", (playlist_id,))
         cur.executemany(
             "INSERT OR IGNORE INTO playlist_tracks "

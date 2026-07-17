@@ -18,6 +18,7 @@ from src.images import service as images_service
 from src.library.router import router as library_router
 from src.palette import sync_css_palette
 from src.playlists.router import router as playlists_router
+from src.scrobbler import library_sync as library_sync_service
 from src.scrobbler import service as scrobbler_service
 from src.scrobbler.router import router as scrobbler_router
 from src.search.router import router as search_router
@@ -34,10 +35,11 @@ _STATIC_DIR = os.path.join(
 async def lifespan(app: FastAPI):
     sync_css_palette()
     poll_task = asyncio.create_task(scrobbler_service.poll_loop())
-    image_task = asyncio.create_task(images_service.image_fetch_loop())
+    library_sync_task = asyncio.create_task(library_sync_service.sync_loop())
+    # image_task disabled temporarily while checking scrobbler scope/API usage
     yield
     poll_task.cancel()
-    image_task.cancel()
+    library_sync_task.cancel()
 
 
 app = FastAPI(title="Your Spotify Data", version="1.0.0", lifespan=lifespan)

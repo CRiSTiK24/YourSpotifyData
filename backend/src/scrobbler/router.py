@@ -15,10 +15,11 @@ router = APIRouter(prefix="/scrobbler", tags=["scrobbler"], dependencies=[Depend
 def _status_content(con) -> str:
     row = service.get_status(con)
     if row is None:
-        return """
+        return f"""
 <h1>Scrobbler</h1>
 <p class="subtitle">Not connected. Link your Spotify account to automatically pull in new
-plays every couple of minutes, instead of manually re-uploading your export.</p>
+plays every couple of minutes, and keep playlists, liked songs, liked albums and followed
+artists in sync, instead of manually re-uploading your export.</p>
 {button("Connect Spotify", "/scrobbler/connect", hx_boost=False)}
 """
     last_poll = f"<li>Last checked: {escape(row['last_poll_at'])}</li>" if row["last_poll_at"] else ""

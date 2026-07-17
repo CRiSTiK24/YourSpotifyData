@@ -17,7 +17,7 @@ from .exceptions import NotConnected
 AUTHORIZE_URL = "https://accounts.spotify.com/authorize"
 TOKEN_URL = "https://accounts.spotify.com/api/token"
 RECENTLY_PLAYED_URL = "https://api.spotify.com/v1/me/player/recently-played?limit=50"
-SCOPE = "user-read-recently-played"
+SCOPE = "user-read-recently-played playlist-read-private user-library-read user-follow-read"
 
 # CSRF state for the OAuth redirect — short-lived and single-user, so a
 # module-level slot (mirroring src.auth.service._pending) is enough.

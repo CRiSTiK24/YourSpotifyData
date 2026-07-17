@@ -1,6 +1,8 @@
 CREATE TABLE IF NOT EXISTS playlists (
-    id      INTEGER PRIMARY KEY AUTOINCREMENT,
-    name    TEXT NOT NULL UNIQUE
+    id                    INTEGER PRIMARY KEY AUTOINCREMENT,
+    name                  TEXT NOT NULL UNIQUE,
+    spotify_playlist_id   TEXT,
+    spotify_snapshot_id   TEXT
 );
 
 CREATE TABLE IF NOT EXISTS track_history (

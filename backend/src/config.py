@@ -30,6 +30,11 @@ class Settings(BaseSettings):
     # How often the background scrobbler poller checks recently-played.
     scrobbler_poll_seconds: int = 900
 
+    # How often the background library sync pulls playlists, liked songs,
+    # liked albums and followed artists. Heavier than the recently-played
+    # poll (paginates every playlist's tracks), so it runs far less often.
+    library_sync_poll_seconds: int = 21600
+
     model_config = {
         "env_file": (
             os.path.join(_BACKEND_DIR, "config.env"),
