@@ -7,7 +7,7 @@ from fastapi.responses import HTMLResponse
 from src.constants import MONTHS
 from src.database import DBDep
 from src.heatmap import build_heatmap_html
-from src.html import card, detail_layout, grid, hero_image, page, row
+from src.html import card, copy_list_button, detail_layout, grid, hero_image, page, page_header, row
 from src.utils import aggregate_plays
 
 from . import service
@@ -78,9 +78,12 @@ def playlist_detail(playlist_id: int, request: Request, con: DBDep, name: str = 
         else ""
     )
 
+    export_lines = [name, ""] + [f"* {t['track_name']} - {t['artist_name']}" for t in tracks]
+    title_html = page_header(name, copy_list_button(export_lines, f"playlist-{playlist_id}-list"))
+
     header = f"""
 {hero_image(playlist["image_url"] if playlist else None)}
-<h1>{escape(name)}</h1>
+{title_html}
 {description_html}
 <p class="subtitle">{len(tracks)} track{"s" if len(tracks) != 1 else ""} &nbsp;·&nbsp; {len(history)} total plays</p>
 """

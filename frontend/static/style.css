@@ -298,6 +298,9 @@ h2 { font-size: 18px; font-weight: 600; margin: 20px 0 10px; color: var(--color-
 }
 .btn:hover { background: var(--color-accent); }
 
+.page-header { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.page-header h1 { margin-bottom: 0; }
+
 /* heatmap: cell colors are an independent 4-color intensity ramp
    (see src/constants.py COLORS); the lightest step only reaches ~3.2:1
    against --color-text, same tradeoff as --color-accent-soft above */

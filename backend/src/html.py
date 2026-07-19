@@ -72,6 +72,28 @@ def button(label: str, href: str, *, hx_boost: bool | None = None) -> str:
     return f"<a class='btn' href='{escape(href)}'{boost_attr}>{escape(label)}</a>"
 
 
+def copy_list_button(lines: list[str], element_id: str, label: str = "Copy List") -> str:
+    """Renders the given lines as a hidden <pre> block plus a button that
+    copies its text to the clipboard - used on the liked songs/albums/
+    playlists pages to let a user grab the full list as plain text (one
+    "Title - Artist" per line) in one click. escape() handles the HTML
+    escaping, so no extra escaping is needed for the <pre> body itself."""
+    text = "\n".join(lines)
+    id_esc = escape(element_id)
+    label_esc = escape(label)
+    return f"""
+<pre id="{id_esc}" style="display:none">{escape(text)}</pre>
+<button type="button" class="btn" onclick="navigator.clipboard.writeText(document.getElementById('{id_esc}').textContent).then(() => {{ this.textContent = 'Copied!'; setTimeout(() => {{ this.textContent = '{label_esc}'; }}, 1500); }})">{label_esc}</button>"""
+
+
+def page_header(title: str, actions: str = "") -> str:
+    return f"""
+<div class="page-header">
+  <h1>{escape(title)}</h1>
+  {actions}
+</div>"""
+
+
 def search_form(
     action: str,
     placeholder: str,
