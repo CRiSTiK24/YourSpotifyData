@@ -75,11 +75,6 @@ def _status_block(job) -> str:
 <p>Done.</p>
 <ul>
   <li>{job['new_history_rows'] or 0} new plays</li>
-  <li>{job['new_library_tracks'] or 0} new liked tracks</li>
-  <li>{job['new_library_albums'] or 0} new liked albums</li>
-  <li>{job['new_library_artists'] or 0} new liked artists</li>
-  <li>{job['new_playlists'] or 0} new playlists</li>
-  <li>{job['new_playlist_tracks'] or 0} new playlist tracks</li>
 </ul>
 """
     elif status == "error":

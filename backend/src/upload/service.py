@@ -15,11 +15,12 @@ PROCESSORS_DIR = os.path.join(BASE_DIR, "processors")
 
 PROCESSOR_SCRIPTS = [
     "StreamingHistoryProcessor.py",
-    "YourLibraryProcessor.py",
-    "PlaylistProcessor.py",
 ]
 
-ALLOWED_PATTERNS = ["Streaming_History_Audio*.json", "YourLibrary.json", "Playlist*.json"]
+ALLOWED_PATTERNS = [
+    "Streaming_History_Audio*.json",
+    "StreamingHistory_music_*.json",
+]
 MAX_ZIP_SIZE = 100 * 1024 * 1024  # compressed, on disk
 MAX_MEMBER_SIZE = 200 * 1024 * 1024  # per accepted file, uncompressed
 MAX_ENTRIES = 20_000
