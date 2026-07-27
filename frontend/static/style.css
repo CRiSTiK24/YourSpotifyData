@@ -71,6 +71,7 @@ a:hover { text-decoration: underline; text-decoration-color: var(--color-accent)
     border-radius: 6px;
 }
 .sidebar a:not(.brand):hover { background: var(--color-surface); text-decoration: none; }
+.sidebar-divider { border: none; border-top: 1px solid var(--color-border); margin: 6px 10px; }
 .sidebar-bottom {
     margin-top: auto;
     padding-top: 14px;
@@ -199,6 +200,8 @@ h2 { font-size: 18px; font-weight: 600; margin: 20px 0 10px; color: var(--color-
     filter: saturate(var(--cover-saturate)) brightness(var(--cover-brightness)) hue-rotate(var(--cover-hue));
 }
 
+.hero-image-raw { filter: none; }
+
 .grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
@@ -212,7 +215,55 @@ h2 { font-size: 18px; font-weight: 600; margin: 20px 0 10px; color: var(--color-
 }
 .grid-compact .card-title, .grid-compact .card-secondary { font-size: 12px; }
 
-.card { display: flex; flex-direction: column; min-width: 0; }
+.card { display: flex; flex-direction: column; min-width: 0; position: relative; }
+
+.card[data-tooltip]::after, .card[data-tooltip]::before {
+    z-index: 20;
+    position: absolute;
+    left: 50%;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.card[data-tooltip]::after {
+    content: attr(data-tooltip);
+    bottom: 100%;
+    width: max-content;
+    max-width: 220px;
+    margin-bottom: 13px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--color-accent);
+    background: var(--color-nav-bg);
+    color: var(--color-text);
+    font-size: 12px;
+    line-height: 1.4;
+    white-space: normal;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35);
+    transform: translate(-50%, 4px);
+}
+
+.card[data-tooltip]::before {
+    content: "";
+    bottom: 100%;
+    width: 10px;
+    height: 10px;
+    margin-bottom: 8px;
+    background: var(--color-nav-bg);
+    border-right: 1px solid var(--color-accent);
+    border-bottom: 1px solid var(--color-accent);
+    transform: translate(-50%, 4px) rotate(45deg);
+}
+
+.card[data-tooltip]:hover::after, .card[data-tooltip]:hover::before {
+    opacity: 1;
+    transform: translate(-50%, 0) rotate(45deg);
+}
+
+.card[data-tooltip]:hover::after {
+    transform: translate(-50%, 0);
+}
 
 .card-cover { display: block; border-radius: 8px; overflow: hidden; }
 
@@ -229,6 +280,8 @@ h2 { font-size: 18px; font-weight: 600; margin: 20px 0 10px; color: var(--color-
 }
 
 .card-thumb-empty { aspect-ratio: 1 / 1; }
+
+.card-thumb-raw { filter: none; }
 
 .card-cover:hover .card-thumb { transform: scale(1.03); }
 
@@ -300,6 +353,82 @@ h2 { font-size: 18px; font-weight: 600; margin: 20px 0 10px; color: var(--color-
 
 .page-header { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
 .page-header h1 { margin-bottom: 0; }
+
+.description-form { display: flex; flex-direction: column; gap: 8px; margin: 8px 0; max-width: 480px; }
+.description-input {
+    width: 100%;
+    min-height: 60px;
+    resize: vertical;
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    padding: 8px 10px;
+    color: var(--color-text);
+    font-size: 14px;
+    font-family: inherit;
+}
+.description-input:focus { outline: none; border-color: var(--color-accent); }
+.description-form .btn { align-self: flex-start; }
+
+.year-filter { display: flex; align-items: center; gap: 12px; }
+.year-filter-label { font-size: 14px; font-weight: 600; min-width: 9ch; text-align: right; }
+
+.year-range {
+    position: relative;
+    width: 180px;
+    height: 20px;
+}
+.year-range-track {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 4px;
+    transform: translateY(-50%);
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 2px;
+}
+.year-range-fill {
+    position: absolute;
+    top: 50%;
+    height: 4px;
+    transform: translateY(-50%);
+    background: var(--color-accent);
+}
+.year-thumb {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 20px;
+    margin: 0;
+    background: transparent;
+    -webkit-appearance: none;
+    appearance: none;
+    pointer-events: none;
+}
+.year-thumb::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    pointer-events: auto;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--color-accent);
+    border: 2px solid var(--color-text);
+    cursor: pointer;
+}
+.year-thumb::-moz-range-thumb {
+    pointer-events: auto;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--color-accent);
+    border: 2px solid var(--color-text);
+    cursor: pointer;
+}
+.year-thumb::-moz-range-track { background: transparent; border: none; }
 
 /* heatmap: cell colors are an independent 4-color intensity ramp
    (see src/constants.py COLORS); the lightest step only reaches ~3.2:1
@@ -426,3 +555,4 @@ h2 { font-size: 18px; font-weight: 600; margin: 20px 0 10px; color: var(--color-
     font-size: 13px;
     flex-shrink: 0;
 }
+

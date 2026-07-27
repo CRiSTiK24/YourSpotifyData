@@ -60,3 +60,17 @@ def recolor_image(image_bytes: bytes, palette_hex: list[str], size: int | None =
     buf = io.BytesIO()
     out.save(buf, format="PNG")
     return buf.getvalue()
+
+
+def resize_image(image_bytes: bytes, size: int | None = None) -> bytes:
+    """Same center-crop/resize step as recolor_image, without the
+    grayscale/palette remap - for covers that should keep their original
+    colors but still benefit from a real server-side resize."""
+    from PIL import Image, ImageOps
+
+    img = Image.open(io.BytesIO(image_bytes)).convert("RGB")
+    if size:
+        img = ImageOps.fit(img, (size, size), Image.LANCZOS)
+    buf = io.BytesIO()
+    img.save(buf, format="PNG")
+    return buf.getvalue()

@@ -1,4 +1,5 @@
 import sqlite3
+from html import unescape
 from urllib.parse import quote
 
 from src.html import card, copy_list_button, grid, page_header
@@ -13,6 +14,8 @@ def playlists_content(con: sqlite3.Connection) -> str:
             pl["name"],
             f"/playlist/{pl['id']}?name={quote(pl['name'])}",
             image_url=pl["image_url"],
+            title=unescape(pl["description"]) if pl["description"] else None,
+            raw_cover=True,
         )
         for pl in pls
     )

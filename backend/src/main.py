@@ -38,6 +38,7 @@ async def lifespan(app: FastAPI):
     con = get_connection()
     try:
         library_sync_service.ensure_migrations(con)
+        images_service.ensure_schema_columns(con)
     finally:
         con.close()
     poll_task = asyncio.create_task(scrobbler_service.poll_loop())

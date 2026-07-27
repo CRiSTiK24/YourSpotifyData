@@ -24,6 +24,17 @@ def _now() -> str:
     return datetime.datetime.now(datetime.timezone.utc).isoformat()
 
 
+def ensure_schema_columns(con: sqlite3.Connection) -> None:
+    """artist_images predates genre tracking, so an existing DB never picks
+    up the new column from schema.sql's CREATE TABLE IF NOT EXISTS."""
+    existing = {row[1] for row in con.execute("PRAGMA table_info(artist_images)")}
+    if not existing:
+        return
+    if "genres" not in existing:
+        con.execute("ALTER TABLE artist_images ADD COLUMN genres TEXT")
+        con.commit()
+
+
 class _TokenState:
     token: str | None = None
     expiry: float = 0.0
@@ -148,7 +159,13 @@ def _next_missing_artist(con: sqlite3.Connection) -> str | None:
         ).fetchone()
         if row:
             return row[0]
-    return None
+    # Everyone has an artist_images row by this point (this project's
+    # 'looked up, no match' convention) - backfill genres onto those rows
+    # the same way, one at a time, rather than a separate one-off pass.
+    row = con.execute(
+        "SELECT artist_name FROM artist_images WHERE genres IS NULL LIMIT 1"
+    ).fetchone()
+    return row[0] if row else None
 
 
 def _representative_track_uri(con, artist_name, album_name=None):
@@ -183,17 +200,18 @@ def _upsert_album(con, artist_name, album_name, spotify_album_id, image_url):
     con.commit()
 
 
-def _upsert_artist(con, artist_name, spotify_artist_id, image_url):
+def _upsert_artist(con, artist_name, spotify_artist_id, image_url, genres=None):
     con.execute(
         """
-        INSERT INTO artist_images (artist_name, spotify_artist_id, image_url, fetched_at)
-        VALUES (?, ?, ?, ?)
+        INSERT INTO artist_images (artist_name, spotify_artist_id, image_url, genres, fetched_at)
+        VALUES (?, ?, ?, ?, ?)
         ON CONFLICT(artist_name) DO UPDATE SET
             spotify_artist_id = COALESCE(excluded.spotify_artist_id, artist_images.spotify_artist_id),
             image_url = COALESCE(excluded.image_url, artist_images.image_url),
+            genres = COALESCE(excluded.genres, artist_images.genres),
             fetched_at = excluded.fetched_at
         """,
-        (artist_name, spotify_artist_id, image_url, _now()),
+        (artist_name, spotify_artist_id, image_url, json.dumps(genres) if genres is not None else None, _now()),
     )
     con.commit()
 
@@ -209,6 +227,14 @@ def _album_uri(con, artist_name, album_name):
 def _artist_uri(con, artist_name):
     row = con.execute(
         "SELECT spotify_artist_uri FROM library_artists WHERE artist_name = ?", (artist_name,)
+    ).fetchone()
+    if row and row[0]:
+        return row[0]
+    # Falls back to an id already resolved by a prior image fetch - needed
+    # for the genre backfill pass, which revisits artists that already have
+    # an artist_images row (and thus won't have a fresh track to look up).
+    row = con.execute(
+        "SELECT spotify_artist_id FROM artist_images WHERE artist_name = ?", (artist_name,)
     ).fetchone()
     return row[0] if row else None
 
@@ -252,11 +278,13 @@ async def _fetch_one_artist(con, artist_name) -> None:
         if artist_id:
             data = await _api_get(f"/artists/{artist_id}")
             if data:
-                _upsert_artist(con, artist_name, data["id"], _best_image(data["images"]))
+                _upsert_artist(
+                    con, artist_name, data["id"], _best_image(data["images"]), data.get("genres", [])
+                )
             else:
-                _upsert_artist(con, artist_name, artist_id, None)
+                _upsert_artist(con, artist_name, artist_id, None, [])
         else:
-            _upsert_artist(con, artist_name, None, None)
+            _upsert_artist(con, artist_name, None, None, [])
     except Exception:
         logger.exception("failed fetching artist %s", artist_name)
         _upsert_artist(con, artist_name, None, None)

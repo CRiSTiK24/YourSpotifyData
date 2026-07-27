@@ -49,10 +49,13 @@ def page(content: str) -> HTMLResponse:
 <div class="shell">
   <aside class="sidebar">
     <a class="brand" href="/">Home</a>
-    <a href="/liked-songs">Liked Songs</a>
-    <a href="/liked-albums">Liked Albums</a>
-    <a href="/playlists">Playlists</a>
-    <a href="/artists">Artists</a>{sidebar_bottom}
+    <hr class="sidebar-divider">
+    <a href="/playlists">See my curated playlists!</a>
+    <a href="/liked-albums">Albums I like</a>
+    <hr class="sidebar-divider">
+    <a href="/most-listened">My most listened songs</a>
+    <a href="/most-listened-albums">My most listened albums</a>
+    <a href="/artists">My most listened artists</a>{sidebar_bottom}
   </aside>
   <main class="content" id="content">
 {content}
@@ -119,18 +122,22 @@ def search_form(
 </form>"""
 
 
-def _cover_src(image_url: str | None, size: int | None = None) -> str | None:
-    """Every album/artist/playlist cover is served through /cover, which
-    recolors it into the site's own palette rather than showing Spotify's
-    original colors as-is - a single choke point so this applies uniformly
-    everywhere a cover image renders. size requests a real server-side
-    resize (roughly 2x the CSS display size, for retina) instead of
-    shipping the source's full resolution for the browser to scale down."""
+def _cover_src(image_url: str | None, size: int | None = None, *, raw: bool = False) -> str | None:
+    """Every album/artist/playlist cover is served through /cover, which by
+    default recolors it into the site's own palette rather than showing
+    Spotify's original colors as-is - a single choke point so this applies
+    uniformly everywhere a cover image renders. size requests a real
+    server-side resize (roughly 2x the CSS display size, for retina)
+    instead of shipping the source's full resolution for the browser to
+    scale down. raw=True opts a cover out of the recolor (e.g. playlists),
+    keeping the source's original colors."""
     if not image_url:
         return None
     src = f"/cover?src={quote(image_url, safe='')}"
     if size:
         src += f"&size={size}"
+    if raw:
+        src += "&raw=true"
     return src
 
 
@@ -176,15 +183,23 @@ def card(
     note: str | None = None,
     *,
     image_url: str | None = None,
+    title: str | None = None,
+    raw_cover: bool = False,
 ) -> str:
     """A grid tile: cover art with a title (and optional secondary link, or
     a plain-text note e.g. a play count) below it - the card/grid
     counterpart to row()'s list-item layout, used where cover art benefits
     from more room (liked songs/albums, playlists) than row()'s 32px
-    thumbnail affords."""
-    cover_src = _cover_src(image_url, size=320)
+    thumbnail affords. `title`, when given, spawns a small tooltip bubble
+    above the card on hover (e.g. a playlist's Spotify description) - a
+    CSS ::after driven off data-tooltip rather than the native browser
+    title attribute, since that one's slow to appear and unstyled.
+    `raw_cover` shows the source image's original colors instead of the
+    site-palette recolor applied everywhere else."""
+    cover_src = _cover_src(image_url, size=320, raw=raw_cover)
+    thumb_class = "card-thumb card-thumb-raw" if raw_cover else "card-thumb"
     thumb = (
-        f"<img class='card-thumb' src='{escape(cover_src)}' loading='lazy'>"
+        f"<img class='{thumb_class}' src='{escape(cover_src)}' loading='lazy'>"
         if cover_src
         else "<div class='card-thumb card-thumb-empty'></div>"
     )
@@ -194,8 +209,9 @@ def card(
         else ""
     )
     note_html = f"<span class='card-note'>{escape(note)}</span>" if note else ""
+    tooltip_attr = f" data-tooltip='{escape(title)}'" if title else ""
     return f"""
-<div class="card">
+<div class="card"{tooltip_attr}>
   <a class="card-cover" href="{escape(primary_href)}">{thumb}</a>
   <a class="card-title" href="{escape(primary_href)}">{escape(primary_label)}</a>
   {secondary}
@@ -212,11 +228,12 @@ def grid(cards_html: str, *, compact: bool = False) -> str:
     return f"<div class='{cls}'>{cards_html}</div>"
 
 
-def hero_image(image_url: str | None) -> str:
-    cover_src = _cover_src(image_url, size=320)
+def hero_image(image_url: str | None, *, raw: bool = False) -> str:
+    cover_src = _cover_src(image_url, size=320, raw=raw)
     if not cover_src:
         return ""
-    return f"<img class='hero-image' src='{escape(cover_src)}' loading='lazy'>"
+    cls = "hero-image hero-image-raw" if raw else "hero-image"
+    return f"<img class='{cls}' src='{escape(cover_src)}' loading='lazy'>"
 
 
 def detail_layout(

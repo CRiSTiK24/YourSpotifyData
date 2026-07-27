@@ -2,7 +2,9 @@ import sqlite3
 
 
 def load_playlists(con: sqlite3.Connection) -> list[sqlite3.Row]:
-    return con.execute("SELECT id, name, image_url FROM playlists ORDER BY name").fetchall()
+    return con.execute(
+        "SELECT id, name, image_url, description FROM playlists ORDER BY name"
+    ).fetchall()
 
 
 def playlist_exists(con: sqlite3.Connection, playlist_id: int) -> bool:
@@ -11,8 +13,19 @@ def playlist_exists(con: sqlite3.Connection, playlist_id: int) -> bool:
 
 def get_playlist(con: sqlite3.Connection, playlist_id: int) -> sqlite3.Row | None:
     return con.execute(
-        "SELECT image_url, description FROM playlists WHERE id = ?", (playlist_id,)
+        "SELECT image_url, description, spotify_playlist_id FROM playlists WHERE id = ?",
+        (playlist_id,),
     ).fetchone()
+
+
+def set_description(con: sqlite3.Connection, playlist_id: int, description: str) -> None:
+    """Local-DB side of an edit - the Spotify-facing PUT is a separate call
+    (scrobbler.service.update_playlist_description) since this module has
+    no Spotify API access of its own."""
+    con.execute(
+        "UPDATE playlists SET description = ? WHERE id = ?", (description, playlist_id)
+    )
+    con.commit()
 
 
 def load_playlist_tracks(con: sqlite3.Connection, playlist_id: int) -> list[sqlite3.Row]:

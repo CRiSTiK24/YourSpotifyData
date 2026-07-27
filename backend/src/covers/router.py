@@ -7,7 +7,7 @@ from functools import lru_cache
 from fastapi import APIRouter, HTTPException, Query
 from fastapi.responses import Response
 
-from src.duotone import recolor_image
+from src.duotone import recolor_image, resize_image
 from src.palette import Palette
 
 router = APIRouter(tags=["covers"])
@@ -49,13 +49,26 @@ def _recolored(src: str, size: int | None) -> bytes:
     return recolor_image(original, _PALETTE_HEX, size)
 
 
+@lru_cache(maxsize=1024)
+def _original(src: str, size: int | None) -> bytes:
+    """Same fetch+resize as _recolored, but keeps the source's real colors -
+    for covers (playlists) that should show as Spotify has them."""
+    with urllib.request.urlopen(src, timeout=10) as resp:
+        original = resp.read()
+    return resize_image(original, size)
+
+
 @router.get("/cover", description="Proxies a Spotify cover image, recolored into the site palette")
-def cover(src: str, size: int | None = Query(default=None, ge=_MIN_SIZE, le=_MAX_SIZE)):
+def cover(
+    src: str,
+    size: int | None = Query(default=None, ge=_MIN_SIZE, le=_MAX_SIZE),
+    raw: bool = Query(default=False, description="Skip the site-palette recolor, keep original colors"),
+):
     parsed = urllib.parse.urlparse(src)
     if parsed.scheme != "https" or not _is_allowed_host(parsed.hostname):
         raise HTTPException(status_code=400, detail="Unsupported image source")
     try:
-        processed = _recolored(src, size)
+        processed = _original(src, size) if raw else _recolored(src, size)
     except urllib.error.URLError:
         raise HTTPException(status_code=502, detail="Failed to fetch source image") from None
     except Exception:

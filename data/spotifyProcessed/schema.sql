@@ -97,6 +97,7 @@ CREATE TABLE IF NOT EXISTS artist_images (
     artist_name        TEXT NOT NULL UNIQUE,
     spotify_artist_id  TEXT,
     image_url          TEXT,
+    genres             TEXT,
     fetched_at         TEXT NOT NULL
 );
 

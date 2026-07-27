@@ -17,7 +17,10 @@ from .exceptions import NotConnected
 AUTHORIZE_URL = "https://accounts.spotify.com/authorize"
 TOKEN_URL = "https://accounts.spotify.com/api/token"
 RECENTLY_PLAYED_URL = "https://api.spotify.com/v1/me/player/recently-played?limit=50"
-SCOPE = "user-read-recently-played playlist-read-private user-library-read user-follow-read"
+SCOPE = (
+    "user-read-recently-played playlist-read-private user-library-read user-follow-read "
+    "playlist-modify-public playlist-modify-private"
+)
 
 # CSRF state for the OAuth redirect — short-lived and single-user, so a
 # module-level slot (mirroring src.auth.service._pending) is enough.
@@ -174,6 +177,26 @@ def _save_new_plays(con: sqlite3.Connection, items: list[dict]) -> int:
     )
     con.commit()
     return len(new_rows)
+
+
+def update_playlist_description(con: sqlite3.Connection, spotify_playlist_id: str, description: str) -> None:
+    """Pushes a new description to Spotify (PUT .../playlists/{id}/details),
+    requiring the playlist-modify-* scopes added alongside this - an
+    account connected before those scopes existed needs to disconnect and
+    reconnect once for its refresh token to pick them up."""
+    access_token = _ensure_access_token(con)
+    body = json.dumps({"description": description}).encode()
+    req = urllib.request.Request(
+        f"https://api.spotify.com/v1/playlists/{spotify_playlist_id}/details",
+        data=body,
+        method="PUT",
+        headers={
+            "Authorization": f"Bearer {access_token}",
+            "Content-Type": "application/json",
+        },
+    )
+    with urllib.request.urlopen(req):
+        pass
 
 
 def poll_once(con: sqlite3.Connection) -> int:
