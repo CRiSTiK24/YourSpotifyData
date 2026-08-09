@@ -1,36 +1,44 @@
 import sqlite3
 from urllib.parse import quote
 
-from src.html import infinite_scroll_trigger, paginate, row, search_form
+from src.html import infinite_scroll_trigger, row
+from src.utils import format_month_param
 
 from . import service
 
+# Matches library/views.py's MOST_LISTENED_BATCH - the three columns/tabs
+# on the merged /most-listened page all page at the same size.
+MOST_LISTENED_ARTISTS_BATCH = 30
 
-def artist_rows_html(all_artists: list, query: str, artists_page: int) -> str:
-    page_items, current_page, total_pages = paginate(all_artists, artists_page)
+
+def most_listened_artists_rows_html(
+    con: sqlite3.Connection, offset: int, max_plays: int, start_period: int = 0, end_period: int = 0
+) -> str:
+    """Fetches one batch + a lookahead row (cheaper than a separate COUNT)
+    to know whether to append another infinite-scroll trigger - same shape
+    as library/views.py's most_listened_rows_html / _albums_rows_html."""
+    artists = service.load_artists(
+        con, MOST_LISTENED_ARTISTS_BATCH + 1, offset, start_period, end_period
+    )
+    has_more = len(artists) > MOST_LISTENED_ARTISTS_BATCH
+    artists = artists[:MOST_LISTENED_ARTISTS_BATCH]
     rows_html = "".join(
         row(
             a["singer"],
             f"/artist/{quote(a['singer'])}",
-            note=f"{a['play_count']} plays",
+            note=f"×{a['play_count']}",
             image_url=a["image_url"],
+            bar_fraction=(a["play_count"] / max_plays) if max_plays else 0,
         )
-        for a in page_items
+        for a in artists
     )
-    if current_page < total_pages:
-        next_href = f"/artists/rows?query={quote(query)}&artists_page={current_page + 1}"
+    if not rows_html:
+        return "<p class='info'>No plays yet.</p>" if offset == 0 else ""
+    if has_more:
+        next_href = (
+            f"/most-listened-artists/more?offset={offset + MOST_LISTENED_ARTISTS_BATCH}"
+            f"&max_plays={max_plays}&start_month={format_month_param(start_period) if start_period else ''}"
+            f"&end_month={format_month_param(end_period) if end_period else ''}"
+        )
         rows_html += infinite_scroll_trigger(next_href)
     return rows_html
-
-
-def artists_content(con: sqlite3.Connection, query: str = "", artists_page: int = 1) -> str:
-    all_artists = list(service.search_artists(con, query) if query else service.load_artists(con))
-    rows_html = artist_rows_html(all_artists, query, artists_page)
-
-    return f"""
-<h1>Artists</h1>
-{search_form("/artists", "Search artists…", value=query, autofocus=False)}
-<hr class="divider">
-<div id="artist-rows">{rows_html}</div>
-<p class="subtitle">{len(all_artists)} artists total</p>
-"""

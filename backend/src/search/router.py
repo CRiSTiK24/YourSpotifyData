@@ -1,122 +1,142 @@
-from html import escape
 from urllib.parse import quote
 
-from fastapi import APIRouter, Request
+from fastapi import APIRouter
 from fastapi.responses import HTMLResponse
 
+from src.albums import service as albums_service
+from src.artists import service as artists_service
 from src.database import DBDep
-from src.heatmap import build_heatmap_html
-from src.html import page, paginate, pagination_html, row
+from src.html import infinite_scroll_trigger, row
 from src.utils import aggregate_plays
 
 from . import service
 
 router = APIRouter(tags=["search"])
 
+QUICK_RESULTS_BATCH = 8
+
+
+def _quick_track_results_html(con, query: str, offset: int = 0) -> str:
+    # No secondary (artist) label - each tab already says what type its
+    # rows are, so "track — artist" here would just repeat the artist
+    # name that's one tab over. Track name + play count only.
+    history = service.search_track_history(con, query)
+    aggregated = aggregate_plays([{"name": r["name"], "singer": r["singer"]} for r in history])
+    batch = aggregated[offset : offset + QUICK_RESULTS_BATCH]
+    rows_html = "".join(
+        row(
+            name,
+            f"/track/{quote(name)}?artist={quote(singer or '')}",
+            note=f"×{count}",
+        )
+        for name, singer, count in batch
+    )
+    if not rows_html:
+        return "<p class='info'>No matches.</p>" if offset == 0 else ""
+    if offset + QUICK_RESULTS_BATCH < len(aggregated):
+        next_href = f"/search/more?kind=tracks&query={quote(query)}&offset={offset + QUICK_RESULTS_BATCH}"
+        rows_html += infinite_scroll_trigger(next_href)
+    return rows_html
+
+
+def _quick_artist_results_html(con, query: str, offset: int = 0) -> str:
+    artists = list(artists_service.search_artists(con, query))
+    batch = artists[offset : offset + QUICK_RESULTS_BATCH]
+    rows_html = "".join(
+        row(
+            a["singer"],
+            f"/artist/{quote(a['singer'])}",
+            note=f"{a['play_count']} plays",
+            image_url=a["image_url"],
+        )
+        for a in batch
+    )
+    if not rows_html:
+        return "<p class='info'>No matches.</p>" if offset == 0 else ""
+    if offset + QUICK_RESULTS_BATCH < len(artists):
+        next_href = f"/search/more?kind=artists&query={quote(query)}&offset={offset + QUICK_RESULTS_BATCH}"
+        rows_html += infinite_scroll_trigger(next_href)
+    return rows_html
+
+
+def _quick_album_results_html(con, query: str, offset: int = 0) -> str:
+    # No secondary (artist) label here either, same reasoning as tracks.
+    albums = list(albums_service.search_albums(con, query))
+    batch = albums[offset : offset + QUICK_RESULTS_BATCH]
+    rows_html = "".join(
+        row(
+            a["album"],
+            f"/album/{quote(a['album'])}?artist={quote(a['singer'])}",
+            note=f"{a['play_count']} plays",
+            image_url=a["image_url"],
+        )
+        for a in batch
+    )
+    if not rows_html:
+        return "<p class='info'>No matches.</p>" if offset == 0 else ""
+    if offset + QUICK_RESULTS_BATCH < len(albums):
+        next_href = f"/search/more?kind=albums&query={quote(query)}&offset={offset + QUICK_RESULTS_BATCH}"
+        rows_html += infinite_scroll_trigger(next_href)
+    return rows_html
+
+
+def _quick_results_html(con, query: str) -> str:
+    """Tracks/Artists/Albums are independently fetched result sets
+    rendered into the same response (rather than a separate round trip
+    per type). On a narrow screen (mobile topbar) .qs-tabs switches which
+    single .qs-column is visible; on desktop, where the search bar spans
+    the whole content width, there's room to show all three side by side
+    at once instead, so CSS there forces every column visible and hides
+    the now-redundant tab buttons - see the min-width:700px block in
+    style.css and .qs-tab handling in quick-search.js."""
+    tracks_html = _quick_track_results_html(con, query)
+    artists_html = _quick_artist_results_html(con, query)
+    albums_html = _quick_album_results_html(con, query)
+    return f"""
+<div class="qs-tabs">
+  <button type="button" class="qs-tab active" data-qs-tab="tracks">Tracks</button>
+  <button type="button" class="qs-tab" data-qs-tab="artists">Artists</button>
+  <button type="button" class="qs-tab" data-qs-tab="albums">Albums</button>
+</div>
+<div class="qs-results-grid">
+  <div class="qs-column" data-qs-panel="tracks">
+    <h4 class="qs-column-title">Tracks</h4>
+    {tracks_html}
+  </div>
+  <div class="qs-column" data-qs-panel="artists" hidden>
+    <h4 class="qs-column-title">Artists</h4>
+    {artists_html}
+  </div>
+  <div class="qs-column" data-qs-panel="albums" hidden>
+    <h4 class="qs-column-title">Albums</h4>
+    {albums_html}
+  </div>
+</div>
+"""
+
 
 @router.get(
     "/search",
     response_class=HTMLResponse,
     status_code=200,
-    description="Search across tracks, albums and playlists",
+    description="Live quick-search fragment for the persistent chrome search box "
+    "(desktop topbar + mobile topbar) - tabbed Tracks/Artists, no navigation",
 )
-def search(request: Request, con: DBDep, query: str = "", search_page: int = 1):
-    if not query:
-        from fastapi.responses import RedirectResponse
+def quick_search(con: DBDep, query: str = ""):
+    query = query.strip()
+    return HTMLResponse(_quick_results_html(con, query) if query else "")
 
-        return RedirectResponse(url="/", status_code=302)
 
-    history = service.search_track_history(con, query)
-    lib_tracks = service.search_library_tracks(con, query)
-    lib_albums = service.search_library_albums(con, query)
-    playlist_rows = service.search_playlists(con, query)
-    pl_ids = {r["name"]: r["id"] for r in con.execute("SELECT id, name FROM playlists").fetchall()}
-
-    aggregated = aggregate_plays([{"name": r["name"], "singer": r["singer"]} for r in history])
-    page_items, current_page, total_pages = paginate(aggregated, search_page)
-
-    rows_html = "".join(
-        row(
-            name,
-            f"/track/{quote(name)}?artist={quote(singer or '')}",
-            singer,
-            f"/artist/{quote(singer)}" if singer else None,
-            note=f"×{count}",
-        )
-        for name, singer, count in page_items
-    )
-    pag = pagination_html(current_page, total_pages, f"/search?query={quote(query)}", "search_page")
-    heatmap_html, _ = build_heatmap_html(history, f"search_{query}", request)
-
-    liked_rows = (
-        "".join(
-            row(
-                r["track_name"],
-                f"/track/{quote(r['track_name'])}?artist={quote(r['artist_name'])}",
-                r["artist_name"],
-                f"/artist/{quote(r['artist_name'])}",
-                image_url=r["image_url"],
-            )
-            for r in lib_tracks
-        )
-        or "<p class='info'>Not in your liked songs.</p>"
-    )
-
-    albums_section = ""
-    if lib_albums:
-        albums_section = "<h2>Liked albums</h2>" + "".join(
-            row(
-                r["album_name"],
-                f"/album/{quote(r['album_name'])}?artist={quote(r['artist_name'])}",
-                r["artist_name"],
-                f"/artist/{quote(r['artist_name'])}",
-                image_url=r["image_url"],
-            )
-            for r in lib_albums
-        )
-
-    by_playlist: dict[str, list] = {}
-    for r in playlist_rows:
-        by_playlist.setdefault(r["playlist_name"], []).append(r)
-
-    pl_html = ""
-    for pl_name, tracks in by_playlist.items():
-        pl_id = pl_ids.get(pl_name, "")
-        inner = (
-            f"<div class='row'><a href='/playlist/{pl_id}?name={quote(pl_name)}'>"
-            f"Open {escape(pl_name)}</a></div>"
-            if pl_id
-            else ""
-        ) + "".join(
-            row(
-                t["track_name"],
-                f"/track/{quote(t['track_name'])}?artist={quote(t['artist_name'])}",
-                t["artist_name"],
-                f"/artist/{quote(t['artist_name'])}",
-                image_url=t["image_url"],
-            )
-            for t in tracks
-        )
-        pl_html += (
-            f"<details style='margin-bottom:8px'>"
-            f"<summary style='cursor:pointer;padding:6px 0'>"
-            f"{escape(pl_name)} ({len(tracks)} match{'es' if len(tracks) > 1 else ''})"
-            f"</summary>{inner}</details>"
-        )
-
-    content = f"""
-<h1>Search: &ldquo;{escape(query)}&rdquo;</h1>
-<h2>Play history — {len(history)} plays across {len(aggregated)} track{"s" if len(aggregated) != 1 else ""}</h2>
-{rows_html or "<p class='info'>No play history found.</p>"}
-{pag}
-<h2>Listen history heatmap</h2>
-{heatmap_html}
-<hr class="divider">
-<h2>Liked songs ({len(lib_tracks)})</h2>
-{liked_rows}
-{albums_section}
-<hr class="divider">
-<h2>Playlists ({len(playlist_rows)} matches)</h2>
-{pl_html or "<p class='info'>Not found in any playlist.</p>"}
-"""
-    return page(content)
+@router.get(
+    "/search/more",
+    response_class=HTMLResponse,
+    status_code=200,
+    description="Infinite-scroll fragment: next batch of quick-search results for one tab",
+)
+def quick_search_more(con: DBDep, query: str = "", offset: int = 0, kind: str = "tracks"):
+    query = query.strip()
+    if kind == "artists":
+        return HTMLResponse(_quick_artist_results_html(con, query, offset))
+    if kind == "albums":
+        return HTMLResponse(_quick_album_results_html(con, query, offset))
+    return HTMLResponse(_quick_track_results_html(con, query, offset))

@@ -22,6 +22,8 @@ def playlists_content(con: sqlite3.Connection) -> str:
     export_lines = []
     for pl in pls:
         export_lines.append(pl["name"])
+        if pl["description"]:
+            export_lines.append(unescape(pl["description"]))
         for t in service.load_playlist_tracks(con, pl["id"]):
             export_lines.append(f"  * {t['track_name']} - {t['artist_name']}")
         export_lines.append("")

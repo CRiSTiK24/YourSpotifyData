@@ -16,12 +16,14 @@ from src.exceptions import http_exception_handler
 from src.home import router as home_router
 from src.html import logged_in_var
 from src.images import service as images_service
+from src.library import service as library_service
 from src.library.router import router as library_router
 from src.palette import sync_css_palette
 from src.playlists.router import router as playlists_router
 from src.scrobbler import library_sync as library_sync_service
 from src.scrobbler import service as scrobbler_service
 from src.scrobbler.router import router as scrobbler_router
+from src.search import service as search_service
 from src.search.router import router as search_router
 from src.theme.router import router as theme_router
 from src.tracks.router import router as tracks_router
@@ -39,6 +41,8 @@ async def lifespan(app: FastAPI):
     try:
         library_sync_service.ensure_migrations(con)
         images_service.ensure_schema_columns(con)
+        search_service.ensure_fts_migrations(con)
+        library_service.ensure_play_count_migrations(con)
     finally:
         con.close()
     poll_task = asyncio.create_task(scrobbler_service.poll_loop())

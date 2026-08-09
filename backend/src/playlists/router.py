@@ -6,19 +6,18 @@ from fastapi import APIRouter, Depends, Form, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 
 from src.auth.service import require_auth
-from src.constants import MONTHS
 from src.database import DBDep
-from src.heatmap import build_heatmap_html
+from src.heatmap import build_heatmap_html, period_label
 from src.html import (
     card,
     copy_list_button,
+    detail_header,
     detail_layout,
+    filter_clear_link,
     grid,
     hero_image,
     logged_in_var,
     page,
-    page_header,
-    row,
 )
 from src.scrobbler import service as scrobbler_service
 from src.scrobbler.exceptions import NotConnected
@@ -34,7 +33,7 @@ logger = logging.getLogger("playlists")
 
 @router.get("/playlists", response_class=HTMLResponse, status_code=200, description="All playlists")
 def playlists(con: DBDep):
-    return page(playlists_content(con))
+    return page(playlists_content(con), title="Playlists")
 
 
 @router.post(
@@ -81,41 +80,55 @@ def playlist_detail(playlist_id: int, request: Request, con: DBDep, name: str = 
     tracks = service.load_playlist_tracks(con, playlist_id)
     history = service.load_playlist_history(con, playlist_id)
 
-    heatmap_html, result = build_heatmap_html(history, f"playlist_{playlist_id}", request)
-
-    period_html = ""
-    if result:
-        year, month, day, plays = result
-        label = f"{MONTHS[month - 1]} {day}, {year}" if day else f"{MONTHS[month - 1]} {year}"
-        aggregated = aggregate_plays(plays)
-        period_html = (
-            f"<h2>{label} — {len(plays)} play{'s' if len(plays) != 1 else ''} "
-            f"across {len(aggregated)} track{'s' if len(aggregated) != 1 else ''}</h2>"
-        )
-        period_html += "".join(
-            row(
-                n,
-                f"/track/{quote(n)}?artist={quote(s or '')}",
-                s,
-                f"/artist/{quote(s)}" if s else None,
-                note=f"×{c}",
-            )
-            for n, s, c in aggregated
-        )
-
-    tracks_html = grid(
-        "".join(
-            card(
-                t["track_name"],
-                f"/track/{quote(t['track_name'])}?artist={quote(t['artist_name'])}",
-                t["artist_name"],
-                f"/artist/{quote(t['artist_name'])}",
-                image_url=t["image_url"],
-            )
-            for t in tracks
-        ),
-        compact=True,
+    heatmap_html, result, base_href = build_heatmap_html(
+        history, f"playlist_{playlist_id}", request
     )
+
+    filter_clear_html = ""
+    if result:
+        _, _, _, plays = result
+        label = period_label(result)
+        aggregated = aggregate_plays(plays)
+        filter_clear_html = filter_clear_link(label, base_href)
+        play_count = len(plays)
+        # Same card-grid layout as the unfiltered view below (not row()'s
+        # plain-text list) - picking a period should narrow which tracks
+        # show, not change how they're displayed. Cover art needs its own
+        # lookup here since plays isn't pre-joined against album_images.
+        album_by_name: dict[str, tuple[str, str]] = {}
+        for p in plays:
+            if p.get("album") and p.get("singer"):
+                album_by_name.setdefault(p["name"], (p["singer"], p["album"]))
+        images = service.images_for_tracks(con, set(album_by_name.values()))
+        tracks_html = grid(
+            "".join(
+                card(
+                    n,
+                    f"/track/{quote(n)}?artist={quote(s or '')}",
+                    s,
+                    f"/artist/{quote(s)}" if s else None,
+                    note=f"×{c}",
+                    image_url=images.get(album_by_name.get(n)),
+                )
+                for n, s, c in aggregated
+            ),
+            compact=True,
+        )
+    else:
+        tracks_html = grid(
+            "".join(
+                card(
+                    t["track_name"],
+                    f"/track/{quote(t['track_name'])}?artist={quote(t['artist_name'])}",
+                    t["artist_name"],
+                    f"/artist/{quote(t['artist_name'])}",
+                    image_url=t["image_url"],
+                )
+                for t in tracks
+            ),
+            compact=True,
+        )
+        play_count = len(history)
 
     playlist = service.get_playlist(con, playlist_id)
     save_notes = {
@@ -143,7 +156,15 @@ def playlist_detail(playlist_id: int, request: Request, con: DBDep, name: str = 
             else ""
         )
 
-    export_lines = [name, ""] + [f"* {t['track_name']} - {t['artist_name']}" for t in tracks]
+    description_line = (
+        unescape(playlist["description"]) if playlist and playlist["description"] else ""
+    )
+    export_lines = (
+        [name]
+        + ([description_line] if description_line else [])
+        + [""]
+        + [f"* {t['track_name']} - {t['artist_name']}" for t in tracks]
+    )
     spotify_link_html = (
         f"<a class='btn' style='margin-left:auto' "
         f"href='https://open.spotify.com/playlist/{escape(playlist['spotify_playlist_id'])}' "
@@ -151,17 +172,21 @@ def playlist_detail(playlist_id: int, request: Request, con: DBDep, name: str = 
         if playlist and playlist["spotify_playlist_id"]
         else ""
     )
-    title_html = page_header(name)
+    title_html = f"<h1>{escape(name)}</h1>"
     tracks_actions_html = copy_list_button(export_lines, f"playlist-{playlist_id}-list") + spotify_link_html
 
-    header = f"""
-{hero_image(playlist["image_url"] if playlist else None, raw=True)}
-{title_html}
-{description_html}
-<p class="subtitle">{len(tracks)} track{"s" if len(tracks) != 1 else ""} &nbsp;·&nbsp; {len(history)} total plays</p>
-"""
+    meta_html = (
+        f"{description_html}"
+        f"<p class='subtitle'>{len(tracks)} track{'s' if len(tracks) != 1 else ''} "
+        f"&nbsp;·&nbsp; {play_count} play{'s' if play_count != 1 else ''}{filter_clear_html}</p>"
+    )
+    header = detail_header(
+        title_html,
+        meta_html,
+        hero_image(playlist["image_url"] if playlist else None, raw=True),
+        heatmap_html,
+    )
     return page(
-        detail_layout(
-            header, heatmap_html + period_html, "Tracks", tracks_html, list_actions=tracks_actions_html
-        )
+        detail_layout(header, "Tracks", tracks_html, list_actions=tracks_actions_html),
+        title=name,
     )

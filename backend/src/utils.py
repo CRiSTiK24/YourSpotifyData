@@ -13,20 +13,28 @@ def aggregate_plays(plays: list) -> list[tuple[str, str | None, int]]:
     )
 
 
-def fts_match_query(words: list[str]) -> str:
+def parse_month_param(value: str) -> int:
+    """Parses a native <input type="month"> value ("YYYY-MM") into the
+    YYYYMM integer the *_play_counts tables key on (see
+    library/service.py's ensure_play_count_migrations) - e.g. "2024-08" ->
+    202408. Empty string (the "no bound on this side" case, same
+    convention as the old start_year/end_year=0) maps to 0."""
+    return int(value.replace("-", "")) if value else 0
+
+
+def format_month_param(period: int) -> str:
+    """The inverse of parse_month_param - YYYYMM back to "YYYY-MM", for
+    populating an <input type="month">'s value/min/max attributes."""
+    return f"{period // 100:04d}-{period % 100:02d}"
+
+
+def fts_match_query(words: list[str], column: str | None = None) -> str:
     """Build an FTS5 MATCH query from user-typed words: each word becomes a
     quoted prefix term (so "day" matches "Daytime"), AND'd together. Bareword
-    terms match against any indexed column, same semantics as the old
-    per-column OR in word_clauses."""
-    terms = [f'"{word.replace(chr(34), chr(34) * 2)}"*' for word in words]
+    terms match against any indexed column. Pass `column` to restrict every
+    term to just that column instead (FTS5's `col: term` syntax) - e.g. so a
+    track search for "car" doesn't also surface every track by an artist
+    named "Cartoon", which an any-column search would."""
+    prefix = f"{column}: " if column else ""
+    terms = [f'{prefix}"{word.replace(chr(34), chr(34) * 2)}"*' for word in words]
     return " AND ".join(terms)
-
-
-def word_clauses(words: list[str], *columns: str) -> tuple[str, list[str]]:
-    parts = []
-    params = []
-    for word in words:
-        col_checks = " OR ".join(f"{col} LIKE ?" for col in columns)
-        parts.append(f"({col_checks})")
-        params.extend(f"%{word}%" for _ in columns)
-    return " AND ".join(parts), params

@@ -36,6 +36,24 @@
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+/* htmx's hx-swap="... transition:true" on <body> (see html.py) triggers
+   the browser's native View Transition API around every boosted
+   navigation, cross-fading the old/new #content instead of an instant
+   swap - previously every click (including a heatmap year/month/day
+   selection, which just narrows the same page) replaced the whole
+   content region abruptly, reading like a full page reload even though
+   it wasn't one. The browser's default transition (an opacity
+   cross-fade) already needs no CSS of its own; this only opts it out for
+   users who've asked the OS for reduced motion, same intent as this
+   file's other transitions (.drawer-overlay, .hm-day-cell, etc). */
+@media (prefers-reduced-motion: reduce) {
+    ::view-transition-group(*),
+    ::view-transition-old(*),
+    ::view-transition-new(*) {
+        animation: none !important;
+    }
+}
+
 body {
     background: var(--color-bg);
     color: var(--color-text);
@@ -47,22 +65,12 @@ body {
 a { color: var(--color-text); text-decoration: none; }
 a:hover { text-decoration: underline; text-decoration-color: var(--color-accent); }
 
-/* app shell: persistent left sidebar + main content pane */
-.shell { display: flex; align-items: flex-start; min-height: 100vh; }
-.sidebar {
-    width: 200px;
-    flex-shrink: 0;
-    position: sticky;
-    top: 0;
-    height: 100vh;
-    overflow-y: auto;
-    background: var(--color-nav-bg);
-    border-right: 1px solid var(--color-border);
-    padding: 16px 12px;
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-}
+/* app shell: mobile-first. Default (no media query) is the phone layout -
+   sidebar hidden, topbar/drawer shown instead; the `min-width: 700px`
+   block at the end of this file swaps in the desktop sidebar and hides
+   the mobile chrome. */
+.shell { display: flex; flex-direction: column; align-items: stretch; min-height: 100vh; }
+.sidebar { display: none; }
 .sidebar .brand { font-weight: 600; color: var(--color-text); font-size: 16px; padding: 6px 10px 14px; }
 .sidebar a:not(.brand) {
     color: var(--color-text);
@@ -80,19 +88,200 @@ a:hover { text-decoration: underline; text-decoration-color: var(--color-accent)
     flex-direction: column;
     gap: 2px;
 }
-.content { flex: 1; min-width: 0; padding: 24px 32px; }
-@media (max-width: 700px) {
-    .shell { flex-direction: column; }
-    .sidebar {
-        width: 100%;
-        height: auto;
-        position: static;
-        flex-direction: row;
-        flex-wrap: wrap;
-        border-right: none;
-        border-bottom: 1px solid var(--color-border);
-    }
-    .sidebar-bottom { margin-top: 0; padding-top: 0; border-top: none; flex-direction: row; }
+/* .content-column is the actual flex:1 item in .shell now (not .content
+   directly) - it stacks the desktop search topbar above .content so that
+   bar spans the content area's full width instead of being squeezed into
+   the 200px sidebar. Harmless on mobile too: desktop-topbar is hidden
+   there and .content-column just passes its size straight through. */
+.content-column { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.content {
+    padding: clamp(6px, 2.5vw, 16px);
+    /* lets descendants size themselves off *this element's* rendered width
+       (cqw units below) instead of the viewport (vw) - matters because
+       .content's actual width isn't the viewport: it's viewport minus the
+       200px sidebar on desktop, and minus half again inside a .panel on
+       detail pages. vw can't see either of those; cqw automatically does,
+       since it reads the real box after layout. */
+    container-type: inline-size;
+}
+
+/* mobile chrome: the phone-mode nav, shown by default. Kept as siblings of
+   #content (outside the htmx hx-select="#content" swap target) so the
+   drawer/tabbar/topbar persist across boosted navigations instead of being
+   torn down and rebuilt on every page load. Hidden on desktop below. */
+.mobile-topbar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background: var(--color-nav-bg);
+    border-bottom: 1px solid var(--color-border);
+    padding: 10px 14px;
+}
+/* desktop counterpart of .mobile-topbar - hidden by default (phone-first),
+   shown in the min-width:700px block at the end of this file. Sits inside
+   .content-column, so it spans the content area's width, not the sidebar. */
+.desktop-topbar {
+    display: none;
+    padding: 14px 32px;
+    border-bottom: 1px solid var(--color-border);
+}
+/* persistent chrome-embedded live search (desktop topbar + mobile topbar -
+   see _quick_search_widget() in html.py). position:relative so the results
+   dropdown below can anchor to this box specifically, not the whole bar. */
+.quick-search { position: relative; flex: 1; min-width: 0; }
+.quick-search-input {
+    width: 100%;
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    color: var(--color-text);
+    padding: 8px 12px;
+    font-size: 14px;
+    outline: none;
+}
+.quick-search-input:focus { border-color: var(--color-accent); }
+/* empty (no query yet, or cleared) means hidden; htmx fills this with
+   .row/.info markup as the user types, or clears it back to empty on
+   navigation - see the htmx:afterSwap handler in mobile-nav.js */
+.quick-search-results {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 40;
+    margin-top: 4px;
+    padding: 6px;
+    background: var(--color-nav-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    max-height: 60vh;
+    overflow-y: auto;
+    /* explicit, not left to default: row content already truncates with
+       ellipsis rather than needing to scroll, so a horizontal scrollbar
+       here is never legitimate - without this, minor CSS Grid track
+       rounding in the 3-column desktop layout was enough to trigger one
+       anyway (setting overflow-y alone makes the browser auto-convert
+       overflow-x from visible to auto, per spec - the two axes can't be
+       "half visible"). */
+    overflow-x: hidden;
+    /* reserves the scrollbar's width in the layout up front (same fix as
+       .ml-column) instead of overlaying it on top of the rightmost
+       result row once content actually overflows - without this, a
+       result appearing/disappearing could shift width or get clipped
+       under the thumb. */
+    scrollbar-gutter: stable;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+.quick-search-results:not(:empty) { display: block; }
+
+/* Tracks/Artists/Albums tab bar inside the results dropdown - see .qs-tab
+   click handling in quick-search.js. All three result sets are always
+   fetched in one response and pre-rendered (see _quick_results_html in
+   search/router.py); switching tabs just toggles which .qs-column is
+   visible, no extra request, so it stays instant even on a slow
+   connection. Mobile-first: single column, tabs pick which one shows -
+   the min-width:700px block below switches to all three side by side and
+   hides the now-redundant tabs, since the desktop search bar has the
+   width to spare. */
+.qs-tabs {
+    display: flex;
+    gap: 4px;
+    padding-bottom: 6px;
+    margin-bottom: 6px;
+    border-bottom: 1px solid var(--color-border);
+}
+.qs-tab {
+    background: none;
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    padding: 4px 10px;
+    font-size: 12px;
+    color: var(--color-text);
+    opacity: 0.7;
+    cursor: pointer;
+}
+.qs-tab.active { opacity: 1; background: var(--color-surface); border-color: var(--color-accent); }
+.qs-column[hidden] { display: none; }
+/* redundant on mobile - the active .qs-tab button already says which type
+   is showing. Only needed on desktop, where the tabs are hidden and this
+   is the sole label per column - see the min-width:700px override. */
+.qs-column-title {
+    display: none;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--color-text);
+    opacity: 0.55;
+    margin-bottom: 4px;
+}
+
+.hamburger-btn {
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    background: none;
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    cursor: pointer;
+}
+.hamburger-btn span {
+    display: block;
+    width: 18px;
+    height: 2px;
+    background: var(--color-text);
+}
+
+.drawer-overlay {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 29;
+    background: rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+}
+.drawer-overlay.open { opacity: 1; pointer-events: auto; }
+
+.mobile-drawer {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 30;
+    width: 240px;
+    max-width: 80vw;
+    overflow-y: auto;
+    scrollbar-gutter: stable;
+    background: var(--color-nav-bg);
+    border-right: 1px solid var(--color-border);
+    padding: 16px 12px;
+    transform: translateX(-100%);
+    transition: transform 0.2s ease;
+}
+.mobile-drawer.open { transform: translateX(0); }
+.mobile-drawer .brand { font-weight: 600; font-size: 16px; padding: 6px 10px 14px; }
+.mobile-drawer a:not(.brand) { font-size: 14px; padding: 10px 10px; border-radius: 6px; }
+.mobile-drawer a:not(.brand):hover { background: var(--color-surface); text-decoration: none; }
+.mobile-drawer .sidebar-bottom {
+    margin-top: auto;
+    padding-top: 14px;
+    border-top: 1px solid var(--color-border);
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
 }
 
 h1 { font-size: 24px; font-weight: 600; margin-bottom: 4px; color: var(--color-text); }
@@ -131,8 +320,10 @@ h2 { font-size: 18px; font-weight: 600; margin: 20px 0 10px; color: var(--color-
     white-space: nowrap;
     text-overflow: ellipsis;
 }
+/* hidden by default (narrow phones truncate to just the primary label);
+   restored at 481px and up - see the min-width block at the end of file */
 .row .row-secondary {
-    display: inline-block;
+    display: none;
     flex-shrink: 0;
     max-width: 40%;
     overflow: hidden;
@@ -149,10 +340,11 @@ h2 { font-size: 18px; font-weight: 600; margin: 20px 0 10px; color: var(--color-
     text-align: right;
 }
 
+.row-bar-wrap { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
 .row-bar {
     position: relative;
-    width: 100px;
-    height: 20px;
+    width: 80px;
+    height: 8px;
     flex-shrink: 0;
     border-radius: 4px;
     background: var(--color-bg);
@@ -166,16 +358,14 @@ h2 { font-size: 18px; font-weight: 600; margin: 20px 0 10px; color: var(--color-
     background: var(--color-accent);
 }
 .row-bar-label {
-    position: relative;
-    z-index: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
-    font-size: 11px;
+    font-size: 12px;
     color: var(--color-text);
+    opacity: 0.85;
+    min-width: 42px;
+    text-align: right;
+    flex-shrink: 0;
 }
-.row .sep { color: var(--color-text); opacity: 0.7; flex-shrink: 0; }
+.row .sep { display: none; color: var(--color-text); opacity: 0.7; flex-shrink: 0; }
 
 .row-thumb {
     width: 32px;
@@ -189,8 +379,12 @@ h2 { font-size: 18px; font-weight: 600; margin: 20px 0 10px; color: var(--color-
 }
 
 .hero-image {
-    width: 160px;
-    height: 160px;
+    /* fluid instead of a hard breakpoint jump: scales continuously between
+       a small-phone floor and the historical 160px desktop size. cqw, not
+       vw: inside a detail page this sits in a ~half-width .panel, and vw
+       has no way to know that. */
+    width: clamp(120px, 30cqw, 160px);
+    height: clamp(120px, 30cqw, 160px);
     border-radius: 8px;
     object-fit: cover;
     background: var(--color-surface);
@@ -202,16 +396,35 @@ h2 { font-size: 18px; font-weight: 600; margin: 20px 0 10px; color: var(--color-
 
 .hero-image-raw { filter: none; }
 
+/* auto-fill + minmax already reflows the column count with no media query
+   needed (intrinsic layout); the minimum tile width is itself fluid via
+   clamp() so it doesn't jump at a breakpoint either - it shrinks smoothly
+   down to a small-phone floor and grows up to the desktop ceiling. cqw
+   (of .content) rather than vw, since .content is narrower than the
+   viewport whenever the sidebar is showing. */
 .grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(clamp(100px, 26cqw, 160px), 1fr));
+    gap: clamp(10px, 3cqw, 20px);
     margin-top: 16px;
+    /* clip only X: on narrow columns the tooltip bubble (centered on its
+       card, up to 220px wide) can be wider than the card itself and
+       overhang the page edge even while inactive/invisible, which was
+       inflating the page's scrollable width and causing a phantom
+       horizontal scrollbar. Clipping at the grid (not html/body) keeps
+       position:sticky elsewhere on the page working, and still lets an
+       active tooltip bleed upward (overflow-y stays visible) above the
+       grid's top edge. */
+    overflow-x: clip;
+    overflow-y: visible;
 }
 
 .grid-compact {
-    grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
-    gap: 12px;
+    /* cqw here resolves against .panel (the nearest containerized
+       ancestor), not .content - correctly reflecting that this grid lives
+       in one half of the desktop two-column detail layout. */
+    grid-template-columns: repeat(auto-fill, minmax(clamp(72px, 20cqw, 90px), 1fr));
+    gap: clamp(8px, 2cqw, 12px);
 }
 .grid-compact .card-title, .grid-compact .card-secondary { font-size: 12px; }
 
@@ -226,6 +439,13 @@ h2 { font-size: 18px; font-weight: 600; margin: 20px 0 10px; color: var(--color-
     transition: opacity 0.15s ease, transform 0.15s ease;
 }
 
+/* --tooltip-shift (set by positionTooltip() in tooltips.js, in px) nudges
+   the bubble left/right so it stays within the viewport for cards near a
+   screen edge - the centering (-50%) alone doesn't know where the
+   viewport ends. Defaults to 0px (plain centered) until JS runs, so it
+   degrades gracefully with no JS. The arrow (::before below) intentionally
+   keeps pointing straight at the card regardless - only the bubble body
+   moves. */
 .card[data-tooltip]::after {
     content: attr(data-tooltip);
     bottom: 100%;
@@ -241,7 +461,7 @@ h2 { font-size: 18px; font-weight: 600; margin: 20px 0 10px; color: var(--color-
     line-height: 1.4;
     white-space: normal;
     box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35);
-    transform: translate(-50%, 4px);
+    transform: translate(calc(-50% + var(--tooltip-shift, 0px)), 4px);
 }
 
 .card[data-tooltip]::before {
@@ -256,16 +476,44 @@ h2 { font-size: 18px; font-weight: 600; margin: 20px 0 10px; color: var(--color-
     transform: translate(-50%, 4px) rotate(45deg);
 }
 
-.card[data-tooltip]:hover::after, .card[data-tooltip]:hover::before {
+.card[data-tooltip]:hover::after, .card[data-tooltip]:hover::before,
+.card[data-tooltip].tooltip-active::after, .card[data-tooltip].tooltip-active::before {
     opacity: 1;
     transform: translate(-50%, 0) rotate(45deg);
 }
 
-.card[data-tooltip]:hover::after {
-    transform: translate(-50%, 0);
+.card[data-tooltip]:hover::after, .card[data-tooltip].tooltip-active::after {
+    transform: translate(calc(-50% + var(--tooltip-shift, 0px)), 0);
 }
 
 .card-cover { display: block; border-radius: 8px; overflow: hidden; }
+
+/* Touch fallback for the hover-only tooltip above: on devices that can't
+   hover (phones/tablets) this button is the only way to reach a playlist's
+   description, so it's shown in place of relying on tap-and-hold. Hidden
+   on hover-capable devices to keep the existing hover UX uncluttered. */
+.card-info-btn {
+    display: none;
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    z-index: 5;
+    width: 24px;
+    height: 24px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    border: 1px solid var(--color-border);
+    background: rgba(44, 31, 51, 0.75);
+    color: var(--color-text);
+    font-size: 12px;
+    font-style: italic;
+    font-family: Georgia, serif;
+    cursor: pointer;
+}
+@media (hover: none) {
+    .card-info-btn { display: flex; }
+}
 
 .card-thumb {
     display: block;
@@ -332,7 +580,10 @@ h2 { font-size: 18px; font-weight: 600; margin: 20px 0 10px; color: var(--color-
     color: var(--color-text);
     border: none;
     border-radius: 6px;
-    padding: 8px 16px;
+    /* fluid vertical padding: a touch of extra tap-target height on
+       narrow/phone widths, settling to the tighter desktop value - no
+       breakpoint needed for a difference this small */
+    padding: clamp(8px, 2cqw, 10px) 16px;
     font-size: 14px;
     cursor: pointer;
 }
@@ -344,17 +595,22 @@ h2 { font-size: 18px; font-weight: 600; margin: 20px 0 10px; color: var(--color-
     color: var(--color-text);
     border: none;
     border-radius: 6px;
-    padding: 8px 16px;
+    padding: clamp(8px, 2cqw, 10px) 16px;
     font-size: 14px;
     text-decoration: none;
     cursor: pointer;
 }
 .btn:hover { background: var(--color-accent); }
 
-.page-header { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.page-header { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
 .page-header h1 { margin-bottom: 0; }
 
-.list-title-row { display: flex; align-items: center; flex-wrap: nowrap; gap: 12px; }
+/* wraps on mobile - a period-filtered heading ("Tracks — Jan 2021") plus
+   two action buttons (Copy List, Open in Spotify) doesn't fit on one line
+   on a narrow panel; nowrap forced them to overflow the panel instead of
+   dropping to a second line (min-width:700px override below restores
+   nowrap once there's room). */
+.list-title-row { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; }
 .list-title-row h2 { margin-bottom: 0; white-space: nowrap; }
 .list-title-row .btn { flex-shrink: 0; white-space: nowrap; }
 
@@ -374,117 +630,230 @@ h2 { font-size: 18px; font-weight: 600; margin: 20px 0 10px; color: var(--color-
 .description-input:focus { outline: none; border-color: var(--color-accent); }
 .description-form .btn { align-self: flex-start; }
 
-.year-filter { display: flex; align-items: center; gap: 12px; }
-.year-filter-label { font-size: 14px; font-weight: 600; min-width: 9ch; text-align: right; }
-
-.year-range {
-    position: relative;
-    width: 180px;
-    height: 20px;
-}
-.year-range-track {
-    position: absolute;
-    top: 50%;
-    left: 0;
-    right: 0;
-    height: 4px;
-    transform: translateY(-50%);
+.date-filter { display: flex; align-items: flex-end; gap: 12px; flex-wrap: wrap; }
+.date-filter-field { display: flex; flex-direction: column; gap: 4px; font-size: 13px; }
+.date-filter-field span { color: var(--color-text); opacity: 0.7; }
+.date-filter-field input[type="month"] {
     background: var(--color-bg);
     border: 1px solid var(--color-border);
-    border-radius: 2px;
+    border-radius: 6px;
+    padding: 6px 8px;
+    color: var(--color-text);
+    font-size: 14px;
+    font-family: inherit;
 }
-.year-range-fill {
-    position: absolute;
-    top: 50%;
-    height: 4px;
-    transform: translateY(-50%);
-    background: var(--color-accent);
-}
-.year-thumb {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 20px;
-    margin: 0;
-    background: transparent;
-    -webkit-appearance: none;
-    appearance: none;
-    pointer-events: none;
-}
-.year-thumb::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
-    pointer-events: auto;
-    width: 16px;
-    height: 16px;
-    border-radius: 50%;
-    background: var(--color-accent);
-    border: 2px solid var(--color-text);
+
+/* /most-listened: Songs/Albums/Artists used to be three separate pages;
+   mobile-first default is tabs switching a single visible .ml-column
+   (same pattern as the quick-search dropdown's Tracks/Artists/Albums) -
+   the min-width:700px block at the end of this file shows all three as
+   side-by-side scrollable columns instead, since desktop has the width to
+   spare, and hides the now-redundant tabs. See most-listened.js.
+
+   Styled like browser tabs rather than pill buttons: tabs sit on the same
+   baseline as .ml-columns' top border, rounded on top only, and the
+   active tab's background matches .ml-columns' so its own bottom edge
+   visually erases that baseline right where it sits - the classic
+   "folder tab attached to the page" look, vs. pills which read as a
+   filter/toggle rather than a page-selector. */
+.ml-tabs { display: flex; align-items: flex-end; gap: 4px; margin: 16px 0 0; flex-wrap: wrap; }
+.ml-tab {
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-bottom: none;
+    border-radius: 8px 8px 0 0;
+    padding: 10px 16px;
+    margin-bottom: -1px;
+    font-size: 14px;
+    color: var(--color-text);
+    opacity: 0.65;
     cursor: pointer;
+    position: relative;
 }
-.year-thumb::-moz-range-thumb {
-    pointer-events: auto;
-    width: 16px;
-    height: 16px;
-    border-radius: 50%;
-    background: var(--color-accent);
-    border: 2px solid var(--color-text);
-    cursor: pointer;
+.ml-tab.active {
+    opacity: 1;
+    background: var(--color-surface);
+    border-color: var(--color-border);
+    z-index: 1;
 }
-.year-thumb::-moz-range-track { background: transparent; border: none; }
+/* hidden on inactive tabs so all three fit without wrapping/crowding on
+   narrow screens - the active tab is the one whose exact count matters at
+   a glance. */
+.ml-tab-count { display: none; }
+.ml-tab.active .ml-tab-count { display: inline; }
+.ml-columns { border-top: 1px solid var(--color-border); background: var(--color-surface); padding: 16px; border-radius: 0 8px 8px 8px; }
+.ml-column[hidden] { display: none; }
+/* redundant on mobile - the active .ml-tab already says which type is
+   showing. Only needed on desktop, where the tabs are hidden and this is
+   the sole label per column. */
+.ml-column-title { display: none; }
 
 /* heatmap: cell colors are an independent 4-color intensity ramp
    (see src/constants.py COLORS); the lightest step only reaches ~3.2:1
-   against --color-text, same tradeoff as --color-accent-soft above */
-.heatmap-wrap { background: var(--color-bg); border: 1px solid var(--color-border); padding: 8px; border-radius: 6px; display: inline-block; }
-.heatmap-wrap table { border-collapse: separate; border-spacing: 2px; }
-.heatmap-wrap th { font-size: 11px; color: var(--color-text); opacity: 0.7; text-align: center; width: 44px; }
-.heatmap-wrap th.row-label { width: 40px; }
-.hm-cell {
-    display: block;
-    width: 32px;
-    height: 32px;
-    border-radius: 4px;
-    text-align: center;
-    line-height: 32px;
-    font-size: 11px;
-    color: var(--color-text);
-    text-decoration: none;
+   against --color-text, same tradeoff as --color-accent-soft above.
+   Only the day/week drill-down level (see _day_grid_html in heatmap.py)
+   still uses this table styling - the top-level overview is the
+   .heatmap-years-overview grid further below. */
+/* The day grid is sized to the hero image's own height (.hero-image's
+   clamp) so the image stays a true 1:1 square instead of stretching to
+   match a tall grid - the grid gives up the space instead, and fills it
+   exactly rather than shrink-wrapping smaller (see .heatmap-wrap table's
+   height:100% below). Cell width fills its column (table-layout:fixed);
+   cell height fills its row (the table's own row-height distribution) -
+   both dimensions are genuinely driven by available space now, not a
+   guessed size in either axis. */
+.heatmap-wrap {
+    /* height (not max-height) - genuinely matches the image's size rather
+       than just capping at it, so the table below has real height to
+       fill instead of shrink-wrapping smaller and leaving a gap under
+       it. overflow:auto stays as a defensive fallback (a 6-week month
+       with unusually tall content could in principle still need it), but
+       table height:100% + the browser's own row-height distribution
+       (see table below) means it fills exactly, not overflow, in the
+       normal case. */
+    height: clamp(120px, 30cqw, 160px);
+    background: var(--color-bg); border: 1px solid var(--color-border); padding: 6px 10px 6px 6px; border-radius: 6px; width: 100%; overflow: auto;
+    /* extra right padding (beyond the other 3 sides' 6px) - scrollbar-
+       gutter reserves the thumb's own track width, but with no padding
+       past that the last day-of-week column sits flush against it, so
+       the thumb still reads as touching the content. This adds a visible
+       gap between the two. */
+    /* reserves the scrollbar's space (same fix as .ml-column/
+       .quick-search-results) so it doesn't overlay the rightmost column
+       of cells once the 7-row grid needs to scroll. */
+    scrollbar-gutter: stable;
 }
-.hm-cell:hover { opacity: 0.8; text-decoration: none; }
+/* Mobile browsers don't show a scrollbar at all by default (only a
+   momentary fading indicator while actively scrolling), which made a
+   scrollable box look just like a cut-off one at rest - explicit styling
+   forces a persistent, always-visible thumb instead. scrollbar-width/
+   -color covers Firefox; the ::-webkit-scrollbar-* rules cover Chrome
+   (desktop and Android) and Safari. iOS Safari is the one exception - it
+   ignores ::-webkit-scrollbar entirely for regular scroll containers
+   (an OS-level restriction, not something CSS can override), so it still
+   falls back to its own momentary indicator there. */
+.heatmap-years-overview,
+.heatmap-wrap {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-accent) var(--color-surface);
+}
+.heatmap-years-overview::-webkit-scrollbar,
+.heatmap-wrap::-webkit-scrollbar {
+    width: 6px;
+}
+.heatmap-years-overview::-webkit-scrollbar-track,
+.heatmap-wrap::-webkit-scrollbar-track {
+    background: var(--color-surface);
+    border-radius: 4px;
+}
+.heatmap-years-overview::-webkit-scrollbar-thumb,
+.heatmap-wrap::-webkit-scrollbar-thumb {
+    background: var(--color-accent);
+    border-radius: 4px;
+}
+/* table-layout:fixed + width:100% (first column narrow-fixed for the
+   week-number labels) makes every day-of-week column genuinely share
+   whatever width .heatmap-wrap has - same idea as .hm-months-strip's
+   bars below. */
+/* height:100% on the table hands its full height down to the row group;
+   browsers distribute any extra height (beyond what the header/day rows
+   need at their content size) proportionately across the <tr>s rather
+   than leaving it as dead space below the last row - the height
+   counterpart to table-layout:fixed's width distribution above. Cells
+   then stretch to fill their (now taller) row via height:100%. */
+.heatmap-wrap table { border-collapse: separate; border-spacing: clamp(1px, 0.2cqw, 2px); table-layout: fixed; width: 100%; height: 100%; }
+.heatmap-wrap th, .heatmap-wrap td { width: auto; }
+.heatmap-wrap th:first-child, .heatmap-wrap td:first-child { width: 16px; }
+.heatmap-wrap th { font-size: clamp(8px, 0.7cqw, 10px); color: var(--color-text); opacity: 0.7; text-align: center; }
+.hm-day-label { font-size: clamp(8px, 0.7cqw, 10px); color: var(--color-text); opacity: 0.7; padding-right: 3px; }
 .hm-day-cell {
-    display: block;
-    width: 28px;
-    height: 28px;
-    border-radius: 4px;
-    text-align: center;
-    line-height: 28px;
-    font-size: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    border-radius: 3px;
+    font-size: clamp(7px, 0.65cqw, 9px);
     color: var(--color-text);
     text-decoration: none;
 }
-.heatmap-cols { display: flex; gap: 24px; align-items: flex-start; flex-wrap: wrap; }
+.hm-day-cell:hover { opacity: 0.8; text-decoration: none; }
+.hm-day-empty { display: block; width: 100%; height: 100%; }
 
-/* pagination */
-.pagination { display: flex; align-items: center; gap: 2px; margin-top: 14px; flex-wrap: wrap; }
-.pagination a, .pagination span {
-    padding: 4px 10px;
-    font-size: 13px;
-    border-radius: 4px;
-    color: var(--color-text);
+/* Every year's 12-month breakdown at once (see _years_overview_html),
+   space allowing - richer at a glance than a years->months click-through
+   on desktop, where there's real width to spare beside the header image.
+   Years always stack vertically (one row each, label + a horizontal
+   month strip) at every width - narrow phone or wide desktop - rather
+   than rearranging into side-by-side columns; only two things change
+   with available space: how many year rows are visible (nth-child rules
+   below, capped by container width since this lives inside .panel, a
+   containerized ancestor) and how wide each month strip's bars are
+   (.hm-month-chip below, flex:1 so the 12 bars stretch to fill however
+   much row width is actually left after the label - real leftover-space
+   sizing, not a guessed cqw ceiling). Width itself is just 100% - its
+   parent, .detail-header-heatmap, is the one with flex:1 to genuinely
+   fill whatever's left beside the hero image (see style.css's
+   .detail-header-media), now that the title/description sit on their own
+   row above instead of sharing this one. */
+.heatmap-years-overview {
+    /* Same reasoning as .heatmap-wrap's max-height: matches the hero
+       image's own clamped height so the image can stay a 1:1 square - a
+       6-year-tall overview scrolls internally instead of stretching the
+       row (and the image with it) taller. */
+    max-height: clamp(120px, 30cqw, 160px);
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    overflow-y: auto;
+    /* room between the last month chip in each row and the scrollbar
+       track - without it the chip sits flush against the thumb once the
+       overview actually needs to scroll (same fix as .heatmap-wrap's
+       padding-right). */
+    padding-right: 6px;
+    /* reserves the scrollbar's space so it doesn't overlay the right end
+       of each year's month strip once the overview needs to scroll (see
+       .heatmap-wrap/.quick-search-results/.ml-column for the same fix). */
+    scrollbar-gutter: stable;
 }
-.pagination span.current { background: var(--color-selected); }
-.pagination .pg-info { color: var(--color-text); opacity: 0.7; margin-left: 10px; }
+/* All years always render (no more container-width-gated hiding of rows
+   below the 4th/5th/etc) - .heatmap-years-overview's max-height +
+   overflow-y:auto (with scrollbar-gutter reserved) handles however many
+   there are at every width, mobile included, so hiding rows to stay
+   compact is no longer necessary. */
+.hm-year-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.hm-year-row-label {
+    width: 3.2ch;
+    flex-shrink: 0;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--color-text);
+    opacity: 0.8;
+}
+.hm-year-row-selected .hm-year-row-label { opacity: 1; text-decoration: underline; }
+.hm-months-strip { display: flex; gap: 2px; flex: 1 1 auto; min-width: 0; }
+.hm-month-chip {
+    display: block;
+    flex: 1 1 0;
+    min-width: 0;
+    height: clamp(12px, 1.6cqw, 26px);
+    border-radius: 2px;
+}
+.hm-month-chip:hover { opacity: 0.8; }
 
 .info { color: var(--color-text); opacity: 0.7; font-size: 14px; padding: 12px 0; }
 
-/* detail page layout: header+list on the left, heatmap on the right, both
-   panels pinned to the same height so a long list scrolls inside its own
-   panel instead of growing the page */
+/* detail page layout: a single panel (header/heatmap + list) - used to
+   be two side-by-side panels with the heatmap in its own, before the
+   heatmap became compact enough to live in the header instead. */
 .detail-layout {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr;
     align-items: stretch;
     gap: 20px;
     margin-top: 16px;
@@ -492,19 +861,45 @@ h2 { font-size: 18px; font-weight: 600; margin: 20px 0 10px; color: var(--color-
 .panel {
     border: 1px solid var(--color-border);
     border-radius: 8px;
-    padding: 16px;
+    /* tighter on mobile - every pixel matters more on a narrow screen
+       than the margin was originally chosen for (desktop); the
+       min-width:700px block below restores the roomier desktop padding.
+       Border/radius stay put so it's still clearly a bounded card, just
+       a snugger one. */
+    padding: 8px;
+    /* containerized so its own children (grid-compact, hero-image, heatmap
+       cells) size off this box, not the wider .content it sits inside. */
+    container-type: inline-size;
 }
-.detail-layout .panel {
-    max-height: calc(100vh - 120px);
-    overflow-y: auto;
-}
-.detail-heatmap { overflow-x: auto; }
-.detail-header .hero-image { margin-bottom: 12px; }
-.detail-header h1 { margin-top: 4px; }
-@media (max-width: 700px) {
-    .detail-layout { grid-template-columns: 1fr; }
-    .detail-layout .panel { max-height: none; overflow-y: visible; }
-}
+/* Header is two stacked rows (see detail_header() in html.py): title/meta
+   on its own full-width line, then image + heatmap below. Splitting them
+   means the title never negotiates width against the heatmap - it always
+   gets the full row, so it only ever wraps at whole words (see
+   .detail-header h1), never mid-word. */
+.detail-header-top { display: flex; flex-direction: column; gap: 10px; margin-bottom: 12px; }
+.detail-header-title { min-width: 0; text-align: center; }
+/* .description-form (the editable playlist-description textarea, only
+   shown logged-in) isn't text, so .detail-header-title's text-align does
+   nothing to it - centered explicitly, same as everything else in this
+   header now. */
+.detail-header-title .description-form { margin-left: auto; margin-right: auto; align-items: center; }
+.detail-header-title .description-form .btn { align-self: center; }
+.detail-header h1 { margin-top: 4px; overflow-wrap: break-word; word-break: break-word; }
+/* image + heatmap row. The image is fixed-size (see .hero-image); the
+   heatmap area gets flex:1 min-width:0 to genuinely fill whatever width
+   is left next to it - real leftover-space sizing (same idea as
+   .hm-months-strip's bars), not a cqw-based guess, since there's no text
+   column here anymore to negotiate against. */
+.detail-header-media { display: flex; align-items: flex-start; gap: 12px; }
+.detail-header-heatmap { flex: 1 1 0; min-width: 0; }
+/* "· Aug 2026 ×", appended inline into a detail page's existing
+   play-count subtitle line (see filter_clear_link in html.py) rather
+   than a separate pill/badge - that earlier version needed its own flex
+   placement to sit somewhere sensible, and kept ending up positioned
+   differently than intended on some real devices. Plain text in an
+   existing paragraph doesn't have that problem. */
+.detail-filter-clear { color: var(--color-text); font-weight: 600; }
+.detail-filter-clear-x { opacity: 0.7; }
 
 /* htmx loading indicator */
 .htmx-indicator { display: none; }
@@ -515,6 +910,7 @@ h2 { font-size: 18px; font-weight: 600; margin: 20px 0 10px; color: var(--color-
 .theme-row {
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
     gap: 10px;
     padding: 8px 0;
     border-bottom: 1px solid var(--color-border);
@@ -558,5 +954,95 @@ h2 { font-size: 18px; font-weight: 600; margin: 20px 0 10px; color: var(--color-
     font-family: monospace;
     font-size: 13px;
     flex-shrink: 0;
+}
+
+/* Mobile-first: every rule above this point is the phone-and-up default.
+   Breakpoints below only add complexity back in for wider viewports, per
+   https://web.dev mobile-first guidance - the small-screen case is the one
+   that can't be "added on" after the fact (you can't un-shrink content
+   that assumed room it doesn't have), so it's the baseline.
+
+   These blocks are kept at the end of the file on purpose: several rules
+   here re-target selectors (.sidebar, .row-secondary, .detail-layout, ...)
+   whose base (mobile) definitions live earlier in this file with equal
+   specificity. For equal-specificity rules the later one in source order
+   wins regardless of which @media currently matches, so an override placed
+   *before* its base rule gets silently clobbered the moment that base rule
+   is touched. Add new overrides here, not further up. */
+
+/* Just past phone width: there's enough room for the artist/secondary
+   label next to a track title again. */
+@media (min-width: 481px) {
+    .row .row-secondary { display: inline-block; }
+    .row .sep { display: inline; }
+}
+
+/* Desktop: swap the mobile drawer/tabbar chrome for the persistent
+   sidebar, and restore the two-column detail layout. */
+@media (min-width: 700px) {
+    .shell { flex-direction: row; align-items: flex-start; }
+    .panel { padding: 16px; }
+    .sidebar {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        width: 200px;
+        flex-shrink: 0;
+        position: sticky;
+        top: 0;
+        height: 100vh;
+        overflow-y: auto;
+        scrollbar-gutter: stable;
+        background: var(--color-nav-bg);
+        border-right: 1px solid var(--color-border);
+        padding: 16px 12px;
+    }
+    .content { padding: 24px 32px; }
+    .desktop-topbar {
+        display: flex;
+        align-items: center;
+        position: sticky;
+        top: 0;
+        z-index: 20;
+        background: var(--color-bg);
+    }
+    .page-header { flex-wrap: nowrap; }
+    .list-title-row { flex-wrap: nowrap; }
+    .qs-tabs { display: none; }
+    .qs-results-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+    .qs-column[hidden] { display: block; }
+    .qs-column-title { display: block; }
+    .date-filter { flex-wrap: nowrap; }
+    .theme-row { flex-wrap: nowrap; }
+
+    .ml-tabs { display: none; }
+    .ml-columns {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 24px;
+        align-items: start;
+        border-top: none;
+        background: none;
+        padding: 0;
+        border-radius: 0;
+    }
+    /* overflow-x explicit, not left to default: setting overflow-y alone
+       makes the browser auto-convert overflow-x from visible to auto per
+       spec, and minor row-content rounding was enough to trigger a
+       visible (if functionless) horizontal scrollbar - same fix as
+       .quick-search-results. */
+    /* scrollbar-gutter reserves space for the scrollbar in the layout
+       instead of overlaying it on top of content - without it the
+       right-aligned row-bar-label (play count) sat right where the
+       scrollbar thumb renders, and the two overlapped. */
+    .ml-column { max-height: calc(100vh - 220px); overflow-y: auto; overflow-x: hidden; scrollbar-gutter: stable; padding-right: 8px; }
+    .ml-column[hidden] { display: block; }
+    .ml-column-title { display: block; }
+
+    .mobile-topbar,
+    .drawer-overlay,
+    .mobile-drawer {
+        display: none;
+    }
 }
 

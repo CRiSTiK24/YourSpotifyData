@@ -23,28 +23,36 @@ CREATE TABLE IF NOT EXISTS track_history (
 -- and prefix equality via this index.
 CREATE INDEX IF NOT EXISTS idx_track_history_name_singer ON track_history(name, singer);
 
--- Full-text index over track_history(name, singer) — LIKE '%word%' on this
--- table (206k+ rows and growing) forces a full scan on every search
--- keystroke; FTS5 turns that into a token lookup. content='track_history'
--- means this table stores no data of its own, just the index — it mirrors
--- rowids from track_history, kept in sync by the triggers below.
+-- Full-text index over track_history(name, singer, album) — LIKE '%word%'
+-- on this table (206k+ rows and growing) forces a full scan on every
+-- search keystroke; FTS5 turns that into a token lookup, used by the
+-- quick-search Tracks/Artists/Albums tabs (each restricted to its own
+-- column via FTS5's `col: term` syntax - see fts_match_query() in
+-- src/utils.py). content='track_history' means this table stores no data
+-- of its own, just the index — it mirrors rowids from track_history, kept
+-- in sync by the triggers below. (If you're looking at an existing
+-- database that predates the `album` column here, src/search/service.py's
+-- ensure_fts_migrations() rebuilds it automatically on startup - this
+-- definition only matters for a fresh install.)
 CREATE VIRTUAL TABLE IF NOT EXISTS track_history_fts USING fts5(
-    name, singer, content='track_history', content_rowid='id'
+    name, singer, album, content='track_history', content_rowid='id'
 );
 
 CREATE TRIGGER IF NOT EXISTS track_history_ai AFTER INSERT ON track_history BEGIN
-    INSERT INTO track_history_fts(rowid, name, singer) VALUES (new.id, new.name, new.singer);
+    INSERT INTO track_history_fts(rowid, name, singer, album)
+    VALUES (new.id, new.name, new.singer, new.album);
 END;
 
 CREATE TRIGGER IF NOT EXISTS track_history_ad AFTER DELETE ON track_history BEGIN
-    INSERT INTO track_history_fts(track_history_fts, rowid, name, singer)
-    VALUES ('delete', old.id, old.name, old.singer);
+    INSERT INTO track_history_fts(track_history_fts, rowid, name, singer, album)
+    VALUES ('delete', old.id, old.name, old.singer, old.album);
 END;
 
 CREATE TRIGGER IF NOT EXISTS track_history_au AFTER UPDATE ON track_history BEGIN
-    INSERT INTO track_history_fts(track_history_fts, rowid, name, singer)
-    VALUES ('delete', old.id, old.name, old.singer);
-    INSERT INTO track_history_fts(rowid, name, singer) VALUES (new.id, new.name, new.singer);
+    INSERT INTO track_history_fts(track_history_fts, rowid, name, singer, album)
+    VALUES ('delete', old.id, old.name, old.singer, old.album);
+    INSERT INTO track_history_fts(rowid, name, singer, album)
+    VALUES (new.id, new.name, new.singer, new.album);
 END;
 
 CREATE TABLE IF NOT EXISTS library_tracks (

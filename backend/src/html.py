@@ -15,7 +15,36 @@ _STATIC_DIR = os.path.join(
 logged_in_var: ContextVar[bool] = ContextVar("logged_in", default=False)
 
 
-def page(content: str) -> HTMLResponse:
+_SITE_NAME = "Your Spotify Data"
+
+
+def _quick_search_widget(id_prefix: str) -> str:
+    """Persistent, chrome-embedded live search - the sidebar (desktop) and
+    topbar (mobile) each get their own instance of this, since both exist
+    in the DOM at once (CSS just hides whichever doesn't apply). Debounced
+    hx-get renders results into a dropdown under the input with no page
+    navigation; id_prefix keeps the two instances' ids from colliding.
+    hx-select is pinned to unset - without it, this input inherits body's
+    hx-select="#content", and since the /search fragment response has no
+    #content element, that inherited select would silently swap in
+    nothing (same failure mode documented on infinite_scroll_trigger)."""
+    input_id = f"{id_prefix}-search-input"
+    results_id = f"{id_prefix}-search-results"
+    return f"""
+    <div class="quick-search">
+      <input id="{input_id}" class="quick-search-input" type="text" name="query" autocomplete="off"
+        placeholder="Search…" aria-label="Search"
+        hx-get="/search" hx-trigger="input changed delay:300ms" hx-target="#{results_id}"
+        hx-select="unset" hx-swap="innerHTML">
+      <div id="{results_id}" class="quick-search-results"></div>
+    </div>"""
+
+
+def page(content: str, title: str = "") -> HTMLResponse:
+    # htmx scans the full response body for a <title> tag and applies it to
+    # document.title on every boosted navigation, even though hx-select only
+    # swaps #content - so this works for both full loads and boosted nav.
+    page_title = f"{title} · {_SITE_NAME}" if title else _SITE_NAME
     if logged_in_var.get():
         sidebar_bottom = """
     <div class="sidebar-bottom">
@@ -28,12 +57,17 @@ def page(content: str) -> HTMLResponse:
     <div class="sidebar-bottom">
       <a href="/login">Login</a>
     </div>"""
+    nav_links = """
+    <a href="/playlists">See my curated playlists!</a>
+    <a href="/liked-albums">Albums I like</a>
+    <hr class="sidebar-divider">
+    <a href="/most-listened">My most listened</a>"""
     html = f"""<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title></title>
+  <title>{escape(page_title)}</title>
   <link rel="stylesheet" href="/static/style.css">
   <script>
   (function () {{
@@ -45,22 +79,39 @@ def page(content: str) -> HTMLResponse:
   </script>
   <script src="https://unpkg.com/htmx.org@2.0.4" integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+" crossorigin="anonymous"></script>
 </head>
-<body hx-boost="true" hx-target="#content" hx-select="#content" hx-swap="outerHTML">
+<body hx-boost="true" hx-target="#content" hx-select="#content" hx-swap="outerHTML transition:true">
 <div class="shell">
   <aside class="sidebar">
     <a class="brand" href="/">Home</a>
-    <hr class="sidebar-divider">
-    <a href="/playlists">See my curated playlists!</a>
-    <a href="/liked-albums">Albums I like</a>
-    <hr class="sidebar-divider">
-    <a href="/most-listened">My most listened songs</a>
-    <a href="/most-listened-albums">My most listened albums</a>
-    <a href="/artists">My most listened artists</a>{sidebar_bottom}
+    <hr class="sidebar-divider">{nav_links}{sidebar_bottom}
   </aside>
-  <main class="content" id="content">
+
+  <header class="mobile-topbar">
+    <button type="button" class="hamburger-btn" id="hamburger-btn" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-drawer">
+      <span></span><span></span><span></span>
+    </button>
+    {_quick_search_widget("topbar")}
+  </header>
+
+  <div class="drawer-overlay" id="drawer-overlay"></div>
+  <nav class="mobile-drawer" id="mobile-drawer" aria-label="Main menu">
+    <a class="brand" href="/">Home</a>
+    <hr class="sidebar-divider">{nav_links}{sidebar_bottom}
+  </nav>
+
+  <div class="content-column">
+    <header class="desktop-topbar">
+      {_quick_search_widget("desktop")}
+    </header>
+    <main class="content" id="content">
 {content}
-  </main>
+    </main>
+  </div>
 </div>
+<script src="/static/mobile-nav.js"></script>
+<script src="/static/tooltips.js"></script>
+<script src="/static/quick-search.js"></script>
+<script src="/static/most-listened.js"></script>
 </body>
 </html>"""
     return HTMLResponse(html)
@@ -152,9 +203,12 @@ def row(
     bar_fraction: float | None = None,
 ) -> str:
     """bar_fraction (0.0-1.0) replaces the plain `note` text with a filled
-    bar sized to that fraction, with `note` rendered as a label inside it -
-    e.g. a track's play count relative to the most-played track in the same
-    list, so the list itself reads as a mini bar chart."""
+    bar sized to that fraction, `note` rendered as a label after it (not
+    overlaid on top - a label sitting on top of the fill made the actual
+    bar length hard to perceive, since every bar reads at a glance as a
+    same-sized pill regardless of fraction) - e.g. a track's play count
+    relative to the most-played track in the same list, so the list itself
+    reads as a mini bar chart."""
     cover_src = _cover_src(image_url, size=64)
     thumb = f"<img class='row-thumb' src='{escape(cover_src)}' loading='lazy'>" if cover_src else ""
     left = f"<a class='row-primary' href='{escape(primary_href)}'>{escape(primary_label)}</a>"
@@ -167,7 +221,8 @@ def row(
         fill_pct = max(0.0, min(1.0, bar_fraction)) * 100
         label = f"<span class='row-bar-label'>{escape(note)}</span>" if note else ""
         right = (
-            f"<div class='row-bar'><div class='row-bar-fill' style='width:{fill_pct:.1f}%'></div>"
+            f"<div class='row-bar-wrap'>"
+            f"<div class='row-bar'><div class='row-bar-fill' style='width:{fill_pct:.1f}%'></div></div>"
             f"{label}</div>"
         )
     else:
@@ -193,7 +248,12 @@ def card(
     thumbnail affords. `title`, when given, spawns a small tooltip bubble
     above the card on hover (e.g. a playlist's Spotify description) - a
     CSS ::after driven off data-tooltip rather than the native browser
-    title attribute, since that one's slow to appear and unstyled.
+    title attribute, since that one's slow to appear and unstyled. Hover
+    never fires on touch, so a `card-info-btn` sibling (shown only on
+    devices without hover, via the CSS `(hover: none)` query) toggles the
+    same tooltip via a `tooltip-active` class instead - see tooltips.js.
+    It's a sibling of card-cover rather than nested inside that anchor so
+    tapping it doesn't also trigger the cover's navigation.
     `raw_cover` shows the source image's original colors instead of the
     site-palette recolor applied everywhere else."""
     cover_src = _cover_src(image_url, size=320, raw=raw_cover)
@@ -210,9 +270,15 @@ def card(
     )
     note_html = f"<span class='card-note'>{escape(note)}</span>" if note else ""
     tooltip_attr = f" data-tooltip='{escape(title)}'" if title else ""
+    info_btn = (
+        "<button type='button' class='card-info-btn' aria-label='Show description'>i</button>"
+        if title
+        else ""
+    )
     return f"""
 <div class="card"{tooltip_attr}>
   <a class="card-cover" href="{escape(primary_href)}">{thumb}</a>
+  {info_btn}
   <a class="card-title" href="{escape(primary_href)}">{escape(primary_label)}</a>
   {secondary}
   {note_html}
@@ -236,16 +302,57 @@ def hero_image(image_url: str | None, *, raw: bool = False) -> str:
     return f"<img class='{cls}' src='{escape(cover_src)}' loading='lazy'>"
 
 
+def filter_clear_link(label: str, clear_href: str) -> str:
+    """"· ‹period label› ×", meant to be appended inline into a detail
+    page's existing play-count subtitle line (e.g. "184 total plays ·
+    Aug 2026 ×") when a heatmap period is selected - not a separate
+    element, so it can't end up positioned somewhere unexpected the way
+    an earlier standalone pill/badge version did."""
+    return (
+        f" &nbsp;·&nbsp; <a class='detail-filter-clear' href='{escape(clear_href)}'>"
+        f"{escape(label)} <span class='detail-filter-clear-x'>&times;</span></a>"
+    )
+
+
+def detail_header(title_html: str, meta_html: str, hero_html: str, heatmap_html: str) -> str:
+    """Header for track/album/artist/playlist detail pages: title + meta
+    (subtitle lines, description) span the full row width on their own
+    line, then a second row holds the hero image (fixed size) beside the
+    heatmap. Title used to share a row with the image and heatmap side by
+    side (see the .detail-header-info column in earlier versions), which
+    meant a long title had to negotiate width against the heatmap and
+    could end up word-broken. Splitting them onto separate rows means the
+    title always gets the full row to itself, and the heatmap - now next
+    to only a fixed-width image, no text to negotiate with - can flex to
+    fill essentially all the leftover width (see .detail-header-heatmap in
+    style.css) instead of guessing a cqw ceiling against how much text
+    might be beside it."""
+    return f"""
+<div class="detail-header-top">
+  <div class="detail-header-title">
+    {title_html}
+    {meta_html}
+  </div>
+  <div class="detail-header-media">
+    {hero_html}
+    <div class="detail-header-heatmap">{heatmap_html}</div>
+  </div>
+</div>"""
+
+
 def detail_layout(
     header: str,
-    heatmap: str,
     list_title: str,
     list_content: str,
     list_id: str = "",
     list_actions: str = "",
 ) -> str:
-    """Two-panel layout used by track/album/artist/playlist detail pages:
-    header info + list on the left, heatmap on the right."""
+    """Single-panel layout used by track/album/artist/playlist detail
+    pages: header info (image/title/heatmap drill-down - see
+    .detail-header-top) followed by the track/tracks list. Used to be a
+    two-panel layout with the heatmap in its own side panel, but the
+    heatmap is compact enough now (see build_heatmap_html) to live
+    embedded in the header instead of needing a dedicated panel."""
     list_id_attr = f" id='{escape(list_id)}'" if list_id else ""
     return f"""
 <div class="detail-layout">
@@ -258,7 +365,6 @@ def detail_layout(
     </div>
     <div{list_id_attr}>{list_content}</div>
   </div>
-  <div class="panel detail-heatmap">{heatmap}</div>
 </div>"""
 
 
@@ -285,30 +391,18 @@ def infinite_scroll_trigger(next_href: str) -> str:
     )
 
 
-def pagination_html(current_page: int, total_pages: int, base_href: str, param: str) -> str:
-    if total_pages <= 1:
-        return ""
-    half = 4
-    p_start = max(1, current_page - half)
-    p_end = min(total_pages, p_start + 8)
-    p_start = max(1, p_end - 8)
-    sep = "&" if "?" in base_href else "?"
-    links = []
-    if current_page > 1:
-        links.append(f"<a href='{base_href}{sep}{param}={current_page - 1}'>‹</a>")
-    for p in range(p_start, p_end + 1):
-        if p == current_page:
-            links.append(f"<span class='current'>{p}</span>")
-        else:
-            links.append(f"<a href='{base_href}{sep}{param}={p}'>{p}</a>")
-    if current_page < total_pages:
-        links.append(f"<a href='{base_href}{sep}{param}={current_page + 1}'>›</a>")
-    links.append(f"<span class='pg-info'>Page {current_page} of {total_pages}</span>")
-    return f"<div class='pagination'>{''.join(links)}</div>"
-
-
-def paginate(items: list, current_page: int, page_size: int = 25) -> tuple[list, int, int]:
-    total_pages = max(1, (len(items) + page_size - 1) // page_size)
-    current_page = max(1, min(current_page, total_pages))
-    start = (current_page - 1) * page_size
-    return items[start : start + page_size], current_page, total_pages
+def lazy_load_trigger(href: str, label: str = "Loading…") -> str:
+    """Like infinite_scroll_trigger, but fires immediately on insertion
+    (hx-trigger='load') rather than on scroll-into-view - for a section
+    that's expensive enough to compute that it shouldn't block the rest of
+    the page's first paint. E.g. /most-listened's Albums/Artists columns:
+    ranking by play count over 200k+ rows has no shortcut index (there's
+    no way to index-sort by an aggregate COUNT(*)), so each one is a real
+    ~500-700ms full scan+sort - rendering only the default-visible column
+    eagerly and letting the other two turn up moments later via their own
+    parallel requests keeps a year-filter change from serially paying for
+    all three at once."""
+    return (
+        f"<p class='info' hx-get='{escape(href)}' hx-trigger='load' hx-target='this' "
+        f"hx-select='unset' hx-swap='outerHTML'>{escape(label)}</p>"
+    )

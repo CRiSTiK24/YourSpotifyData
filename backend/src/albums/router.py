@@ -4,10 +4,9 @@ from urllib.parse import quote
 from fastapi import APIRouter, Request
 from fastapi.responses import HTMLResponse
 
-from src.constants import MONTHS
 from src.database import DBDep
-from src.heatmap import build_heatmap_html
-from src.html import detail_layout, hero_image, link, page, row
+from src.heatmap import build_heatmap_html, period_label
+from src.html import detail_header, detail_layout, filter_clear_link, hero_image, link, page, row
 from src.utils import aggregate_plays
 
 from . import service
@@ -24,30 +23,21 @@ router = APIRouter(tags=["albums"])
 def album_detail(album_name: str, request: Request, con: DBDep, artist: str = ""):
     history = service.load_album_track_history(con, album_name)
 
-    heatmap_html, result = build_heatmap_html(history, f"album_{album_name}", request)
+    heatmap_html, result, base_href = build_heatmap_html(
+        history, f"album_{album_name}", request
+    )
 
-    period_html = ""
+    filter_clear_html = ""
     if result:
-        year, month, day, plays = result
-        label = f"{MONTHS[month - 1]} {day}, {year}" if day else f"{MONTHS[month - 1]} {year}"
+        _, _, _, plays = result
+        label = period_label(result)
         aggregated = aggregate_plays(plays)
-        period_html = (
-            f"<h2>{label} — {len(plays)} play{'s' if len(plays) != 1 else ''} "
-            f"across {len(aggregated)} track{'s' if len(aggregated) != 1 else ''}</h2>"
-        )
-        period_html += "".join(
-            row(
-                name,
-                f"/track/{quote(name)}?artist={quote(singer or artist)}",
-                singer or artist,
-                f"/artist/{quote(singer or artist)}" if (singer or artist) else None,
-                note=f"×{count}",
-            )
-            for name, singer, count in aggregated
-        )
-
-    aggregated_tracks = aggregate_plays(history)
-    max_plays = max((count for _, _, count in aggregated_tracks), default=0)
+        filter_clear_html = filter_clear_link(label, base_href)
+        play_count = len(plays)
+    else:
+        aggregated = aggregate_plays(history)
+        play_count = len(history)
+    max_plays = max((count for _, _, count in aggregated), default=0)
     tracks_html = "".join(
         row(
             name,
@@ -57,17 +47,22 @@ def album_detail(album_name: str, request: Request, con: DBDep, artist: str = ""
             note=f"×{count}",
             bar_fraction=(count / max_plays) if max_plays else 0,
         )
-        for name, singer, count in aggregated_tracks
+        for name, singer, count in aggregated
     )
 
     artist_line = (
         f"<p class='subtitle'>Artist: {link(artist, f'/artist/{quote(artist)}')}</p>" if artist else ""
     )
 
-    header = f"""
-{hero_image(service.get_album_image(con, artist, album_name))}
-<h1>{escape(album_name)}</h1>
-{artist_line}
-<p class="subtitle">{len(history)} plays from this album</p>
-"""
-    return page(detail_layout(header, heatmap_html + period_html, "Tracks", tracks_html))
+    meta_html = (
+        f"{artist_line}"
+        f"<p class='subtitle'>{play_count} play{'s' if play_count != 1 else ''} "
+        f"from this album{filter_clear_html}</p>"
+    )
+    header = detail_header(
+        f"<h1>{escape(album_name)}</h1>",
+        meta_html,
+        hero_image(service.get_album_image(con, artist, album_name)),
+        heatmap_html,
+    )
+    return page(detail_layout(header, "Tracks", tracks_html), title=album_name)

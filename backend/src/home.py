@@ -1,17 +1,9 @@
-import sqlite3
-from urllib.parse import quote
-
 from fastapi import APIRouter
 from fastapi.responses import HTMLResponse
 
-from src.database import DBDep
-from src.html import infinite_scroll_trigger, page, row, search_form
-from src.search.service import search_track_history
-from src.utils import aggregate_plays
+from src.html import page
 
 router = APIRouter(tags=["home"])
-
-QUICK_RESULTS_BATCH = 8
 
 ABOUT_HTML = """
 <p class="subtitle">At the moment this is a one-person thing which has already been done in
@@ -35,70 +27,8 @@ all music is such a beloved hobby for a reason.</p>
 """
 
 
-def _quick_results_html(con: sqlite3.Connection, query: str, offset: int = 0) -> str:
-    history = search_track_history(con, query)
-    aggregated = aggregate_plays([{"name": r["name"], "singer": r["singer"]} for r in history])
-    batch = aggregated[offset : offset + QUICK_RESULTS_BATCH]
-    rows_html = "".join(
-        row(
-            name,
-            f"/track/{quote(name)}?artist={quote(singer or '')}",
-            singer,
-            f"/artist/{quote(singer)}" if singer else None,
-            note=f"×{count}",
-        )
-        for name, singer, count in batch
-    )
-    if not rows_html:
-        return "<p class='info'>No matches.</p>" if offset == 0 else ""
-    if offset + QUICK_RESULTS_BATCH < len(aggregated):
-        next_href = f"/home/search/more?query={quote(query)}&offset={offset + QUICK_RESULTS_BATCH}"
-        rows_html += infinite_scroll_trigger(next_href)
-    return rows_html
-
-
-def home_page() -> HTMLResponse:
-    content = f"""
-{
-        search_form(
-            "/home/search",
-            "Search for a song or artist…",
-            hx_target="#home-results",
-            hx_select="#home-search-fragment",
-            hx_swap="innerHTML",
-            hx_push_url=False,
-        )
-    }
-<hr class="divider">
-<div id="home-results">{ABOUT_HTML}</div>
-"""
-    return page(content)
-
-
 @router.get(
     "/", response_class=HTMLResponse, status_code=200, description="Home page"
 )
 def home():
-    return home_page()
-
-
-@router.get(
-    "/home/search",
-    response_class=HTMLResponse,
-    status_code=200,
-    description="Live quick-search fragment for the home page",
-)
-def home_search(con: DBDep, query: str = ""):
-    query = query.strip()
-    inner = ABOUT_HTML if not query else _quick_results_html(con, query)
-    return HTMLResponse(f"<div id='home-search-fragment'>{inner}</div>")
-
-
-@router.get(
-    "/home/search/more",
-    response_class=HTMLResponse,
-    status_code=200,
-    description="Infinite-scroll fragment: next batch of home quick-search results",
-)
-def home_search_more(con: DBDep, query: str = "", offset: int = 0):
-    return HTMLResponse(_quick_results_html(con, query.strip(), offset))
+    return page(ABOUT_HTML)

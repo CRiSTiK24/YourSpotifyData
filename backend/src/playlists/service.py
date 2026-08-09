@@ -50,9 +50,12 @@ def load_playlist_tracks(con: sqlite3.Connection, playlist_id: int) -> list[sqli
 
 
 def load_playlist_history(con: sqlite3.Connection, playlist_id: int) -> list[sqlite3.Row]:
+    # album is only here for the heatmap's period-filtered track cards to
+    # look up cover art with (see images_for_tracks below) - not used by
+    # the heatmap itself.
     return con.execute(
         """
-        SELECT th.name, th.singer, th.time
+        SELECT th.name, th.singer, th.album, th.time
         FROM track_history th
         JOIN playlist_tracks pt ON th.name = pt.track_name AND th.singer = pt.artist_name
         WHERE pt.playlist_id = ?
@@ -60,3 +63,19 @@ def load_playlist_history(con: sqlite3.Connection, playlist_id: int) -> list[sql
         """,
         (playlist_id,),
     ).fetchall()
+
+
+def images_for_tracks(con: sqlite3.Connection, artist_albums: set[tuple[str, str]]) -> dict[tuple[str, str], str]:
+    """Maps (artist, album) -> cover image_url, for looking up cover art
+    on a heatmap-filtered track list (a playlist can span many artists,
+    unlike artists/service.py's single-artist version of this)."""
+    if not artist_albums:
+        return {}
+    placeholders = ",".join("(?,?)" for _ in artist_albums)
+    params = [v for pair in artist_albums for v in pair]
+    rows = con.execute(
+        f"SELECT artist_name, album_name, image_url FROM album_images "
+        f"WHERE (artist_name, album_name) IN ({placeholders})",
+        params,
+    ).fetchall()
+    return {(r["artist_name"], r["album_name"]): r["image_url"] for r in rows}
