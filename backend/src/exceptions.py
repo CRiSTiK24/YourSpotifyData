@@ -11,6 +11,6 @@ async def http_exception_handler(request: Request, exc: HTTPException) -> HTMLRe
 <h1>Error {exc.status_code}</h1>
 <p>{escape(str(exc.detail))}</p>
 """
-    response = page(content)
+    response = page(content, title=f"Error {exc.status_code}")
     response.status_code = exc.status_code
     return response

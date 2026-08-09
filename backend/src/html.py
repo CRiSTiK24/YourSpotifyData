@@ -237,7 +237,12 @@ def hero_image(image_url: str | None, *, raw: bool = False) -> str:
 
 
 def detail_layout(
-    header: str, heatmap: str, list_title: str, list_content: str, list_id: str = ""
+    header: str,
+    heatmap: str,
+    list_title: str,
+    list_content: str,
+    list_id: str = "",
+    list_actions: str = "",
 ) -> str:
     """Two-panel layout used by track/album/artist/playlist detail pages:
     header info + list on the left, heatmap on the right."""
@@ -247,7 +252,10 @@ def detail_layout(
   <div class="panel detail-header">
     {header}
     <hr class="divider">
-    <h2>{escape(list_title)}</h2>
+    <div class="list-title-row">
+      <h2>{escape(list_title)}</h2>
+      {list_actions}
+    </div>
     <div{list_id_attr}>{list_content}</div>
   </div>
   <div class="panel detail-heatmap">{heatmap}</div>

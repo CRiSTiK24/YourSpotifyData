@@ -31,7 +31,7 @@ already imported gets added — safe to re-upload the same or a newer export.</p
   <button type="submit">Upload</button>
 </form>
 """
-    return page(content)
+    return page(content, title="Upload")
 
 
 @router.post("/upload", status_code=200, description="Accept a zip and start processing")
@@ -46,7 +46,8 @@ async def upload_submit(background_tasks: BackgroundTasks, con: DBDep, file: Upl
                 return page(
                     "<h1>Upload failed</h1>"
                     f"<p class='subtitle'>File too large "
-                    f"(max {service.MAX_ZIP_SIZE // (1024 * 1024)}MB).</p>"
+                    f"(max {service.MAX_ZIP_SIZE // (1024 * 1024)}MB).</p>",
+                    title="Upload",
                 )
             f.write(chunk)
 
@@ -99,7 +100,7 @@ def upload_status(job_id: int, con: DBDep):
 <h1>Import #{job['id']}</h1>
 {_status_block(job)}
 """
-    return page(content)
+    return page(content, title=f"Import #{job['id']}")
 
 
 @router.get(

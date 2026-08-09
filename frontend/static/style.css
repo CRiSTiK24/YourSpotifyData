@@ -354,6 +354,10 @@ h2 { font-size: 18px; font-weight: 600; margin: 20px 0 10px; color: var(--color-
 .page-header { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
 .page-header h1 { margin-bottom: 0; }
 
+.list-title-row { display: flex; align-items: center; flex-wrap: nowrap; gap: 12px; }
+.list-title-row h2 { margin-bottom: 0; white-space: nowrap; }
+.list-title-row .btn { flex-shrink: 0; white-space: nowrap; }
+
 .description-form { display: flex; flex-direction: column; gap: 8px; margin: 8px 0; max-width: 480px; }
 .description-input {
     width: 100%;

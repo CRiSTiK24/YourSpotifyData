@@ -58,7 +58,7 @@ artists in sync, instead of manually re-uploading your export.</p>
 
 @router.get("", response_class=HTMLResponse, status_code=200, description="Scrobbler status page")
 def status_page(con: DBDep, synced: str | None = None):
-    return page(_status_content(con, synced))
+    return page(_status_content(con, synced), title="Scrobbler")
 
 
 @router.get("/connect", status_code=302, description="Start Spotify OAuth login")
@@ -74,7 +74,7 @@ def connect():
 )
 def callback(con: DBDep, code: str | None = None, state: str | None = None, error: str | None = None):
     if error:
-        return page(f"<h1>Scrobbler</h1><p>{escape(error)}</p>")
+        return page(f"<h1>Scrobbler</h1><p>{escape(error)}</p>", title="Scrobbler")
     if not code or not state or not service.verify_state(state):
         raise HTTPException(status_code=400, detail="Invalid or expired OAuth state")
     service.exchange_code(con, code)

@@ -132,7 +132,7 @@ def playlist_detail(playlist_id: int, request: Request, con: DBDep, name: str = 
 <form class="description-form" action="/playlist/{playlist_id}/description?name={quote(name)}" method="post">
   <textarea name="description" class="description-input" maxlength="300"
             placeholder="Add a description…">{escape(unescape(playlist["description"] or "")) if playlist else ""}</textarea>
-  <button type="submit" class="btn">Save to Spotify</button>
+  <button type="submit" class="btn">Save description</button>
 </form>
 {save_note_html}
 """
@@ -144,7 +144,15 @@ def playlist_detail(playlist_id: int, request: Request, con: DBDep, name: str = 
         )
 
     export_lines = [name, ""] + [f"* {t['track_name']} - {t['artist_name']}" for t in tracks]
-    title_html = page_header(name, copy_list_button(export_lines, f"playlist-{playlist_id}-list"))
+    spotify_link_html = (
+        f"<a class='btn' style='margin-left:auto' "
+        f"href='https://open.spotify.com/playlist/{escape(playlist['spotify_playlist_id'])}' "
+        "target='_blank' rel='noopener noreferrer'>Open in Spotify</a>"
+        if playlist and playlist["spotify_playlist_id"]
+        else ""
+    )
+    title_html = page_header(name)
+    tracks_actions_html = copy_list_button(export_lines, f"playlist-{playlist_id}-list") + spotify_link_html
 
     header = f"""
 {hero_image(playlist["image_url"] if playlist else None, raw=True)}
@@ -152,4 +160,8 @@ def playlist_detail(playlist_id: int, request: Request, con: DBDep, name: str = 
 {description_html}
 <p class="subtitle">{len(tracks)} track{"s" if len(tracks) != 1 else ""} &nbsp;·&nbsp; {len(history)} total plays</p>
 """
-    return page(detail_layout(header, heatmap_html + period_html, "Tracks", tracks_html))
+    return page(
+        detail_layout(
+            header, heatmap_html + period_html, "Tracks", tracks_html, list_actions=tracks_actions_html
+        )
+    )

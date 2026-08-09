@@ -83,4 +83,4 @@ this device until cleared.</p>
 </div>
 <script src="/static/theme.js"></script>
 """
-    return page(content)
+    return page(content, title="Theme")
