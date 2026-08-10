@@ -5,9 +5,9 @@ from fastapi import APIRouter, Request
 from fastapi.responses import HTMLResponse
 
 from src.database import DBDep
-from src.heatmap import build_heatmap_html, period_label
-from src.html import detail_header, detail_layout, filter_clear_link, hero_image, link, page, row
-from src.utils import aggregate_plays
+from src.heatmap import build_heatmap_html, resolve_period_filter
+from src.html import detail_header, detail_layout, hero_image, link, page, row
+from src.utils import aggregate_plays, pluralize
 
 from . import service
 
@@ -23,20 +23,10 @@ router = APIRouter(tags=["albums"])
 def album_detail(album_name: str, request: Request, con: DBDep, artist: str = ""):
     history = service.load_album_track_history(con, album_name)
 
-    heatmap_html, result, base_href = build_heatmap_html(
-        history, f"album_{album_name}", request
-    )
+    heatmap_html, result, base_href = build_heatmap_html(history, f"album_{album_name}", request)
 
-    filter_clear_html = ""
-    if result:
-        _, _, _, plays = result
-        label = period_label(result)
-        aggregated = aggregate_plays(plays)
-        filter_clear_html = filter_clear_link(label, base_href)
-        play_count = len(plays)
-    else:
-        aggregated = aggregate_plays(history)
-        play_count = len(history)
+    plays, play_count, filter_clear_html = resolve_period_filter(history, result, base_href)
+    aggregated = aggregate_plays(plays)
     max_plays = max((count for _, _, count in aggregated), default=0)
     tracks_html = "".join(
         row(
@@ -51,12 +41,14 @@ def album_detail(album_name: str, request: Request, con: DBDep, artist: str = ""
     )
 
     artist_line = (
-        f"<p class='subtitle'>Artist: {link(artist, f'/artist/{quote(artist)}')}</p>" if artist else ""
+        f"<p class='subtitle'>Artist: {link(artist, f'/artist/{quote(artist)}')}</p>"
+        if artist
+        else ""
     )
 
     meta_html = (
         f"{artist_line}"
-        f"<p class='subtitle'>{play_count} play{'s' if play_count != 1 else ''} "
+        f"<p class='subtitle'>{pluralize(play_count, 'play')} "
         f"from this album{filter_clear_html}</p>"
     )
     header = detail_header(

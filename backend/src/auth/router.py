@@ -35,7 +35,7 @@ def login_form():
     "/login", response_class=HTMLResponse, status_code=200, description="Request a login code"
 )
 def login_submit(email: str = Form(...)):
-    service.request_code(email)
+    service.request_code_if_email_matches_owner(email)
     content = f"""
 <p class="subtitle">If that email is registered, a code was just sent.</p>
 {_CODE_FORM}

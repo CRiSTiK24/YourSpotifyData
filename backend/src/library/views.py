@@ -6,23 +6,19 @@ from src.html import (
     card,
     copy_list_button,
     grid,
-    infinite_scroll_trigger,
     lazy_load_trigger,
     page_header,
+    paginated_fragment,
     row,
 )
-from src.utils import format_month_param
+from src.utils import format_month_param, most_listened_next_href
 
-from . import service
+from . import play_counts, service
 
 MOST_LISTENED_BATCH = 30
 
 
-def _placeholder(period: int) -> str:
-    """MM/YYYY, purely for the placeholder text - value/min/max on an
-    <input type="month"> must stay "YYYY-MM" (the one format the element
-    actually accepts; the browser renders its own locale-formatted month
-    picker over that regardless of what we put here)."""
+def _format_month_placeholder(period: int) -> str:
     year, month = divmod(period, 100)
     return f"{month:02d}/{year:04d}"
 
@@ -30,19 +26,6 @@ def _placeholder(period: int) -> str:
 def date_filter_html(
     min_period: int, max_period: int, start_period: int, end_period: int, base_href: str
 ) -> str:
-    """Two native <input type="month"> fields (From/To) scoping a
-    most-listened ranking to a month range - replaced an earlier
-    dual-thumb slider. Native month inputs give mobile an optimized
-    touch/wheel picker and desktop a small calendar dropdown, both
-    low-click, without needing any custom widget code to keep the two in
-    visual sync (the actual goal was interaction comfort on both, not
-    pixel-identical rendering). 0 on either end means unbounded on that
-    side; left blank rather than defaulting to min/max, so 'All time' is
-    just both inputs empty - no dedicated 'All time' control, clearing
-    both fields (or just navigating away) gets you back there. The
-    available range is shown as each field's own placeholder (MM/YYYY,
-    see _placeholder) rather than as separate text elsewhere on the page.
-    base_href is the page this filter lives on."""
     start_value = format_month_param(start_period) if start_period else ""
     end_value = format_month_param(end_period) if end_period else ""
     min_value = format_month_param(min_period)
@@ -51,11 +34,11 @@ def date_filter_html(
 <div class="date-filter">
   <label class="date-filter-field">
     <span>From</span>
-    <input type="month" id="date-filter-start" min="{min_value}" max="{max_value}" value="{start_value}" placeholder="{_placeholder(min_period)}">
+    <input type="month" id="date-filter-start" min="{min_value}" max="{max_value}" value="{start_value}" placeholder="{_format_month_placeholder(min_period)}">
   </label>
   <label class="date-filter-field">
     <span>To</span>
-    <input type="month" id="date-filter-end" min="{min_value}" max="{max_value}" value="{end_value}" placeholder="{_placeholder(max_period)}">
+    <input type="month" id="date-filter-end" min="{min_value}" max="{max_value}" value="{end_value}" placeholder="{_format_month_placeholder(max_period)}">
   </label>
 </div>
 <script>
@@ -80,9 +63,9 @@ def date_filter_html(
 def most_listened_rows_html(
     con: sqlite3.Connection, offset: int, max_plays: int, start_period: int = 0, end_period: int = 0
 ) -> str:
-    """Fetches one batch + a lookahead row (cheaper than a separate COUNT)
-    to know whether to append another infinite-scroll trigger."""
-    tracks = service.load_most_listened(con, MOST_LISTENED_BATCH + 1, offset, start_period, end_period)
+    tracks = play_counts.load_most_listened(
+        con, MOST_LISTENED_BATCH + 1, offset, start_period, end_period
+    )
     has_more = len(tracks) > MOST_LISTENED_BATCH
     tracks = tracks[:MOST_LISTENED_BATCH]
     rows_html = "".join(
@@ -97,22 +80,22 @@ def most_listened_rows_html(
         )
         for t in tracks
     )
-    if not rows_html:
-        return "<p class='info'>No plays yet.</p>" if offset == 0 else ""
-    if has_more:
-        next_href = (
-            f"/most-listened/more?offset={offset + MOST_LISTENED_BATCH}"
-            f"&max_plays={max_plays}&start_month={format_month_param(start_period) if start_period else ''}"
-            f"&end_month={format_month_param(end_period) if end_period else ''}"
-        )
-        rows_html += infinite_scroll_trigger(next_href)
-    return rows_html
+    next_href = most_listened_next_href(
+        "/most-listened/more", offset + MOST_LISTENED_BATCH, max_plays, start_period, end_period
+    )
+    return paginated_fragment(
+        rows_html,
+        offset=offset,
+        has_more=has_more,
+        next_href=next_href,
+        empty_message="<p class='info'>No plays yet.</p>",
+    )
 
 
 def most_listened_albums_rows_html(
     con: sqlite3.Connection, offset: int, max_plays: int, start_period: int = 0, end_period: int = 0
 ) -> str:
-    albums = service.load_most_listened_albums(
+    albums = play_counts.load_most_listened_albums(
         con, MOST_LISTENED_BATCH + 1, offset, start_period, end_period
     )
     has_more = len(albums) > MOST_LISTENED_BATCH
@@ -129,57 +112,43 @@ def most_listened_albums_rows_html(
         )
         for a in albums
     )
-    if not rows_html:
-        return "<p class='info'>No plays yet.</p>" if offset == 0 else ""
-    if has_more:
-        next_href = (
-            f"/most-listened-albums/more?offset={offset + MOST_LISTENED_BATCH}"
-            f"&max_plays={max_plays}&start_month={format_month_param(start_period) if start_period else ''}"
-            f"&end_month={format_month_param(end_period) if end_period else ''}"
-        )
-        rows_html += infinite_scroll_trigger(next_href)
-    return rows_html
+    next_href = most_listened_next_href(
+        "/most-listened-albums/more",
+        offset + MOST_LISTENED_BATCH,
+        max_plays,
+        start_period,
+        end_period,
+    )
+    return paginated_fragment(
+        rows_html,
+        offset=offset,
+        has_more=has_more,
+        next_href=next_href,
+        empty_message="<p class='info'>No plays yet.</p>",
+    )
 
 
 def most_listened_combined_content(
     con: sqlite3.Connection, start_period: int = 0, end_period: int = 0
 ) -> str:
-    """Songs, Albums and Artists used to be three separate pages; merged
-    into one so desktop (room to spare) can show all three as side-by-side
-    scrollable columns while mobile switches between them with tabs - see
-    .ml-tabs/.ml-columns in style.css and most-listened.js for the
-    tab-switch behavior these three .ml-column sections rely on. One
-    shared month-range filter applies to all three at once rather than
-    each having its own.
-
-    Only Songs' rows are fetched eagerly here - ranking Albums/Artists by
-    play count is its own ~500-700ms full scan+sort each (no index can
-    shortcut sorting by an aggregate COUNT(*)), and computing all three
-    serially on every page load / filter change was the exact regression a
-    single merged page risked over three separate ones, each previously
-    paying for only its own ranking. lazy_load_trigger() defers those two
-    so they load moments later via their own parallel requests instead of
-    blocking the page's first paint. Stats stay eager (cheap enough, and
-    the tab labels/column titles need the counts immediately)."""
-    songs_total, songs_max = service.most_listened_stats(con, start_period, end_period)
-    albums_total, albums_max = service.most_listened_albums_stats(con, start_period, end_period)
+    songs_total, songs_max = play_counts.most_listened_stats(con, start_period, end_period)
+    albums_total, albums_max = play_counts.most_listened_albums_stats(con, start_period, end_period)
     artists_total, artists_max = artists_service.most_listened_artists_stats(
         con, start_period, end_period
     )
-    min_period, max_period = service.most_listened_period_range(con)
-
-    start_month = format_month_param(start_period) if start_period else ""
-    end_month = format_month_param(end_period) if end_period else ""
+    min_period, max_period = play_counts.most_listened_period_range(con)
 
     songs_rows = most_listened_rows_html(con, 0, songs_max, start_period, end_period)
     albums_rows = lazy_load_trigger(
-        f"/most-listened-albums/more?offset=0&max_plays={albums_max}"
-        f"&start_month={start_month}&end_month={end_month}",
+        most_listened_next_href(
+            "/most-listened-albums/more", 0, albums_max, start_period, end_period
+        ),
         "Loading albums…",
     )
     artists_rows = lazy_load_trigger(
-        f"/most-listened-artists/more?offset=0&max_plays={artists_max}"
-        f"&start_month={start_month}&end_month={end_month}",
+        most_listened_next_href(
+            "/most-listened-artists/more", 0, artists_max, start_period, end_period
+        ),
         "Loading artists…",
     )
 

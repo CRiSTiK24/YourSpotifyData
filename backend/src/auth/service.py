@@ -1,6 +1,7 @@
 import json
 import secrets
 import sqlite3
+import threading
 import urllib.error
 import urllib.request
 from datetime import UTC, datetime, timedelta
@@ -17,46 +18,42 @@ MAX_ATTEMPTS = 5
 SESSION_TTL = timedelta(days=30)
 SESSION_COOKIE_NAME = "session"
 
-# Single pending login code at a time — this app has exactly one authorized
-# user, so there's no need for per-email state.
-_pending: dict | None = None
+_pending_login_code: dict | None = None
+_pending_login_code_lock = threading.Lock()
 
 
 def _now() -> datetime:
     return datetime.now(UTC)
 
 
-def request_code(email: str) -> None:
-    """Send a login code if the email matches the configured owner. Always
-    behaves the same regardless of match, so the caller can show an
-    identical response either way (avoids confirming which email is valid)."""
-    global _pending
+def request_code_if_email_matches_owner(email: str) -> None:
+    global _pending_login_code
     if not settings.allowed_email or email.strip().lower() != settings.allowed_email.lower():
         return
 
     code = f"{secrets.randbelow(1_000_000):06d}"
-    _pending = {"code": code, "expires_at": _now() + CODE_TTL, "attempts": 0}
+    with _pending_login_code_lock:
+        _pending_login_code = {"code": code, "expires_at": _now() + CODE_TTL, "attempts": 0}
     _send_email(email, code)
 
 
 def verify_code(code: str) -> bool:
-    """Check the submitted code against the pending one. Returns True and
-    clears pending state on success."""
-    global _pending
-    if _pending is None:
-        return False
-    if _now() > _pending["expires_at"]:
-        _pending = None
-        return False
-    if _pending["attempts"] >= MAX_ATTEMPTS:
-        _pending = None
-        return False
+    global _pending_login_code
+    with _pending_login_code_lock:
+        if _pending_login_code is None:
+            return False
+        if _now() > _pending_login_code["expires_at"]:
+            _pending_login_code = None
+            return False
+        if _pending_login_code["attempts"] >= MAX_ATTEMPTS:
+            _pending_login_code = None
+            return False
 
-    _pending["attempts"] += 1
-    if secrets.compare_digest(code.strip(), _pending["code"]):
-        _pending = None
-        return True
-    return False
+        _pending_login_code["attempts"] += 1
+        if secrets.compare_digest(code.strip(), _pending_login_code["code"]):
+            _pending_login_code = None
+            return True
+        return False
 
 
 def _send_email(to_addr: str, code: str) -> None:

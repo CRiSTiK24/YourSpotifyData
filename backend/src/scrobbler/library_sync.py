@@ -9,27 +9,20 @@ import urllib.error
 import urllib.request
 
 from src.config import settings
-from src.database import get_connection
 
 from . import service as scrobbler_service
-from .exceptions import NotConnected
+from .loop import run_periodic
 
 logger = logging.getLogger("library_sync")
 
 API_BASE = "https://api.spotify.com/v1"
 
-# The GDPR-export processors (processors/*.py) already implement the
-# upsert-and-prune sync logic this needs (playlists matched by name with
-# tracks replaced, library items matched by key with removals pruned). They
-# live outside the backend/src package (they're invoked as standalone
-# scripts by the /upload flow), so they're loaded here by file path rather
-# than a normal import, to reuse that logic instead of duplicating it.
 _PROCESSORS_DIR = os.path.join(
     os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))), "processors"
 )
 
 
-def _load_processor(name: str):
+def _load_processor_module_by_path(name: str):
     path = os.path.join(_PROCESSORS_DIR, f"{name}.py")
     spec = importlib.util.spec_from_file_location(f"processors.{name}", path)
     module = importlib.util.module_from_spec(spec)
@@ -37,16 +30,11 @@ def _load_processor(name: str):
     return module
 
 
-_playlist_processor = _load_processor("PlaylistProcessor")
-_library_processor = _load_processor("YourLibraryProcessor")
+_playlist_processor = _load_processor_module_by_path("PlaylistProcessor")
+_library_processor = _load_processor_module_by_path("YourLibraryProcessor")
 
 
 def ensure_migrations(con: sqlite3.Connection) -> None:
-    """Adds the playlists columns this sync needs (and that /playlists'
-    read path now also selects) if they're missing. Called unconditionally
-    at app startup, not just when a sync actually runs, so browsing
-    /playlists doesn't 'no such column' on a DB that predates these
-    columns and has never run a library sync."""
     _playlist_processor.ensure_schema_columns(con)
 
 
@@ -85,20 +73,9 @@ def _fetch_current_user_id(access_token: str) -> str:
     return _api_get(access_token, f"{API_BASE}/me")["id"]
 
 
-def _fetch_playlists(con: sqlite3.Connection, access_token: str, my_user_id: str) -> list[dict]:
-    """Fetching every track of every playlist on every run is the bulk of
-    this sync's request volume. Spotify's playlist snapshot_id changes
-    whenever a playlist's contents change, so a playlist whose snapshot_id
-    still matches what's stored from last sync is skipped entirely (no
-    tracks call at all) - same approach used by other Spotify sync tools.
-
-    /me/playlists returns every playlist the account follows, not just ones
-    it owns (Spotify-curated playlists, other users' public/shared
-    playlists you've saved, etc.) - those aren't "your" playlists in the
-    sense this app tracks, so only playlists owned by my_user_id are kept.
-    A playlist that was previously synced and is no longer owned (or was
-    never yours to begin with) simply won't appear here, and the caller's
-    prune_missing=True then removes it - same mechanism as an unlike."""
+def _fetch_owned_playlists(
+    con: sqlite3.Connection, access_token: str, my_user_id: str
+) -> list[dict]:
     _playlist_processor.ensure_schema_columns(con)
     known_snapshots = _playlist_processor.get_snapshot_ids(con)
 
@@ -117,7 +94,10 @@ def _fetch_playlists(con: sqlite3.Connection, access_token: str, my_user_id: str
             "imageUrl": images[0]["url"] if images else None,
             "description": pl.get("description") or None,
         }
-        if pl.get("snapshot_id") is not None and known_snapshots.get(pl["name"]) == pl["snapshot_id"]:
+        if (
+            pl.get("snapshot_id") is not None
+            and known_snapshots.get(pl["name"]) == pl["snapshot_id"]
+        ):
             entry["unchanged"] = True
             playlists.append(entry)
             continue
@@ -181,18 +161,29 @@ def _fetch_followed_artists(access_token: str) -> list[dict]:
     ]
 
 
+def set_playlist_description_via_spotify_api(
+    con: sqlite3.Connection, spotify_playlist_id: str, description: str
+) -> None:
+    access_token = scrobbler_service.ensure_access_token(con)
+    body = json.dumps({"description": description}).encode()
+    req = urllib.request.Request(
+        f"{API_BASE}/playlists/{spotify_playlist_id}/details",
+        data=body,
+        method="PUT",
+        headers={
+            "Authorization": f"Bearer {access_token}",
+            "Content-Type": "application/json",
+        },
+    )
+    with urllib.request.urlopen(req):
+        pass
+
+
 def sync_once(con: sqlite3.Connection) -> dict:
-    """Pulls the account's current playlists, liked songs, liked albums and
-    followed artists from the Spotify Web API and syncs them into the same
-    tables the GDPR export upload fills in, via the same processor
-    save_to_db functions - so this is the "live" equivalent of periodically
-    re-uploading the export zip. Every fetch here always returns the full,
-    current set (the Spotify API doesn't offer a delta/changes-since
-    endpoint), so pruning of removed items is always safe."""
-    access_token = scrobbler_service._ensure_access_token(con)
+    access_token = scrobbler_service.ensure_access_token(con)
     my_user_id = _fetch_current_user_id(access_token)
 
-    playlists = _fetch_playlists(con, access_token, my_user_id)
+    playlists = _fetch_owned_playlists(con, access_token, my_user_id)
     counts = _playlist_processor.save_to_db(con, playlists, prune_missing=True)
 
     tracks = _fetch_liked_tracks(access_token)
@@ -203,19 +194,15 @@ def sync_once(con: sqlite3.Connection) -> dict:
     return counts
 
 
+async def _sync_and_log(con: sqlite3.Connection) -> None:
+    counts = await asyncio.to_thread(sync_once, con)
+    logger.info("library sync complete: %s", counts)
+
+
 async def sync_loop() -> None:
-    """Background task started from the app lifespan, mirroring
-    scrobbler.service.poll_loop but for the much heavier library sync."""
-    while True:
-        await asyncio.sleep(settings.library_sync_poll_seconds)
-        con = get_connection()
-        try:
-            if scrobbler_service.get_status(con) is not None:
-                counts = sync_once(con)
-                logger.info("library sync complete: %s", counts)
-        except NotConnected:
-            pass
-        except Exception:
-            logger.exception("library sync failed")
-        finally:
-            con.close()
+    await run_periodic(
+        _sync_and_log,
+        interval_seconds=settings.library_sync_poll_seconds,
+        logger=logger,
+        require_connected=lambda con: scrobbler_service.get_status(con) is not None,
+    )

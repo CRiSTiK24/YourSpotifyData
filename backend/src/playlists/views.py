@@ -14,7 +14,7 @@ def playlists_content(con: sqlite3.Connection) -> str:
             pl["name"],
             f"/playlist/{pl['id']}?name={quote(pl['name'])}",
             image_url=pl["image_url"],
-            title=unescape(pl["description"]) if pl["description"] else None,
+            hover_tooltip=unescape(pl["description"]) if pl["description"] else None,
             raw_cover=True,
         )
         for pl in pls

@@ -10,9 +10,11 @@ from base64 import b64encode
 from datetime import UTC, datetime, timedelta
 
 from src.config import settings
-from src.database import get_connection
 
 from .exceptions import NotConnected
+from .loop import run_periodic
+
+logger = logging.getLogger("scrobbler")
 
 AUTHORIZE_URL = "https://accounts.spotify.com/authorize"
 TOKEN_URL = "https://accounts.spotify.com/api/token"
@@ -22,9 +24,7 @@ SCOPE = (
     "playlist-modify-public playlist-modify-private"
 )
 
-# CSRF state for the OAuth redirect — short-lived and single-user, so a
-# module-level slot (mirroring src.auth.service._pending) is enough.
-_pending_state: str | None = None
+_pending_oauth_state: str | None = None
 
 
 def _now() -> datetime:
@@ -37,24 +37,22 @@ def _basic_auth_header() -> str:
 
 
 def start_authorization() -> str:
-    """Generates and remembers a CSRF state, returning the URL to redirect
-    the user to for Spotify's consent screen."""
-    global _pending_state
-    _pending_state = secrets.token_urlsafe(24)
+    global _pending_oauth_state
+    _pending_oauth_state = secrets.token_urlsafe(24)
     params = {
         "client_id": settings.spotify_client_id,
         "response_type": "code",
         "redirect_uri": settings.spotify_redirect_uri,
         "scope": SCOPE,
-        "state": _pending_state,
+        "state": _pending_oauth_state,
     }
     return f"{AUTHORIZE_URL}?{urllib.parse.urlencode(params)}"
 
 
 def verify_state(state: str) -> bool:
-    global _pending_state
-    match = _pending_state is not None and secrets.compare_digest(state, _pending_state)
-    _pending_state = None
+    global _pending_oauth_state
+    match = _pending_oauth_state is not None and secrets.compare_digest(state, _pending_oauth_state)
+    _pending_oauth_state = None
     return match
 
 
@@ -113,9 +111,7 @@ def disconnect(con: sqlite3.Connection) -> None:
 
 
 def _refresh_access_token(con: sqlite3.Connection, refresh_token: str) -> str:
-    payload = _post_token_request(
-        {"grant_type": "refresh_token", "refresh_token": refresh_token}
-    )
+    payload = _post_token_request({"grant_type": "refresh_token", "refresh_token": refresh_token})
     now = _now()
     new_refresh_token = payload.get("refresh_token", refresh_token)
     con.execute(
@@ -131,7 +127,7 @@ def _refresh_access_token(con: sqlite3.Connection, refresh_token: str) -> str:
     return payload["access_token"]
 
 
-def _ensure_access_token(con: sqlite3.Connection) -> str:
+def ensure_access_token(con: sqlite3.Connection) -> str:
     row = get_status(con)
     if row is None:
         raise NotConnected()
@@ -150,14 +146,11 @@ def _fetch_recently_played(access_token: str) -> list[dict]:
 
 
 def _save_new_plays(con: sqlite3.Connection, items: list[dict]) -> int:
-    """Same incremental rule as processors/StreamingHistoryProcessor.py: only
-    insert plays newer than what's already stored, so overlapping polls (and
-    a manual GDPR re-upload later) never duplicate history."""
-    last_max = con.execute("SELECT MAX(time) FROM track_history").fetchone()[0]
+    last_known_played_at = con.execute("SELECT MAX(time) FROM track_history").fetchone()[0]
     new_rows = []
     for item in items:
         played_at = item["played_at"]
-        if last_max is not None and played_at <= last_max:
+        if last_known_played_at is not None and played_at <= last_known_played_at:
             continue
         track = item["track"]
         artists = track.get("artists") or []
@@ -179,31 +172,8 @@ def _save_new_plays(con: sqlite3.Connection, items: list[dict]) -> int:
     return len(new_rows)
 
 
-def update_playlist_description(con: sqlite3.Connection, spotify_playlist_id: str, description: str) -> None:
-    """Pushes a new description to Spotify (PUT .../playlists/{id}/details),
-    requiring the playlist-modify-* scopes added alongside this - an
-    account connected before those scopes existed needs to disconnect and
-    reconnect once for its refresh token to pick them up."""
-    access_token = _ensure_access_token(con)
-    body = json.dumps({"description": description}).encode()
-    req = urllib.request.Request(
-        f"https://api.spotify.com/v1/playlists/{spotify_playlist_id}/details",
-        data=body,
-        method="PUT",
-        headers={
-            "Authorization": f"Bearer {access_token}",
-            "Content-Type": "application/json",
-        },
-    )
-    with urllib.request.urlopen(req):
-        pass
-
-
 def poll_once(con: sqlite3.Connection) -> int:
-    """Runs one poll cycle: refresh token if needed, fetch recently-played,
-    insert new plays, and record the outcome for the /scrobbler status page.
-    Raises NotConnected if no account is linked yet."""
-    access_token = _ensure_access_token(con)
+    access_token = ensure_access_token(con)
     try:
         items = _fetch_recently_played(access_token)
         new_count = _save_new_plays(con, items)
@@ -223,21 +193,15 @@ def poll_once(con: sqlite3.Connection) -> int:
     return new_count
 
 
+async def _poll(con: sqlite3.Connection) -> None:
+    new_count = await asyncio.to_thread(poll_once, con)
+    logger.info("poll complete: %d new plays", new_count)
+
+
 async def poll_loop() -> None:
-    """Background task started from the app lifespan. Runs forever, sleeping
-    scrobbler_poll_seconds between polls; a poll failure (e.g. not connected
-    yet, or a transient Spotify API error) is logged and retried next tick
-    rather than killing the loop."""
-    logger = logging.getLogger("scrobbler")
-    while True:
-        await asyncio.sleep(settings.scrobbler_poll_seconds)
-        con = get_connection()
-        try:
-            if get_status(con) is not None:
-                poll_once(con)
-        except NotConnected:
-            pass
-        except Exception:
-            logger.exception("scrobbler poll failed")
-        finally:
-            con.close()
+    await run_periodic(
+        _poll,
+        interval_seconds=settings.scrobbler_poll_seconds,
+        logger=logger,
+        require_connected=lambda con: get_status(con) is not None,
+    )

@@ -14,27 +14,26 @@ def aggregate_plays(plays: list) -> list[tuple[str, str | None, int]]:
 
 
 def parse_month_param(value: str) -> int:
-    """Parses a native <input type="month"> value ("YYYY-MM") into the
-    YYYYMM integer the *_play_counts tables key on (see
-    library/service.py's ensure_play_count_migrations) - e.g. "2024-08" ->
-    202408. Empty string (the "no bound on this side" case, same
-    convention as the old start_year/end_year=0) maps to 0."""
     return int(value.replace("-", "")) if value else 0
 
 
 def format_month_param(period: int) -> str:
-    """The inverse of parse_month_param - YYYYMM back to "YYYY-MM", for
-    populating an <input type="month">'s value/min/max attributes."""
     return f"{period // 100:04d}-{period % 100:02d}"
 
 
+def pluralize(n: int, word: str) -> str:
+    return f"{n} {word}{'s' if n != 1 else ''}"
+
+
+def most_listened_next_href(
+    path: str, offset: int, max_plays: int, start_period: int, end_period: int
+) -> str:
+    start_month = format_month_param(start_period) if start_period else ""
+    end_month = format_month_param(end_period) if end_period else ""
+    return f"{path}?offset={offset}&max_plays={max_plays}&start_month={start_month}&end_month={end_month}"
+
+
 def fts_match_query(words: list[str], column: str | None = None) -> str:
-    """Build an FTS5 MATCH query from user-typed words: each word becomes a
-    quoted prefix term (so "day" matches "Daytime"), AND'd together. Bareword
-    terms match against any indexed column. Pass `column` to restrict every
-    term to just that column instead (FTS5's `col: term` syntax) - e.g. so a
-    track search for "car" doesn't also surface every track by an artist
-    named "Cartoon", which an any-column search would."""
     prefix = f"{column}: " if column else ""
     terms = [f'{prefix}"{word.replace(chr(34), chr(34) * 2)}"*' for word in words]
     return " AND ".join(terms)

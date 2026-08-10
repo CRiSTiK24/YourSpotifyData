@@ -6,8 +6,9 @@ from fastapi.responses import HTMLResponse
 
 from src.albums.service import get_album_image
 from src.database import DBDep
-from src.heatmap import build_heatmap_html, period_label
-from src.html import detail_header, detail_layout, filter_clear_link, hero_image, link, page, row
+from src.heatmap import build_heatmap_html, resolve_period_filter
+from src.html import detail_header, detail_layout, hero_image, link, page, row
+from src.utils import pluralize
 
 from . import service
 
@@ -31,18 +32,13 @@ def track_detail(track_name: str, request: Request, con: DBDep, artist: str = ""
         else ""
     )
     artist_line = (
-        f"<p class='subtitle'>Artist: {link(artist, f'/artist/{quote(artist)}')}</p>" if artist else ""
+        f"<p class='subtitle'>Artist: {link(artist, f'/artist/{quote(artist)}')}</p>"
+        if artist
+        else ""
     )
 
     heatmap_html, result, base_href = build_heatmap_html(history, f"track_{track_name}", request)
-
-    filter_clear_html = ""
-    if result:
-        _, _, _, plays = result
-        play_count = len(plays)
-        filter_clear_html = filter_clear_link(period_label(result), base_href)
-    else:
-        play_count = len(history)
+    _, play_count, filter_clear_html = resolve_period_filter(history, result, base_href)
 
     pl_html = (
         "".join(
@@ -53,7 +49,7 @@ def track_detail(track_name: str, request: Request, con: DBDep, artist: str = ""
 
     meta_html = (
         f"{artist_line}{album_line}"
-        f"<p class='subtitle'>Played {play_count} time{'s' if play_count != 1 else ''}{filter_clear_html}</p>"
+        f"<p class='subtitle'>Played {pluralize(play_count, 'time')}{filter_clear_html}</p>"
     )
     header = detail_header(
         f"<h1>{escape(track_name)}</h1>",

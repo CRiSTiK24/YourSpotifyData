@@ -41,12 +41,12 @@ async def upload_submit(background_tasks: BackgroundTasks, con: DBDep, file: Upl
     with os.fdopen(fd, "wb") as f:
         while chunk := await file.read(1024 * 1024):
             size += len(chunk)
-            if size > service.MAX_ZIP_SIZE:
+            if size > service.MAX_ZIP_SIZE_COMPRESSED:
                 os.remove(tmp_path)
                 return page(
                     "<h1>Upload failed</h1>"
                     f"<p class='subtitle'>File too large "
-                    f"(max {service.MAX_ZIP_SIZE // (1024 * 1024)}MB).</p>",
+                    f"(max {service.MAX_ZIP_SIZE_COMPRESSED // (1024 * 1024)}MB).</p>",
                     title="Upload",
                 )
             f.write(chunk)
@@ -61,11 +61,6 @@ def _status_block(job) -> str:
     if status in ("done", "error"):
         poll_attrs = ""
     else:
-        # hx-target/hx-select pinned to itself and unset — without this it
-        # inherits hx-target="#content" / hx-select="#content" from <body>,
-        # and since this polled fragment has no #content element, that
-        # inherited select-and-swap wipes the entire page content out on
-        # the very first poll (same failure mode as infinite_scroll_trigger).
         poll_attrs = (
             f" hx-get='/upload/{job['id']}/status' hx-trigger='every 2s' hx-target='this' "
             f"hx-select='unset' hx-swap='outerHTML'"
@@ -75,7 +70,7 @@ def _status_block(job) -> str:
         body = f"""
 <p>Done.</p>
 <ul>
-  <li>{job['new_history_rows'] or 0} new plays</li>
+  <li>{job["new_history_rows"] or 0} new plays</li>
 </ul>
 """
     elif status == "error":
@@ -97,7 +92,7 @@ def upload_status(job_id: int, con: DBDep):
     if job is None:
         raise JobNotFound(job_id)
     content = f"""
-<h1>Import #{job['id']}</h1>
+<h1>Import #{job["id"]}</h1>
 {_status_block(job)}
 """
     return page(content, title=f"Import #{job['id']}")

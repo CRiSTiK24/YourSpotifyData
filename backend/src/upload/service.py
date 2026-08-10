@@ -13,7 +13,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__fil
 RAW_DIR = os.path.join(BASE_DIR, "data", "spotifyRaw")
 PROCESSORS_DIR = os.path.join(BASE_DIR, "processors")
 
-PROCESSOR_SCRIPTS = [
+UPLOAD_PROCESSOR_SCRIPTS = [
     "StreamingHistoryProcessor.py",
 ]
 
@@ -21,10 +21,10 @@ ALLOWED_PATTERNS = [
     "Streaming_History_Audio*.json",
     "StreamingHistory_music_*.json",
 ]
-MAX_ZIP_SIZE = 100 * 1024 * 1024  # compressed, on disk
-MAX_MEMBER_SIZE = 200 * 1024 * 1024  # per accepted file, uncompressed
+MAX_ZIP_SIZE_COMPRESSED = 100 * 1024 * 1024
+MAX_MEMBER_SIZE_UNCOMPRESSED = 200 * 1024 * 1024
 MAX_ENTRIES = 20_000
-PROCESSOR_TIMEOUT = 1800  # seconds, generous for a large streaming-history export
+PROCESSOR_TIMEOUT_SECONDS = 1800
 
 
 class InvalidZip(ValueError):
@@ -32,12 +32,8 @@ class InvalidZip(ValueError):
 
 
 def validate_and_list_matches(zip_path: str) -> tuple[zipfile.ZipFile, list[tuple]]:
-    """Reject oversized/malformed/suspicious zips before extracting anything.
-    Only entries whose basename matches an expected Spotify export filename
-    are ever read — everything else in the zip is ignored outright, which
-    also means we never even decompress unrelated/oversized junk."""
-    if os.path.getsize(zip_path) > MAX_ZIP_SIZE:
-        raise InvalidZip(f"Zip file too large (max {MAX_ZIP_SIZE // (1024 * 1024)}MB)")
+    if os.path.getsize(zip_path) > MAX_ZIP_SIZE_COMPRESSED:
+        raise InvalidZip(f"Zip file too large (max {MAX_ZIP_SIZE_COMPRESSED // (1024 * 1024)}MB)")
 
     try:
         zf = zipfile.ZipFile(zip_path)
@@ -57,7 +53,7 @@ def validate_and_list_matches(zip_path: str) -> tuple[zipfile.ZipFile, list[tupl
         if not basename:
             continue
         if any(fnmatch.fnmatch(basename, p) for p in ALLOWED_PATTERNS):
-            if info.file_size > MAX_MEMBER_SIZE:
+            if info.file_size > MAX_MEMBER_SIZE_UNCOMPRESSED:
                 zf.close()
                 raise InvalidZip(f"{basename} is larger than expected for a Spotify export")
             matches.append((info, basename))
@@ -69,9 +65,9 @@ def validate_and_list_matches(zip_path: str) -> tuple[zipfile.ZipFile, list[tupl
     return zf, matches
 
 
-def extract_matches(zf: zipfile.ZipFile, matches: list[tuple], dest_dir: str) -> list[str]:
-    """Extraction targets are built purely from the sanitized basename, never
-    the zip's internal path — zip-slip is structurally impossible here."""
+def extract_matches_to_sanitized_paths(
+    zf: zipfile.ZipFile, matches: list[tuple], dest_dir: str
+) -> list[str]:
     os.makedirs(dest_dir, exist_ok=True)
     extracted = []
     for info, basename in matches:
@@ -116,23 +112,21 @@ def _parse_summary(stdout: str) -> dict:
 
 
 def process_upload(job_id: int, zip_path: str) -> None:
-    """Runs as a FastAPI BackgroundTask, so it opens its own DB connection
-    rather than relying on the (already-closed-by-then) request-scoped one."""
     con = get_connection()
     try:
         _update_job(con, job_id, status="extracting")
         zf, matches = validate_and_list_matches(zip_path)
-        extract_matches(zf, matches, RAW_DIR)
+        extract_matches_to_sanitized_paths(zf, matches, RAW_DIR)
 
         _update_job(con, job_id, status="processing")
         counts: dict = {}
-        for script in PROCESSOR_SCRIPTS:
+        for script in UPLOAD_PROCESSOR_SCRIPTS:
             result = subprocess.run(
                 [sys.executable, os.path.join(PROCESSORS_DIR, script)],
                 capture_output=True,
                 text=True,
                 cwd=BASE_DIR,
-                timeout=PROCESSOR_TIMEOUT,
+                timeout=PROCESSOR_TIMEOUT_SECONDS,
             )
             if result.returncode != 0:
                 raise RuntimeError(f"{script} failed: {result.stderr[-2000:]}")

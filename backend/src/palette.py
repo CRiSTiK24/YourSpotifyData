@@ -8,10 +8,6 @@ class Palette(StrEnum):
     DARK_PURPLE = "#412752"
     PURPLE = "#683a68"
     LIGHT_PURPLE = "#9775a6"
-    # neutrals: LIGHT_PURPLE only reaches ~3.2:1 against TEXT, below the 4.5:1
-    # AA minimum — it's still used as a fill (buttons, borders) but text on
-    # top of it directly (e.g. resting-state button label) is a known
-    # legibility tradeoff. TEXT is otherwise the only color used for text.
     TEXT = "#f5eac2"
     BACKGROUND = "#2c1f33"
 
@@ -34,14 +30,10 @@ def css_root_block() -> str:
 _STATIC_DIR = os.path.join(
     os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "frontend", "static"
 )
-_MARKER_RE = re.compile(
-    r"/\* palette:start.*?\*/.*?/\* palette:end \*/", re.DOTALL
-)
+_MARKER_RE = re.compile(r"/\* palette:start.*?\*/.*?/\* palette:end \*/", re.DOTALL)
 
 
 def sync_css_palette() -> None:
-    """Rewrite the generated :root block in style.css from this module, so the
-    CSS palette can never drift out of sync with Palette."""
     path = os.path.join(_STATIC_DIR, "style.css")
     with open(path) as f:
         css = f.read()

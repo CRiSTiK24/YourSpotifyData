@@ -4,13 +4,6 @@ from src.utils import fts_match_query
 
 
 def search_albums(con: sqlite3.Connection, query: str) -> list[sqlite3.Row]:
-    """Same (album, singer) grouping/ranking as most_listened_albums, just
-    filtered to albums matching query - the quick-search Albums tab.
-    FTS instead of a LIKE scan, same reasoning as search_track_history -
-    track_history is 200k+ rows and growing. Restricted to the album
-    column so this only matches on the album's own title, not the artist -
-    a query matching only the artist shouldn't surface every album by that
-    artist here (that's what the Artists tab is for)."""
     match = fts_match_query(query.split(), column="album")
     return con.execute(
         """

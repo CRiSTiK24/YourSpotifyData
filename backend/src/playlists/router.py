@@ -7,21 +7,20 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 
 from src.auth.service import require_auth
 from src.database import DBDep
-from src.heatmap import build_heatmap_html, period_label
+from src.heatmap import build_heatmap_html, resolve_period_filter
 from src.html import (
     card,
     copy_list_button,
     detail_header,
     detail_layout,
-    filter_clear_link,
     grid,
     hero_image,
     logged_in_var,
     page,
 )
-from src.scrobbler import service as scrobbler_service
+from src.scrobbler import library_sync as library_sync_service
 from src.scrobbler.exceptions import NotConnected
-from src.utils import aggregate_plays
+from src.utils import aggregate_plays, pluralize
 
 from . import service
 from .exceptions import PlaylistNotFound
@@ -43,14 +42,14 @@ def playlists(con: DBDep):
     dependencies=[Depends(require_auth)],
 )
 def update_description(playlist_id: int, con: DBDep, description: str = Form(""), name: str = ""):
-    if not service.playlist_exists(con, playlist_id):
+    playlist = service.get_playlist(con, playlist_id)
+    if playlist is None:
         raise PlaylistNotFound(playlist_id)
 
-    playlist = service.get_playlist(con, playlist_id)
     description = description.strip()
-    if playlist and playlist["spotify_playlist_id"]:
+    if playlist["spotify_playlist_id"]:
         try:
-            scrobbler_service.update_playlist_description(
+            library_sync_service.set_playlist_description_via_spotify_api(
                 con, playlist["spotify_playlist_id"], description
             )
             saved = "ok"
@@ -61,7 +60,7 @@ def update_description(playlist_id: int, con: DBDep, description: str = Form("")
             saved = "error"
     else:
         saved = "unlinked"
-    service.set_description(con, playlist_id, description)
+    service.set_local_description(con, playlist_id, description)
     return RedirectResponse(
         url=f"/playlist/{playlist_id}?name={quote(name)}&saved={saved}", status_code=302
     )
@@ -73,33 +72,28 @@ def update_description(playlist_id: int, con: DBDep, description: str = Form("")
     status_code=200,
     description="Playlist detail with play history",
 )
-def playlist_detail(playlist_id: int, request: Request, con: DBDep, name: str = "", saved: str = ""):
-    if not service.playlist_exists(con, playlist_id):
+def playlist_detail(
+    playlist_id: int, request: Request, con: DBDep, name: str = "", saved: str = ""
+):
+    playlist = service.get_playlist(con, playlist_id)
+    if playlist is None:
         raise PlaylistNotFound(playlist_id)
 
     tracks = service.load_playlist_tracks(con, playlist_id)
-    history = service.load_playlist_history(con, playlist_id)
+    history = service.load_playlist_history_with_album_for_cover_lookup(con, playlist_id)
 
     heatmap_html, result, base_href = build_heatmap_html(
         history, f"playlist_{playlist_id}", request
     )
 
-    filter_clear_html = ""
+    plays, play_count, filter_clear_html = resolve_period_filter(history, result, base_href)
     if result:
-        _, _, _, plays = result
-        label = period_label(result)
         aggregated = aggregate_plays(plays)
-        filter_clear_html = filter_clear_link(label, base_href)
-        play_count = len(plays)
-        # Same card-grid layout as the unfiltered view below (not row()'s
-        # plain-text list) - picking a period should narrow which tracks
-        # show, not change how they're displayed. Cover art needs its own
-        # lookup here since plays isn't pre-joined against album_images.
         album_by_name: dict[str, tuple[str, str]] = {}
         for p in plays:
             if p.get("album") and p.get("singer"):
                 album_by_name.setdefault(p["name"], (p["singer"], p["album"]))
-        images = service.images_for_tracks(con, set(album_by_name.values()))
+        images = service.cover_images_for_artist_album_pairs(con, set(album_by_name.values()))
         tracks_html = grid(
             "".join(
                 card(
@@ -128,9 +122,7 @@ def playlist_detail(playlist_id: int, request: Request, con: DBDep, name: str = 
             ),
             compact=True,
         )
-        play_count = len(history)
 
-    playlist = service.get_playlist(con, playlist_id)
     save_notes = {
         "ok": "Saved to Spotify.",
         "not_connected": "Saved locally, but Spotify isn't connected — connect it on the Scrobbler page to sync edits.",
@@ -140,25 +132,21 @@ def playlist_detail(playlist_id: int, request: Request, con: DBDep, name: str = 
     save_note_html = (
         f"<p class='subtitle'>{escape(save_notes[saved])}</p>" if saved in save_notes else ""
     )
+    description_line = unescape(playlist["description"]) if playlist["description"] else ""
     if logged_in_var.get():
         description_html = f"""
 <form class="description-form" action="/playlist/{playlist_id}/description?name={quote(name)}" method="post">
   <textarea name="description" class="description-input" maxlength="300"
-            placeholder="Add a description…">{escape(unescape(playlist["description"] or "")) if playlist else ""}</textarea>
+            placeholder="Add a description…">{escape(description_line)}</textarea>
   <button type="submit" class="btn">Save description</button>
 </form>
 {save_note_html}
 """
     else:
         description_html = (
-            f"<p class='subtitle'>{escape(unescape(playlist['description']))}</p>"
-            if playlist and playlist["description"]
-            else ""
+            f"<p class='subtitle'>{escape(description_line)}</p>" if description_line else ""
         )
 
-    description_line = (
-        unescape(playlist["description"]) if playlist and playlist["description"] else ""
-    )
     export_lines = (
         [name]
         + ([description_line] if description_line else [])
@@ -169,21 +157,23 @@ def playlist_detail(playlist_id: int, request: Request, con: DBDep, name: str = 
         f"<a class='btn' style='margin-left:auto' "
         f"href='https://open.spotify.com/playlist/{escape(playlist['spotify_playlist_id'])}' "
         "target='_blank' rel='noopener noreferrer'>Open in Spotify</a>"
-        if playlist and playlist["spotify_playlist_id"]
+        if playlist["spotify_playlist_id"]
         else ""
     )
     title_html = f"<h1>{escape(name)}</h1>"
-    tracks_actions_html = copy_list_button(export_lines, f"playlist-{playlist_id}-list") + spotify_link_html
+    tracks_actions_html = (
+        copy_list_button(export_lines, f"playlist-{playlist_id}-list") + spotify_link_html
+    )
 
     meta_html = (
         f"{description_html}"
-        f"<p class='subtitle'>{len(tracks)} track{'s' if len(tracks) != 1 else ''} "
-        f"&nbsp;·&nbsp; {play_count} play{'s' if play_count != 1 else ''}{filter_clear_html}</p>"
+        f"<p class='subtitle'>{pluralize(len(tracks), 'track')} "
+        f"&nbsp;·&nbsp; {pluralize(play_count, 'play')}{filter_clear_html}</p>"
     )
     header = detail_header(
         title_html,
         meta_html,
-        hero_image(playlist["image_url"] if playlist else None, raw=True),
+        hero_image(playlist["image_url"], raw=True),
         heatmap_html,
     )
     return page(

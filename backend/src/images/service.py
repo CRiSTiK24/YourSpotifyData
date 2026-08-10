@@ -14,19 +14,17 @@ from src.database import get_connection
 TOKEN_URL = "https://accounts.spotify.com/api/token"
 API_BASE = "https://api.spotify.com/v1"
 
-REQUEST_DELAY = 5.0  # pacing between successful calls
-IDLE_POLL_SECONDS = 60.0  # how often to re-check once nothing is missing
+REQUEST_DELAY_SECONDS = 5.0
+IDLE_POLL_SECONDS = 60.0
 
 logger = logging.getLogger("images")
 
 
 def _now() -> str:
-    return datetime.datetime.now(datetime.timezone.utc).isoformat()
+    return datetime.datetime.now(datetime.UTC).isoformat()
 
 
 def ensure_schema_columns(con: sqlite3.Connection) -> None:
-    """artist_images predates genre tracking, so an existing DB never picks
-    up the new column from schema.sql's CREATE TABLE IF NOT EXISTS."""
     existing = {row[1] for row in con.execute("PRAGMA table_info(artist_images)")}
     if not existing:
         return
@@ -83,9 +81,7 @@ async def _ensure_token() -> str:
     return _token_state.token
 
 
-async def _api_get(path: str) -> dict | None:
-    """GET path in a worker thread (keeps the event loop free), handling
-    token refresh and rate limits. Returns None on 404."""
+async def _api_get_or_none_on_404(path: str) -> dict | None:
     token = await _ensure_token()
     while True:
         status, body, headers = await asyncio.to_thread(_get_sync, path, token)
@@ -139,7 +135,7 @@ def _next_missing_album(con: sqlite3.Connection) -> tuple[str, str] | None:
     return (row[0], row[1]) if row else None
 
 
-def _next_missing_artist(con: sqlite3.Connection) -> str | None:
+def _next_artist_missing_image_or_genres(con: sqlite3.Connection) -> str | None:
     row = con.execute(
         "SELECT th.singer FROM track_history th "
         "LEFT JOIN artist_images ai ON ai.artist_name = th.singer "
@@ -159,9 +155,6 @@ def _next_missing_artist(con: sqlite3.Connection) -> str | None:
         ).fetchone()
         if row:
             return row[0]
-    # Everyone has an artist_images row by this point (this project's
-    # 'looked up, no match' convention) - backfill genres onto those rows
-    # the same way, one at a time, rather than a separate one-off pass.
     row = con.execute(
         "SELECT artist_name FROM artist_images WHERE genres IS NULL LIMIT 1"
     ).fetchone()
@@ -211,7 +204,13 @@ def _upsert_artist(con, artist_name, spotify_artist_id, image_url, genres=None):
             genres = COALESCE(excluded.genres, artist_images.genres),
             fetched_at = excluded.fetched_at
         """,
-        (artist_name, spotify_artist_id, image_url, json.dumps(genres) if genres is not None else None, _now()),
+        (
+            artist_name,
+            spotify_artist_id,
+            image_url,
+            json.dumps(genres) if genres is not None else None,
+            _now(),
+        ),
     )
     con.commit()
 
@@ -230,9 +229,6 @@ def _artist_uri(con, artist_name):
     ).fetchone()
     if row and row[0]:
         return row[0]
-    # Falls back to an id already resolved by a prior image fetch - needed
-    # for the genre backfill pass, which revisits artists that already have
-    # an artist_images row (and thus won't have a fresh track to look up).
     row = con.execute(
         "SELECT spotify_artist_id FROM artist_images WHERE artist_name = ?", (artist_name,)
     ).fetchone()
@@ -240,18 +236,15 @@ def _artist_uri(con, artist_name):
 
 
 async def _fetch_one_album(con, artist_name, album_name) -> None:
-    """Always writes a row (image_url NULL if nothing found), so a permanent
-    miss (bad/missing id) doesn't get retried forever — same 'looked up, no
-    match' convention as the rest of the schema."""
     try:
         album_id = _uri_to_id(_album_uri(con, artist_name, album_name))
-        data = await _api_get(f"/albums/{album_id}") if album_id else None
+        data = await _api_get_or_none_on_404(f"/albums/{album_id}") if album_id else None
         if data:
             _upsert_album(con, artist_name, album_name, data["id"], _best_image(data["images"]))
             return
 
         track_id = _uri_to_id(_representative_track_uri(con, artist_name, album_name))
-        track = await _api_get(f"/tracks/{track_id}") if track_id else None
+        track = await _api_get_or_none_on_404(f"/tracks/{track_id}") if track_id else None
         if track and track.get("album"):
             alb = track["album"]
             _upsert_album(con, artist_name, album_name, alb["id"], _best_image(alb["images"]))
@@ -268,7 +261,7 @@ async def _fetch_one_artist(con, artist_name) -> None:
 
         if not artist_id:
             track_id = _uri_to_id(_representative_track_uri(con, artist_name))
-            track = await _api_get(f"/tracks/{track_id}") if track_id else None
+            track = await _api_get_or_none_on_404(f"/tracks/{track_id}") if track_id else None
             if track:
                 for a in track.get("artists", []):
                     if a["name"].lower() == artist_name.lower():
@@ -276,10 +269,14 @@ async def _fetch_one_artist(con, artist_name) -> None:
                         break
 
         if artist_id:
-            data = await _api_get(f"/artists/{artist_id}")
+            data = await _api_get_or_none_on_404(f"/artists/{artist_id}")
             if data:
                 _upsert_artist(
-                    con, artist_name, data["id"], _best_image(data["images"]), data.get("genres", [])
+                    con,
+                    artist_name,
+                    data["id"],
+                    _best_image(data["images"]),
+                    data.get("genres", []),
                 )
             else:
                 _upsert_artist(con, artist_name, artist_id, None, [])
@@ -291,10 +288,6 @@ async def _fetch_one_artist(con, artist_name) -> None:
 
 
 async def image_fetch_loop() -> None:
-    """Runs for the lifetime of the app: finds one album or artist still
-    missing cover art, fetches and writes it, then repeats. On restart there
-    is nothing to resume — the only state is the db itself, so it just
-    re-queries what's still missing and keeps going."""
     if not settings.spotify_client_id or not settings.spotify_client_secret:
         logger.warning("SPOTIFY_CLIENT_ID/SECRET not set, image fetch loop disabled")
         return
@@ -305,13 +298,13 @@ async def image_fetch_loop() -> None:
             missing_album = _next_missing_album(con)
             if missing_album:
                 await _fetch_one_album(con, *missing_album)
-                await asyncio.sleep(REQUEST_DELAY)
+                await asyncio.sleep(REQUEST_DELAY_SECONDS)
                 continue
 
-            missing_artist = _next_missing_artist(con)
+            missing_artist = _next_artist_missing_image_or_genres(con)
             if missing_artist:
                 await _fetch_one_artist(con, missing_artist)
-                await asyncio.sleep(REQUEST_DELAY)
+                await asyncio.sleep(REQUEST_DELAY_SECONDS)
                 continue
 
             await asyncio.sleep(IDLE_POLL_SECONDS)
