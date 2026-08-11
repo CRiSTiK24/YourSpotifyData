@@ -25,7 +25,7 @@ router = APIRouter(tags=["library"])
 def most_listened(con: DBDep, start_month: str = "", end_month: str = ""):
     return page(
         most_listened_combined_content(
-            con, parse_month_param(start_month), parse_month_param(end_month)
+            con, parse_month_param(start_month), parse_month_param(end_month, end=True)
         ),
         title="Most Listened",
     )
@@ -42,7 +42,7 @@ def most_listened_more(
 ):
     return HTMLResponse(
         most_listened_rows_html(
-            con, offset, max_plays, parse_month_param(start_month), parse_month_param(end_month)
+            con, offset, max_plays, parse_month_param(start_month), parse_month_param(end_month, end=True)
         )
     )
 
@@ -67,7 +67,7 @@ def most_listened_albums_more(
 ):
     return HTMLResponse(
         most_listened_albums_rows_html(
-            con, offset, max_plays, parse_month_param(start_month), parse_month_param(end_month)
+            con, offset, max_plays, parse_month_param(start_month), parse_month_param(end_month, end=True)
         )
     )
 

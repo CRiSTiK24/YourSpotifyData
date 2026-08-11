@@ -26,8 +26,9 @@ def _artist_tracks_cards_fragment(con, artist_name: str, offset: int) -> str:
         card(
             t["name"],
             f"/track/{quote(t['name'])}?artist={quote(artist_name)}",
-            note=f"×{t['cnt']}",
+            note=str(t["cnt"]),
             image_url=t["image_url"],
+            preview_artist=artist_name,
         )
         for t in tracks
     )
@@ -59,7 +60,7 @@ def most_listened_artists_more(
 ):
     return HTMLResponse(
         most_listened_artists_rows_html(
-            con, offset, max_plays, parse_month_param(start_month), parse_month_param(end_month)
+            con, offset, max_plays, parse_month_param(start_month), parse_month_param(end_month, end=True)
         )
     )
 
@@ -90,8 +91,9 @@ def artist_detail(artist_name: str, request: Request, con: DBDep):
                 card(
                     name,
                     f"/track/{quote(name)}?artist={quote(artist_name)}",
-                    note=f"×{count}",
+                    note=str(count),
                     image_url=images.get(album_by_name.get(name)),
+                    preview_artist=artist_name,
                 )
                 for name, _, count in aggregated
             ),
@@ -103,7 +105,7 @@ def artist_detail(artist_name: str, request: Request, con: DBDep):
     header = detail_header(
         f"<h1>{escape(artist_name)}</h1>",
         f"<p class='subtitle'>{pluralize(play_count, 'play')}{filter_clear_html}</p>",
-        hero_image(service.get_artist_image(con, artist_name)),
+        hero_image(service.get_artist_image(con, artist_name), large=True),
         heatmap_html,
     )
     return page(

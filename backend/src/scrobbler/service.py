@@ -26,6 +26,12 @@ SCOPE = (
 
 _pending_oauth_state: str | None = None
 
+# Spotify's own placeholder for tracks it can no longer resolve metadata for
+# (seen on removed/region-locked tracks that still show up in play history) -
+# not something our code ever produces, so filtering on the literal string
+# is the only way to keep this junk out of track_history.
+UNKNOWN_TRACK_NAME = "Unknown Track"
+
 
 def _now() -> datetime:
     return datetime.now(UTC)
@@ -153,6 +159,8 @@ def _save_new_plays(con: sqlite3.Connection, items: list[dict]) -> int:
         if last_known_played_at is not None and played_at <= last_known_played_at:
             continue
         track = item["track"]
+        if track["name"] == UNKNOWN_TRACK_NAME:
+            continue
         artists = track.get("artists") or []
         new_rows.append(
             (

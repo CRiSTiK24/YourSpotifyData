@@ -20,6 +20,7 @@ from src.library import play_counts as library_play_counts
 from src.library.router import router as library_router
 from src.palette import sync_css_palette
 from src.playlists.router import router as playlists_router
+from src.previews.router import router as previews_router
 from src.scrobbler import library_sync as library_sync_service
 from src.scrobbler import service as scrobbler_service
 from src.scrobbler.router import router as scrobbler_router
@@ -78,6 +79,7 @@ app.include_router(albums_router)
 app.include_router(tracks_router)
 app.include_router(auth_router)
 app.include_router(covers_router)
+app.include_router(previews_router)
 app.include_router(upload_router)
 app.include_router(scrobbler_router)
 app.include_router(theme_router)

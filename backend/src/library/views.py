@@ -11,34 +11,29 @@ from src.html import (
     paginated_fragment,
     row,
 )
-from src.utils import format_month_param, most_listened_next_href
+from src.utils import format_date_param_iso, most_listened_next_href
 
 from . import play_counts, service
 
 MOST_LISTENED_BATCH = 30
 
 
-def _format_month_placeholder(period: int) -> str:
-    year, month = divmod(period, 100)
-    return f"{month:02d}/{year:04d}"
-
-
 def date_filter_html(
     min_period: int, max_period: int, start_period: int, end_period: int, base_href: str
 ) -> str:
-    start_value = format_month_param(start_period) if start_period else ""
-    end_value = format_month_param(end_period) if end_period else ""
-    min_value = format_month_param(min_period)
-    max_value = format_month_param(max_period)
+    start_value = format_date_param_iso(start_period)
+    end_value = format_date_param_iso(end_period, end=True)
+    min_value = format_date_param_iso(min_period)
+    max_value = format_date_param_iso(max_period, end=True)
     return f"""
 <div class="date-filter">
   <label class="date-filter-field">
     <span>From</span>
-    <input type="month" id="date-filter-start" min="{min_value}" max="{max_value}" value="{start_value}" placeholder="{_format_month_placeholder(min_period)}">
+    <input type="date" id="date-filter-start" min="{min_value}" max="{max_value}" value="{start_value}">
   </label>
   <label class="date-filter-field">
     <span>To</span>
-    <input type="month" id="date-filter-end" min="{min_value}" max="{max_value}" value="{end_value}" placeholder="{_format_month_placeholder(max_period)}">
+    <input type="date" id="date-filter-end" min="{min_value}" max="{max_value}" value="{end_value}">
   </label>
 </div>
 <script>
@@ -49,8 +44,8 @@ def date_filter_html(
 
   function navigate() {{
     var params = [];
-    if (startInput.value) {{ params.push("start_month=" + startInput.value); }}
-    if (endInput.value) {{ params.push("end_month=" + endInput.value); }}
+    if (startInput.value) {{ params.push("start_month=" + encodeURIComponent(startInput.value)); }}
+    if (endInput.value) {{ params.push("end_month=" + encodeURIComponent(endInput.value)); }}
     window.location.href = baseHref + (params.length ? "?" + params.join("&") : "");
   }}
 
@@ -72,11 +67,9 @@ def most_listened_rows_html(
         row(
             t["name"],
             f"/track/{quote(t['name'])}?artist={quote(t['singer'] or '')}",
-            t["singer"],
-            f"/artist/{quote(t['singer'])}" if t["singer"] else None,
-            note=f"×{t['play_count']}",
+            note=str(t["play_count"]),
             image_url=t["image_url"],
-            bar_fraction=(t["play_count"] / max_plays) if max_plays else 0,
+            preview_artist=t["singer"],
         )
         for t in tracks
     )
@@ -104,11 +97,8 @@ def most_listened_albums_rows_html(
         row(
             a["album"],
             f"/album/{quote(a['album'])}?artist={quote(a['singer'])}",
-            a["singer"],
-            f"/artist/{quote(a['singer'])}",
-            note=f"×{a['play_count']}",
+            note=str(a["play_count"]),
             image_url=a["image_url"],
-            bar_fraction=(a["play_count"] / max_plays) if max_plays else 0,
         )
         for a in albums
     )
@@ -167,14 +157,17 @@ def most_listened_combined_content(
 <div class="ml-columns">
   <div class="ml-column" data-ml-panel="songs">
     <h2 class="ml-column-title">Songs ({songs_total})</h2>
+    <div class="ml-column-header"><span>Track</span><span>Plays</span></div>
     <div id="most-listened-rows">{songs_rows}</div>
   </div>
   <div class="ml-column" data-ml-panel="albums" hidden>
     <h2 class="ml-column-title">Albums ({albums_total})</h2>
+    <div class="ml-column-header"><span>Album</span><span>Plays</span></div>
     <div id="most-listened-albums-rows">{albums_rows}</div>
   </div>
   <div class="ml-column" data-ml-panel="artists" hidden>
     <h2 class="ml-column-title">Artists ({artists_total})</h2>
+    <div class="ml-column-header"><span>Artist</span><span>Plays</span></div>
     <div id="most-listened-artists-rows">{artists_rows}</div>
   </div>
 </div>

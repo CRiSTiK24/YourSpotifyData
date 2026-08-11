@@ -35,6 +35,17 @@ def _month_chip(
     )
 
 
+def _months_header_html() -> str:
+    labels = "".join(
+        f"<span><span class='hm-month-num'>{i}</span><span class='hm-month-abbr'>{m}</span></span>"
+        for i, m in enumerate(MONTHS, start=1)
+    )
+    return (
+        "<div class='hm-months-header'><span class='hm-year-row-label'></span>"
+        f"<div class='hm-months-header-strip'>{labels}</div></div>"
+    )
+
+
 def _years_overview_html(
     years: list[int],
     counts: dict[tuple, int],
@@ -43,7 +54,7 @@ def _years_overview_html(
     sel_year: int | None,
 ) -> str:
     sep = "&" if "?" in base_href else "?"
-    rows = []
+    rows = [_months_header_html()]
     for year in sorted(years, reverse=True):
         year_total = sum(counts.get((year, m), 0) for m in range(1, 13))
         year_href = base_href + sep + urlencode({f"hm_{key_prefix}_y": year})

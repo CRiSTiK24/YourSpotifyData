@@ -66,11 +66,6 @@ def page(content: str, title: str = "") -> HTMLResponse:
 </head>
 <body hx-boost="true" hx-target="#content" hx-select="#content" hx-swap="outerHTML transition:true">
 <div class="shell">
-  <aside class="sidebar">
-    <a class="brand" href="/">Home</a>
-    <hr class="sidebar-divider">{nav_links}{sidebar_bottom}
-  </aside>
-
   <header class="mobile-topbar">
     <button type="button" class="hamburger-btn" id="hamburger-btn" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-drawer">
       <span></span><span></span><span></span>
@@ -85,18 +80,29 @@ def page(content: str, title: str = "") -> HTMLResponse:
   </nav>
 
   <div class="content-column">
-    <header class="desktop-topbar">
-      {_quick_search_widget("desktop")}
-    </header>
     <main class="content" id="content">
 {content}
     </main>
+  </div>
+
+  <div class="preview-bar" id="preview-bar" hidden>
+    <button type="button" class="preview-btn preview-bar-toggle" id="preview-bar-toggle" aria-label="Pause">
+      <span class="preview-icon" id="preview-bar-toggle-icon">&#10074;&#10074;</span>
+    </button>
+    <div class="preview-bar-info">
+      <span class="preview-bar-track" id="preview-bar-track"></span>
+      <span class="preview-bar-sep">—</span>
+      <span class="preview-bar-artist" id="preview-bar-artist"></span>
+    </div>
+    <div class="preview-bar-progress" id="preview-bar-progress"><div class="preview-bar-progress-fill" id="preview-bar-fill"></div></div>
+    <input type="range" class="preview-bar-volume" id="preview-bar-volume" min="0" max="1" step="0.01" aria-label="Volume">
   </div>
 </div>
 <script src="/static/mobile-nav.js"></script>
 <script src="/static/tooltips.js"></script>
 <script src="/static/quick-search.js"></script>
 <script src="/static/most-listened.js"></script>
+<script src="/static/preview.js"></script>
 </body>
 </html>"""
     return HTMLResponse(html)
@@ -166,6 +172,16 @@ def _recolored_cover_src(
     return src
 
 
+def _preview_play_button(track_name: str, preview_artist: str | None, extra_class: str) -> str:
+    if not preview_artist:
+        return ""
+    return (
+        f"<button type='button' class='preview-btn {extra_class}' aria-label='Play preview' "
+        f"data-preview-track='{escape(track_name)}' data-preview-artist='{escape(preview_artist)}'>"
+        f"<span class='preview-icon'>&#9654;</span></button>"
+    )
+
+
 def row(
     primary_label: str,
     primary_href: str,
@@ -175,9 +191,11 @@ def row(
     *,
     image_url: str | None = None,
     bar_fraction: float | None = None,
+    preview_artist: str | None = None,
 ) -> str:
     cover_src = _recolored_cover_src(image_url, size=64)
     thumb = f"<img class='row-thumb' src='{escape(cover_src)}' loading='lazy'>" if cover_src else ""
+    play_btn = _preview_play_button(primary_label, preview_artist, "row-play-btn")
     left = f"<a class='row-primary' href='{escape(primary_href)}'>{escape(primary_label)}</a>"
     if secondary_label and secondary_href:
         left += (
@@ -194,7 +212,7 @@ def row(
         )
     else:
         right = f"<span class='note'>{escape(note)}</span>" if note else ""
-    return f"<div class='row'><div class='left'>{thumb}{left}</div>{right}</div>"
+    return f"<div class='row'><div class='left'>{play_btn}{thumb}{left}</div>{right}</div>"
 
 
 def card(
@@ -207,6 +225,7 @@ def card(
     image_url: str | None = None,
     hover_tooltip: str | None = None,
     raw_cover: bool = False,
+    preview_artist: str | None = None,
 ) -> str:
     cover_src = _recolored_cover_src(image_url, size=320, raw=raw_cover)
     thumb_class = "card-thumb card-thumb-raw" if raw_cover else "card-thumb"
@@ -227,9 +246,13 @@ def card(
         if hover_tooltip
         else ""
     )
+    play_btn = _preview_play_button(primary_label, preview_artist, "card-play-btn")
     return f"""
 <div class="card"{tooltip_attr}>
-  <a class="card-cover" href="{escape(primary_href)}">{thumb}</a>
+  <div class="card-cover-wrap">
+    <a class="card-cover" href="{escape(primary_href)}">{thumb}</a>
+    {play_btn}
+  </div>
   {info_btn}
   <a class="card-title" href="{escape(primary_href)}">{escape(primary_label)}</a>
   {secondary}
@@ -242,12 +265,16 @@ def grid(cards_html: str, *, compact: bool = False) -> str:
     return f"<div class='{cls}'>{cards_html}</div>"
 
 
-def hero_image(image_url: str | None, *, raw: bool = False) -> str:
+def hero_image(image_url: str | None, *, raw: bool = False, large: bool = False) -> str:
     cover_src = _recolored_cover_src(image_url, size=320, raw=raw)
     if not cover_src:
         return ""
-    cls = "hero-image hero-image-raw" if raw else "hero-image"
-    return f"<img class='{cls}' src='{escape(cover_src)}' loading='lazy'>"
+    classes = "hero-image"
+    if raw:
+        classes += " hero-image-raw"
+    if large:
+        classes += " hero-image-large"
+    return f"<img class='{classes}' src='{escape(cover_src)}' loading='lazy'>"
 
 
 def filter_clear_link(label: str, clear_href: str) -> str:
@@ -264,10 +291,8 @@ def detail_header(title_html: str, meta_html: str, hero_html: str, heatmap_html:
     {title_html}
     {meta_html}
   </div>
-  <div class="detail-header-media">
-    {hero_html}
-    <div class="detail-header-heatmap">{heatmap_html}</div>
-  </div>
+  {hero_html}
+  <div class="detail-header-heatmap">{heatmap_html}</div>
 </div>"""
 
 
@@ -294,9 +319,17 @@ def detail_layout(
 
 
 def infinite_scroll_trigger(next_href: str) -> str:
+    # 'intersect once' does the loading automatically as this scrolls into
+    # view, but it's a real fallback, not decoration: some of these sit
+    # inside their own independently-scrolling container (e.g. .ml-column
+    # on desktop, not the page itself), and scrolling the wrong element
+    # never brings an invisible sentinel into view - 'click' on the same
+    # element means there's always a visible, working way to load more
+    # even if the automatic trigger never fires for whatever reason.
     return (
-        f"<div hx-get='{escape(next_href)}' hx-trigger='intersect once' hx-target='this' "
-        f"hx-select='unset' hx-swap='outerHTML'></div>"
+        f"<button type='button' class='infinite-scroll-trigger' "
+        f"hx-get='{escape(next_href)}' hx-trigger='intersect once, click' hx-target='this' "
+        f"hx-select='unset' hx-swap='outerHTML'>Load more</button>"
     )
 
 

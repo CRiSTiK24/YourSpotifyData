@@ -107,6 +107,8 @@ def _fetch_owned_playlists(
             track = item.get("track")
             if not track or track.get("is_local"):
                 continue
+            if track["name"] == scrobbler_service.UNKNOWN_TRACK_NAME:
+                continue
             artists = track.get("artists") or []
             tracks.append(
                 {
@@ -125,6 +127,8 @@ def _fetch_liked_tracks(access_token: str) -> list[dict]:
     for item in _paginate(access_token, f"{API_BASE}/me/tracks?limit=50"):
         track = item.get("track")
         if not track:
+            continue
+        if track["name"] == scrobbler_service.UNKNOWN_TRACK_NAME:
             continue
         artists = track.get("artists") or []
         tracks.append(
@@ -184,7 +188,7 @@ def sync_once(con: sqlite3.Connection) -> dict:
     my_user_id = _fetch_current_user_id(access_token)
 
     playlists = _fetch_owned_playlists(con, access_token, my_user_id)
-    counts = _playlist_processor.save_to_db(con, playlists, prune_missing=True)
+    counts = _playlist_processor.save_to_db(con, playlists, remove_missing=True)
 
     tracks = _fetch_liked_tracks(access_token)
     albums = _fetch_liked_albums(access_token)

@@ -21,9 +21,8 @@ def most_listened_artists_rows_html(
         row(
             a["singer"],
             f"/artist/{quote(a['singer'])}",
-            note=f"×{a['play_count']}",
+            note=str(a["play_count"]),
             image_url=a["image_url"],
-            bar_fraction=(a["play_count"] / max_plays) if max_plays else 0,
         )
         for a in artists
     )

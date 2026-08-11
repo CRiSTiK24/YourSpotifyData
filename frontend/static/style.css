@@ -65,50 +65,32 @@ body {
 a { color: var(--color-text); text-decoration: none; }
 a:hover { text-decoration: underline; text-decoration-color: var(--color-accent); }
 
-/* app shell: mobile-first. Default (no media query) is the phone layout -
-   sidebar hidden, topbar/drawer shown instead; the `min-width: 700px`
-   block at the end of this file swaps in the desktop sidebar and hides
-   the mobile chrome. */
+/* app shell: the hamburger/drawer nav (mobile-topbar + mobile-drawer) is
+   the only nav chrome at every width - no persistent desktop sidebar (it
+   wasn't earning its 200px; the drawer does the same job on demand,
+   already works at any width). .sidebar-divider is named after the removed
+   sidebar but is still used by .mobile-drawer, which reuses the same
+   nav-links partial; its own .brand/link styling lives below. */
 .shell { display: flex; flex-direction: column; align-items: stretch; min-height: 100vh; }
-.sidebar { display: none; }
-.sidebar .brand { font-weight: 600; color: var(--color-text); font-size: 16px; padding: 6px 10px 14px; }
-.sidebar a:not(.brand) {
-    color: var(--color-text);
-    font-size: 14px;
-    padding: 8px 10px;
-    border-radius: 6px;
-}
-.sidebar a:not(.brand):hover { background: var(--color-surface); text-decoration: none; }
 .sidebar-divider { border: none; border-top: 1px solid var(--color-border); margin: 6px 10px; }
-.sidebar-bottom {
-    margin-top: auto;
-    padding-top: 14px;
-    border-top: 1px solid var(--color-border);
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-}
-/* .content-column is the actual flex:1 item in .shell now (not .content
-   directly) - it stacks the desktop search topbar above .content so that
-   bar spans the content area's full width instead of being squeezed into
-   the 200px sidebar. Harmless on mobile too: desktop-topbar is hidden
-   there and .content-column just passes its size straight through. */
+/* .content-column wraps #content as the flex:1 item in .shell, sized off
+   the remaining width next to nothing else now (no sidebar) - kept so
+   .content still measures its own box via container queries below. */
 .content-column { flex: 1; min-width: 0; display: flex; flex-direction: column; }
 .content {
     padding: clamp(6px, 2.5vw, 16px);
     /* lets descendants size themselves off *this element's* rendered width
        (cqw units below) instead of the viewport (vw) - matters because
-       .content's actual width isn't the viewport: it's viewport minus the
-       200px sidebar on desktop, and minus half again inside a .panel on
-       detail pages. vw can't see either of those; cqw automatically does,
-       since it reads the real box after layout. */
+       .content's actual width isn't the viewport: e.g. it's halved again
+       inside a .panel on detail pages. vw can't see that; cqw automatically
+       does, since it reads the real box after layout. */
     container-type: inline-size;
 }
 
-/* mobile chrome: the phone-mode nav, shown by default. Kept as siblings of
-   #content (outside the htmx hx-select="#content" swap target) so the
-   drawer/tabbar/topbar persist across boosted navigations instead of being
-   torn down and rebuilt on every page load. Hidden on desktop below. */
+/* mobile-style chrome: the only nav chrome now, shown at every width. Kept
+   as siblings of #content (outside the htmx hx-select="#content" swap
+   target) so the drawer/topbar persist across boosted navigations instead
+   of being torn down and rebuilt on every page load. */
 .mobile-topbar {
     display: flex;
     align-items: center;
@@ -120,17 +102,112 @@ a:hover { text-decoration: underline; text-decoration-color: var(--color-accent)
     border-bottom: 1px solid var(--color-border);
     padding: 10px 14px;
 }
-/* desktop counterpart of .mobile-topbar - hidden by default (phone-first),
-   shown in the min-width:700px block at the end of this file. Sits inside
-   .content-column, so it spans the content area's width, not the sidebar. */
-.desktop-topbar {
-    display: none;
-    padding: 14px 32px;
-    border-bottom: 1px solid var(--color-border);
+/* now-playing footer for preview playback (see preview.js) - fixed so it
+   overlays regardless of scroll position. */
+.preview-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 25;
+    background: var(--color-nav-bg);
+    border-top: 1px solid var(--color-border);
+    padding: 8px 14px;
 }
-/* persistent chrome-embedded live search (desktop topbar + mobile topbar -
-   see _quick_search_widget() in html.py). position:relative so the results
-   dropdown below can anchor to this box specifically, not the whole bar. */
+/* [hidden] is a user-agent stylesheet default (display:none) - author
+   styles always win over user-agent styles regardless of specificity, so
+   the display:flex above silently overrode it and the bar rendered
+   (empty) on every page. This explicit override, after the base rule in
+   source order, is what actually makes toggling `hidden` in preview.js
+   work. */
+.preview-bar[hidden] {
+    display: none;
+}
+/* hidden by default (phone-first: no room next to the progress bar/volume
+   slider at narrow widths) - restored at 700px and up alongside the rest
+   of the roomier desktop layout, see the min-width block at the end of
+   this file. */
+.preview-bar-info {
+    display: none;
+    align-items: baseline;
+    gap: 6px;
+    min-width: 0;
+    max-width: 240px;
+    flex-shrink: 0;
+    font-size: 13px;
+}
+.preview-bar-track { font-weight: 600; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.preview-bar-sep { color: var(--color-text); opacity: 0.6; flex-shrink: 0; }
+.preview-bar-artist {
+    color: var(--color-text);
+    opacity: 0.7;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+/* padding + background-clip gives this a comfortably-sized click/tap
+   target for seeking (see preview.js) well beyond the 4px visual bar,
+   without inflating what's actually drawn as "the bar". */
+.preview-bar-progress {
+    position: relative;
+    flex: 1;
+    min-width: 0;
+    height: 4px;
+    padding: 10px 0;
+    /* the global reset sets border-box everywhere, which would make this
+       10px padding alone exceed the declared 4px height and collapse the
+       actual paintable area (and any top/bottom:10px absolutely-positioned
+       child, i.e. the fill below) to nothing - content-box is needed here
+       so height:4px means the 4px content area this whole approach
+       depends on, with the padding added on top of that, not eating it. */
+    box-sizing: content-box;
+    background-clip: content-box;
+    border-radius: 2px;
+    /* --color-surface, not --color-bg: --color-bg and --color-nav-bg (this
+       bar's own background) are nearly the same near-black shade, so an
+       unfilled track drawn in --color-bg was invisible against the bar
+       behind it - only the accent fill showed, with nothing to read
+       progress against. --color-surface is visibly lighter than both. */
+    background-color: var(--color-surface);
+    cursor: pointer;
+}
+.preview-bar-progress::before {
+    content: "";
+    position: absolute;
+    inset: 10px 0;
+    border-radius: 2px;
+    border: 1px solid var(--color-border);
+}
+.preview-bar-progress-fill {
+    position: absolute;
+    top: 10px;
+    bottom: 10px;
+    left: 0;
+    width: 0%;
+    background: var(--color-text);
+    pointer-events: none;
+}
+.preview-btn.preview-bar-toggle .preview-icon {
+    font-size: 13px;
+    margin-left: 0;
+}
+.preview-bar-volume {
+    flex-shrink: 0;
+    width: 70px;
+    accent-color: var(--color-accent);
+    cursor: pointer;
+}
+/* toggled on <body> alongside the bar's `hidden` attribute (see
+   preview.js) so the fixed bar doesn't sit on top of - and hide - the
+   last row of whatever list is currently on screen. */
+body.preview-bar-visible .content { padding-bottom: 52px; }
+
+/* persistent chrome-embedded live search (see _quick_search_widget() in
+   html.py). position:relative so the results dropdown below can anchor to
+   this box specifically, not the whole bar. */
 .quick-search { position: relative; flex: 1; min-width: 0; }
 .quick-search-input {
     width: 100%;
@@ -336,7 +413,7 @@ h2 { font-size: 18px; font-weight: 600; margin: 20px 0 10px; color: var(--color-
     font-size: 12px;
     white-space: nowrap;
     flex-shrink: 0;
-    min-width: 70px;
+    min-width: 36px;
     text-align: right;
 }
 
@@ -378,13 +455,60 @@ h2 { font-size: 18px; font-weight: 600; margin: 20px 0 10px; color: var(--color-
     filter: saturate(var(--cover-saturate)) brightness(var(--cover-brightness)) hue-rotate(var(--cover-hue));
 }
 
+/* shared between .row-play-btn (most-listened/album/search track rows)
+   and .card-play-btn (track grids, e.g. artist/playlist detail pages) -
+   preview.js's click delegation and icon-swap logic target this class and
+   .preview-icon regardless of which list rendered the button. */
+.preview-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    border: 1px solid var(--color-border);
+    background: var(--color-surface);
+    color: var(--color-text);
+    cursor: pointer;
+}
+.preview-btn:hover { border-color: var(--color-accent); }
+.preview-icon {
+    font-size: 9px;
+    line-height: 1;
+    /* optical centering: the glyph's own whitespace makes a plain triangle
+       look off-center in a circular button without this nudge. */
+    margin-left: 1px;
+}
+.preview-btn.playing .preview-icon { margin-left: 0; }
+/* swapped for the pause glyph via JS on the currently-playing button
+   (see preview.js) rather than two separate <span> states, so there's
+   only ever one icon element to keep in sync. */
+
+/* .card-cover-wrap exists purely to give this a positioning context sized
+   to the image itself, not the whole (taller, title+note included) .card -
+   .card-info-btn can get away with anchoring to .card because top:6px
+   happens to land at the same place either way, but bottom:6px can't. */
+.card-cover-wrap { position: relative; }
+.card-play-btn {
+    position: absolute;
+    left: 6px;
+    bottom: 6px;
+    z-index: 5;
+    background: rgba(44, 31, 51, 0.75);
+}
+
 .hero-image {
-    /* fluid instead of a hard breakpoint jump: scales continuously between
-       a small-phone floor and the historical 160px desktop size. cqw, not
-       vw: inside a detail page this sits in a ~half-width .panel, and vw
-       has no way to know that. */
-    width: clamp(120px, 30cqw, 160px);
-    height: clamp(120px, 30cqw, 160px);
+    /* var(--hero-size), not its own clamp() - defined on .detail-header-top
+       (see below) so this and .heatmap-years-overview's height always
+       share the exact same value, in both the default and large-cover
+       layouts, rather than two separately-written clamp()s that can drift
+       apart. fluid instead of a hard breakpoint jump: scales continuously
+       between a small-phone floor and the historical 160px desktop size.
+       cqw, not vw: inside a detail page this sits in a ~half-width .panel,
+       and vw has no way to know that. */
+    width: var(--hero-size);
+    height: var(--hero-size);
     border-radius: 8px;
     object-fit: cover;
     background: var(--color-surface);
@@ -400,8 +524,8 @@ h2 { font-size: 18px; font-weight: 600; margin: 20px 0 10px; color: var(--color-
    needed (intrinsic layout); the minimum tile width is itself fluid via
    clamp() so it doesn't jump at a breakpoint either - it shrinks smoothly
    down to a small-phone floor and grows up to the desktop ceiling. cqw
-   (of .content) rather than vw, since .content is narrower than the
-   viewport whenever the sidebar is showing. */
+   (of .content) rather than vw, since .content can be narrower than the
+   viewport, e.g. inside a .panel on detail pages. */
 .grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(clamp(100px, 26cqw, 160px), 1fr));
@@ -633,7 +757,7 @@ h2 { font-size: 18px; font-weight: 600; margin: 20px 0 10px; color: var(--color-
 .date-filter { display: flex; align-items: flex-end; gap: 12px; flex-wrap: wrap; }
 .date-filter-field { display: flex; flex-direction: column; gap: 4px; font-size: 13px; }
 .date-filter-field span { color: var(--color-text); opacity: 0.7; }
-.date-filter-field input[type="month"] {
+.date-filter-field input {
     background: var(--color-bg);
     border: 1px solid var(--color-border);
     border-radius: 6px;
@@ -642,6 +766,11 @@ h2 { font-size: 18px; font-weight: 600; margin: 20px 0 10px; color: var(--color-
     font-size: 14px;
     font-family: inherit;
 }
+.date-filter-field input:focus { outline: none; border-color: var(--color-accent); }
+/* color-scheme tells the browser the page is dark, so the native date
+   picker (icon, calendar overlay) renders with light text/controls
+   instead of assuming a light page and rendering illegibly dark-on-dark. */
+input[type="date"] { color-scheme: dark; }
 
 /* /most-listened: Songs/Albums/Artists used to be three separate pages;
    mobile-first default is tabs switching a single visible .ml-column
@@ -687,6 +816,18 @@ h2 { font-size: 18px; font-weight: 600; margin: 20px 0 10px; color: var(--color-
    showing. Only needed on desktop, where the tabs are hidden and this is
    the sole label per column. */
 .ml-column-title { display: none; }
+.ml-column-header {
+    display: flex;
+    justify-content: space-between;
+    padding: 4px 10px;
+    margin-bottom: 4px;
+    border-bottom: 1px solid var(--color-border);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--color-text);
+    opacity: 0.5;
+}
 
 /* heatmap: cell colors are an independent 4-color intensity ramp
    (see src/constants.py COLORS); the lightest step only reaches ~3.2:1
@@ -791,17 +932,18 @@ h2 { font-size: 18px; font-weight: 600; margin: 20px 0 10px; color: var(--color-
    containerized ancestor) and how wide each month strip's bars are
    (.hm-month-chip below, flex:1 so the 12 bars stretch to fill however
    much row width is actually left after the label - real leftover-space
-   sizing, not a guessed cqw ceiling). Width itself is just 100% - its
-   parent, .detail-header-heatmap, is the one with flex:1 to genuinely
-   fill whatever's left beside the hero image (see style.css's
-   .detail-header-media), now that the title/description sit on their own
-   row above instead of sharing this one. */
+   sizing, not a guessed cqw ceiling). Width itself is just 100% of
+   .detail-header-heatmap, the "heatmap" grid area sized to fill whatever's
+   left beside the hero image (see .detail-header-top). */
 .heatmap-years-overview {
-    /* Same reasoning as .heatmap-wrap's max-height: matches the hero
-       image's own clamped height so the image can stay a 1:1 square - a
-       6-year-tall overview scrolls internally instead of stretching the
-       row (and the image with it) taller. */
-    max-height: clamp(120px, 30cqw, 160px);
+    /* var(--hero-size), the same value .hero-image uses, and height (not
+       max-height): the hero image beside this is always exactly
+       --hero-size tall, so this needs to always claim exactly that much
+       too, not just cap out at it - a shorter (max-height) box here would
+       leave dead space below a year or two of history while the image
+       stays full height beside it. A too-tall history scrolls internally
+       instead of stretching this (and the image) taller. */
+    height: var(--hero-size);
     width: 100%;
     display: flex;
     flex-direction: column;
@@ -824,7 +966,14 @@ h2 { font-size: 18px; font-weight: 600; margin: 20px 0 10px; color: var(--color-
    compact is no longer necessary. */
 .hm-year-row {
     display: flex;
-    align-items: center;
+    /* stretch, not center: each row claims an equal share (flex:1) of
+       .heatmap-years-overview's now-fixed height (see var(--hero-size)
+       above) - stretch is what lets that height actually reach
+       .hm-month-chip's height:100% below instead of leaving it centered
+       at its own unrelated content height. */
+    align-items: stretch;
+    flex: 1 1 0;
+    min-height: 12px;
     gap: 8px;
 }
 .hm-year-row-label {
@@ -836,17 +985,61 @@ h2 { font-size: 18px; font-weight: 600; margin: 20px 0 10px; color: var(--color-
     opacity: 0.8;
 }
 .hm-year-row-selected .hm-year-row-label { opacity: 1; text-decoration: underline; }
+/* Sticky so it stays put while .heatmap-years-overview scrolls past it.
+   Month names collide too much for a 1-2 letter abbreviation to be
+   unambiguous (Jan/Jun/Jul, Mar/May) - mobile's narrow chips show the
+   month number instead (see .hm-month-num/.hm-month-abbr below), full
+   "Jan"/"Feb"/... names only once min-width:700px has room for them. */
+.hm-months-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    position: sticky;
+    top: 0;
+    background: var(--color-bg);
+    padding-bottom: 2px;
+}
+.hm-months-header-strip { display: flex; gap: 2px; flex: 1 1 auto; min-width: 0; }
+.hm-months-header-strip span {
+    flex: 1 1 0;
+    min-width: 0;
+    text-align: center;
+    font-size: 10px;
+    color: var(--color-text);
+    opacity: 0.5;
+}
+.hm-month-abbr { display: none; }
 .hm-months-strip { display: flex; gap: 2px; flex: 1 1 auto; min-width: 0; }
 .hm-month-chip {
     display: block;
     flex: 1 1 0;
     min-width: 0;
-    height: clamp(12px, 1.6cqw, 26px);
+    /* 100% of .hm-year-row's now-stretched height (see .hm-year-row above),
+       not its own clamp() - so N year rows always exactly fill
+       .heatmap-years-overview's height between them, whatever N is,
+       instead of every row rendering at the same fixed height regardless
+       of how much space is actually available. */
+    height: 100%;
     border-radius: 2px;
 }
 .hm-month-chip:hover { opacity: 0.8; }
 
 .info { color: var(--color-text); opacity: 0.7; font-size: 14px; padding: 12px 0; }
+
+.infinite-scroll-trigger {
+    display: block;
+    width: 100%;
+    background: none;
+    border: none;
+    color: var(--color-text);
+    opacity: 0.7;
+    font-size: 14px;
+    font-family: inherit;
+    text-align: center;
+    padding: 12px 0;
+    cursor: pointer;
+}
+.infinite-scroll-trigger:hover { opacity: 1; text-decoration: underline; }
 
 /* detail page layout: a single panel (header/heatmap + list) - used to
    be two side-by-side panels with the heatmap in its own, before the
@@ -871,13 +1064,26 @@ h2 { font-size: 18px; font-weight: 600; margin: 20px 0 10px; color: var(--color-
        cells) size off this box, not the wider .content it sits inside. */
     container-type: inline-size;
 }
-/* Header is two stacked rows (see detail_header() in html.py): title/meta
-   on its own full-width line, then image + heatmap below. Splitting them
-   means the title never negotiates width against the heatmap - it always
-   gets the full row, so it only ever wraps at whole words (see
-   .detail-header h1), never mid-word. */
-.detail-header-top { display: flex; flex-direction: column; gap: 10px; margin-bottom: 12px; }
-.detail-header-title { min-width: 0; text-align: center; }
+/* Header as a 2x2 grid (see detail_header() in html.py: title, hero image
+   and heatmap are direct siblings, not nested rows) - title spans the full
+   top row so it never negotiates width against the heatmap (only ever
+   wraps at whole words, see .detail-header h1), hero/heatmap share the row
+   below. Grid (not nested flex) so the raw-cover override below can move
+   the hero image beside the title too, just by repainting grid-area
+   assignments - no DOM change needed between the two layouts. */
+.detail-header-top {
+    display: grid;
+    grid-template-areas: "title title" "hero heatmap";
+    grid-template-columns: auto 1fr;
+    gap: 10px 12px;
+    margin-bottom: 12px;
+    /* Shared by .hero-image and .heatmap-years-overview (see both) so they
+       always render at the exact same height - redefined to a bigger value
+       by the large-cover @container override further down, everything
+       else about how the two stay matched is identical either way. */
+    --hero-size: clamp(120px, 30cqw, 160px);
+}
+.detail-header-title { grid-area: title; min-width: 0; text-align: center; }
 /* .description-form (the editable playlist-description textarea, only
    shown logged-in) isn't text, so .detail-header-title's text-align does
    nothing to it - centered explicitly, same as everything else in this
@@ -885,13 +1091,8 @@ h2 { font-size: 18px; font-weight: 600; margin: 20px 0 10px; color: var(--color-
 .detail-header-title .description-form { margin-left: auto; margin-right: auto; align-items: center; }
 .detail-header-title .description-form .btn { align-self: center; }
 .detail-header h1 { margin-top: 4px; overflow-wrap: break-word; word-break: break-word; }
-/* image + heatmap row. The image is fixed-size (see .hero-image); the
-   heatmap area gets flex:1 min-width:0 to genuinely fill whatever width
-   is left next to it - real leftover-space sizing (same idea as
-   .hm-months-strip's bars), not a cqw-based guess, since there's no text
-   column here anymore to negotiate against. */
-.detail-header-media { display: flex; align-items: flex-start; gap: 12px; }
-.detail-header-heatmap { flex: 1 1 0; min-width: 0; }
+.hero-image { grid-area: hero; }
+.detail-header-heatmap { grid-area: heatmap; min-width: 0; }
 /* "· Aug 2026 ×", appended inline into a detail page's existing
    play-count subtitle line (see filter_clear_link in html.py) rather
    than a separate pill/badge - that earlier version needed its own flex
@@ -963,7 +1164,7 @@ h2 { font-size: 18px; font-weight: 600; margin: 20px 0 10px; color: var(--color-
    that assumed room it doesn't have), so it's the baseline.
 
    These blocks are kept at the end of the file on purpose: several rules
-   here re-target selectors (.sidebar, .row-secondary, .detail-layout, ...)
+   here re-target selectors (.row-secondary, .detail-layout, ...)
    whose base (mobile) definitions live earlier in this file with equal
    specificity. For equal-specificity rules the later one in source order
    wins regardless of which @media currently matches, so an override placed
@@ -977,35 +1178,15 @@ h2 { font-size: 18px; font-weight: 600; margin: 20px 0 10px; color: var(--color-
     .row .sep { display: inline; }
 }
 
-/* Desktop: swap the mobile drawer/tabbar chrome for the persistent
-   sidebar, and restore the two-column detail layout. */
+/* Desktop: keep the hamburger/drawer nav (no persistent sidebar - it
+   wasn't earning its 200px, the drawer already does the same job on
+   demand at any width) but still restore the roomier content layout
+   (padding, multi-column grids, the large-hero treatment below). */
 @media (min-width: 700px) {
-    .shell { flex-direction: row; align-items: flex-start; }
+    .hm-month-num { display: none; }
+    .hm-month-abbr { display: inline; }
     .panel { padding: 16px; }
-    .sidebar {
-        display: flex;
-        flex-direction: column;
-        gap: 2px;
-        width: 200px;
-        flex-shrink: 0;
-        position: sticky;
-        top: 0;
-        height: 100vh;
-        overflow-y: auto;
-        scrollbar-gutter: stable;
-        background: var(--color-nav-bg);
-        border-right: 1px solid var(--color-border);
-        padding: 16px 12px;
-    }
     .content { padding: 24px 32px; }
-    .desktop-topbar {
-        display: flex;
-        align-items: center;
-        position: sticky;
-        top: 0;
-        z-index: 20;
-        background: var(--color-bg);
-    }
     .page-header { flex-wrap: nowrap; }
     .list-title-row { flex-wrap: nowrap; }
     .qs-tabs { display: none; }
@@ -1014,12 +1195,13 @@ h2 { font-size: 18px; font-weight: 600; margin: 20px 0 10px; color: var(--color-
     .qs-column-title { display: block; }
     .date-filter { flex-wrap: nowrap; }
     .theme-row { flex-wrap: nowrap; }
+    .preview-bar-info { display: flex; }
 
     .ml-tabs { display: none; }
     .ml-columns {
         display: grid;
         grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 24px;
+        gap: 32px;
         align-items: start;
         border-top: none;
         background: none;
@@ -1036,13 +1218,85 @@ h2 { font-size: 18px; font-weight: 600; margin: 20px 0 10px; color: var(--color-
        right-aligned row-bar-label (play count) sat right where the
        scrollbar thumb renders, and the two overlapped. */
     .ml-column { max-height: calc(100vh - 220px); overflow-y: auto; overflow-x: hidden; scrollbar-gutter: stable; padding-right: 8px; }
+    /* :not(:first-child) rather than nth-child(1) so this stays correct
+       regardless of how many columns end up rendered/hidden. The negative
+       margin pulls the border back towards the previous column's
+       scrollbar, so it doesn't just sit at the far side of the (now
+       32px) gap - padding-left keeps this column's own content sitting
+       at its usual distance from the border despite the shift. */
+    .ml-column:not(:first-child) { border-left: 1px solid var(--color-border); margin-left: -20px; padding-left: 20px; }
     .ml-column[hidden] { display: block; }
     .ml-column-title { display: block; }
-
-    .mobile-topbar,
-    .drawer-overlay,
-    .mobile-drawer {
-        display: none;
-    }
 }
 
+
+/* hero_image(large=True) covers (playlist/album/artist, not track) move
+   beside the title instead of below it and grow to a big square, once
+   there's genuinely room for that to be worthwhile - keyed to .panel's own
+   width (container query, .panel already has container-type:inline-size),
+   not just the viewport. A bare container query alone caused a visible
+   flip-flop right around the 700px viewport breakpoint below though:
+   crossing it also bumps .content's padding (clamp-capped 16px -> 32px per
+   side above), which - independently of anything here - shrinks .panel's
+   width in the same jump. With only a container query gating this, that
+   jump could straddle the 534px hero threshold on its own, so a mouse
+   hovering right at 700px could toggle *both* breakpoints in lockstep,
+   reading as the whole layout flickering between mobile and desktop.
+   Nesting inside the same min-width:700px media query means "large hero"
+   can only ever be evaluated once that padding jump has already happened -
+   the container query then only sees the smooth, monotonic growth of
+   .panel as the viewport keeps widening past 700px, never the one
+   discontinuous jump at the boundary itself.
+
+   Below 700px, or below 534px of .panel width once past it: stay on the
+   default (mobile-identical) grid-template-areas - no in-between state
+   where switching layouts makes the cover smaller than mobile's own
+   160px ceiling would.
+
+   Only --hero-size, grid-template-areas/rows, and the hero's own grid-row
+   span change here - the actual "stay matched" mechanism (.hero-image and
+   .heatmap-years-overview both sized off var(--hero-size), .hm-year-row/
+   .hm-month-chip stretching to fill it) is the same base-rule machinery
+   the default (mobile-identical) layout already uses year-round, not a
+   second parallel mechanism - the two states differing only in size and
+   position, not in kind, is what keeps this transition from visibly
+   jumping once it does happen. */
+@media (min-width: 700px) {
+@container (min-width: 534px) {
+    .detail-header-top:has(.hero-image-raw, .hero-image-large) {
+        grid-template-areas: "hero title" "hero heatmap";
+        /* minmax(0, 1fr), not bare 1fr: a bare 1fr track still respects its
+           content's natural minimum size (8 year rows x their min-height,
+           plus gaps) - without this, the heatmap row can't compress below
+           that minimum even when there's less than that much space left. */
+        grid-template-rows: auto minmax(0, 1fr);
+        --hero-size: clamp(160px, 30cqw, 280px);
+        /* The container itself needs an explicit height, not just the hero
+           item spanning it - without this, .detail-header-top's height is
+           "auto" (emergent from its rows' own natural content sizes), so
+           row2's minmax(0, 1fr) has no definite total to size against and
+           falls back to the heatmap's natural content height instead of
+           "whatever's left after the title row" - confirmed overflowing
+           past the image's bottom by however much the heatmap's natural
+           height exceeded that leftover space. An explicit height here
+           makes the row math fully definite: row2 = height - row1's auto. */
+        height: var(--hero-size);
+    }
+    /* Only this layout's hero spans both grid rows (title + heatmap
+       combined) instead of sharing just the "hero" row with the heatmap -
+       width/height themselves still come from the base .hero-image rule's
+       var(--hero-size), now resolving to the bigger clamp() redefined
+       above. */
+    .hero-image-raw, .hero-image-large { grid-row: 1 / 3; }
+    .detail-header-top:has(.hero-image-raw, .hero-image-large) .heatmap-years-overview {
+        /* 100%, not var(--hero-size) directly: this box's actual grid cell
+           (the "heatmap" row) is already exactly the right height - the
+           hero spans both grid rows at --hero-size, the title row is
+           "auto", "heatmap"'s own row is 1fr (the remainder). Using the
+           full --hero-size here ignores that the title row already ate
+           some of it, overflowing this box past the image's bottom edge
+           by however tall the title row is. */
+        height: 100%;
+    }
+}
+}

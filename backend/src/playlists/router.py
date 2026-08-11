@@ -101,8 +101,9 @@ def playlist_detail(
                     f"/track/{quote(n)}?artist={quote(s or '')}",
                     s,
                     f"/artist/{quote(s)}" if s else None,
-                    note=f"×{c}",
+                    note=str(c),
                     image_url=images.get(album_by_name.get(n)),
+                    preview_artist=s,
                 )
                 for n, s, c in aggregated
             ),
@@ -117,6 +118,7 @@ def playlist_detail(
                     t["artist_name"],
                     f"/artist/{quote(t['artist_name'])}",
                     image_url=t["image_url"],
+                    preview_artist=t["artist_name"],
                 )
                 for t in tracks
             ),

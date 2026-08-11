@@ -1,5 +1,5 @@
 (function () {
-  // Persistent chrome search (sidebar on desktop, topbar on mobile - see
+  // Persistent chrome search (mobile-topbar, at every width - see
   // _quick_search_widget() in html.py). Delegated on document so it keeps
   // working after htmx swaps #content, no re-init needed.
   function clearResults() {
@@ -8,13 +8,10 @@
     });
   }
 
-  // The sidebar's own vertical scroll (overflow-y: auto) silently converts
-  // its overflow-x to auto too (CSS spec: an axis can't stay truly
-  // "visible" once the other axis isn't), which clips this dropdown's
-  // intentional overflow past the 200px sidebar even though its box is
-  // laid out at the wider width - position:absolute can't escape an
-  // ancestor's clipping, so this positions it with position:fixed instead
-  // (anchored to the input's real screen coordinates), which does.
+  // position:absolute can't escape an ancestor's clipping (e.g. a
+  // scrollable container converting its overflow-x to auto), so this
+  // positions the dropdown with position:fixed instead (anchored to the
+  // input's real screen coordinates), which does.
   function positionResults(resultsEl) {
     var input = resultsEl.previousElementSibling;
     if (!input) return;

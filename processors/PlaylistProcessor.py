@@ -59,14 +59,14 @@ def get_snapshot_ids(con) -> dict:
     }
 
 
-def save_to_db(con, playlists, prune_missing=True):
+def save_to_db(con, playlists, remove_missing=True):
     """The uploaded Playlist*.json files are treated as the full, current
     set of the user's playlists. On each import: existing playlists are
     matched by name and have their tracks replaced (so removed/reordered
     tracks are reflected), new playlists are created, and - when
-    prune_missing is set - any previously stored playlist absent from this
+    remove_missing is set - any previously stored playlist absent from this
     import is deleted along with its tracks, so re-uploading overrides
-    rather than only ever adding. prune_missing should be False when no
+    rather than only ever adding. remove_missing should be False when no
     Playlist*.json files were present at all, so an unrelated upload (e.g.
     history-only) doesn't wipe out existing playlists.
 
@@ -113,7 +113,7 @@ def save_to_db(con, playlists, prune_missing=True):
             [(playlist_id, t["trackName"], t["artistName"], t["trackUri"]) for t in pl["tracks"]],
         )
 
-    if prune_missing:
+    if remove_missing:
         placeholders = ",".join("?" * len(seen_ids))
         stale_ids = [
             row[0]
@@ -149,7 +149,7 @@ def main():
     con = sqlite3.connect(DB_PATH)
     with open(SCHEMA_PATH) as f:
         con.executescript(f.read())
-    counts = save_to_db(con, playlists, prune_missing=found_files)
+    counts = save_to_db(con, playlists, remove_missing=found_files)
     con.close()
 
     print(f"Added {counts['new_playlists']} new playlists, "

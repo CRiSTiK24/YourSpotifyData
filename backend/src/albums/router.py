@@ -27,15 +27,12 @@ def album_detail(album_name: str, request: Request, con: DBDep, artist: str = ""
 
     plays, play_count, filter_clear_html = resolve_period_filter(history, result, base_href)
     aggregated = aggregate_plays(plays)
-    max_plays = max((count for _, _, count in aggregated), default=0)
     tracks_html = "".join(
         row(
             name,
             f"/track/{quote(name)}?artist={quote(singer or artist)}",
-            singer or artist,
-            f"/artist/{quote(singer or artist)}" if (singer or artist) else None,
-            note=f"×{count}",
-            bar_fraction=(count / max_plays) if max_plays else 0,
+            note=str(count),
+            preview_artist=singer or artist,
         )
         for name, singer, count in aggregated
     )
@@ -54,7 +51,7 @@ def album_detail(album_name: str, request: Request, con: DBDep, artist: str = ""
     header = detail_header(
         f"<h1>{escape(album_name)}</h1>",
         meta_html,
-        hero_image(service.get_album_image(con, artist, album_name)),
+        hero_image(service.get_album_image(con, artist, album_name), large=True),
         heatmap_html,
     )
     return page(detail_layout(header, "Tracks", tracks_html), title=album_name)

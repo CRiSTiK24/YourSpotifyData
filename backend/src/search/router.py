@@ -24,7 +24,8 @@ def _quick_track_results_html(con, query: str, offset: int = 0) -> str:
         row(
             name,
             f"/track/{quote(name)}?artist={quote(singer or '')}",
-            note=f"×{count}",
+            note=str(count),
+            preview_artist=singer,
         )
         for name, singer, count in batch
     )
