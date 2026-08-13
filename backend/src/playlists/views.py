@@ -31,8 +31,19 @@ def playlists_content(con: sqlite3.Connection) -> str:
         f"Playlists ({len(pls)})",
         copy_list_button(export_lines, "playlists-list"),
     )
+    rules_html = """
+<ul class="subtitle">
+<li>A song can only stay if I can hear it and resonate just by playing it in my mind.</li>
+<li>No duplicate artists, however if it's a collaboration it counts as a different one</li>
+<li>All songs need to share the aesthetic. This one is pretty personal as I end up merging
+lot's of genres if it feels right to me.</li>
+<li>It's a living thing! I will remove songs I no longer think they are amazing no matter
+how much I loved them in the past. VERY HARD to remove those, but we gotta do what we
+gotta do :(</li>
+</ul>"""
     return f"""
 {header}
+{rules_html}
 <hr class="divider">
 {grid(cards_html)}
 """
