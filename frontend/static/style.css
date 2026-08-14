@@ -54,10 +54,28 @@
     }
 }
 
+@font-face {
+    font-family: "Director";
+    src: url("/static/fonts/degheest/Director-Variable.woff2") format("woff2");
+    font-weight: 100 900;
+    /* optional, not swap: swap guarantees the custom font eventually
+       replaces the fallback, which is exactly what caused a visible
+       .widget-header reflow (and the .widget shrink-wrapped around it
+       growing with it) whenever the font finished loading after first
+       paint - preloading it (see html.py) closed that gap in Chromium but
+       not reliably in Firefox, which doesn't guarantee a preloaded font is
+       ready before layout either. optional gives the font a short window
+       (~100ms) to arrive; if it misses that, the page commits to the
+       fallback font for the rest of that view instead of swapping in
+       later - trading "Director" not always appearing on a cold/slow load
+       for guaranteeing no post-paint reflow, in any browser. */
+    font-display: optional;
+}
+
 body {
     background: var(--color-bg);
     color: var(--color-text);
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-family: "Director", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     font-size: 15px;
     line-height: 1.5;
 }
@@ -364,6 +382,76 @@ body.preview-bar-visible .content { padding-bottom: 52px; }
 h1 { font-size: 24px; font-weight: 600; margin-bottom: 4px; color: var(--color-text); }
 h2 { font-size: 18px; font-weight: 600; margin: 20px 0 10px; color: var(--color-text); }
 
+.section-header { display: flex; align-items: center; gap: 8px; margin-top: 20px; }
+.section-header h2 { margin: 0; }
+
+/* plain flexbox: each widget just sizes to its own content and wraps -
+   simple, zero JS. A perfectly gapless packing of variable-width AND
+   variable-height boxes isn't possible without either JS (real masonry)
+   or stretching boxes past their content (row-justification); both were
+   tried here and added more complexity than this homepage widget row is
+   worth. Small gaps next to a short widget are an accepted tradeoff. */
+.widget-grid {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 16px;
+    margin-top: 16px;
+    /* same reasoning as .grid above: an inactive tooltip bubble
+       ([data-tooltip]::after, up to 220px wide) still occupies layout
+       space even at opacity:0, and near a narrow viewport's edge that
+       inflates the page's scrollable width into a phantom horizontal
+       scrollbar - clipping at this container (not html/body) stops that
+       without touching position:sticky elsewhere on the page. */
+    overflow-x: clip;
+}
+
+.widget {
+    /* flex: none (= flex-grow:0 flex-shrink:0 flex-basis:auto) is the
+       named shorthand for "no flexibility, size purely from content" -
+       exactly the policy this grid wants for every widget. Without it,
+       flex-shrink's default of 1 would let a widget that almost-but-not-
+       quite fits a wrapped row get visually compressed narrower than its
+       own content instead of cleanly wrapping to the next line;
+       flex-wrap alone should decide what moves to the next line. */
+    flex: none;
+    /* flex-shrink:0 (part of the above) disables shrinking outright, so
+       without a cap a widget wider than the viewport (a long single quote)
+       would overflow the page horizontally on narrow screens instead of
+       letting its text reflow smaller - max-width, not shrinking, is what
+       should handle that case. */
+    max-width: 100%;
+    box-sizing: border-box;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    padding: 16px;
+}
+/* caps a carousel-widget's width at roughly a handful of cards, the rest
+   reachable by scrolling the carousel itself (see .carousel below for why
+   this cap lives here instead of on .carousel's own max-width). 520px is
+   sized for the compact carousel's cards (~5 at their 90px ceiling) - the
+   only variant in use; revisit if a non-compact carousel widget shows up. */
+.widget:has(.carousel) { max-width: min(100%, 520px); }
+
+.widget-header { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+.widget-header h2 { margin: 0; }
+.widget blockquote { margin-bottom: 0; }
+.widget .carousel { margin-top: 0; }
+
+p { margin-bottom: 12px; }
+ul { margin-bottom: 12px; padding-left: 20px; }
+li { margin-bottom: 4px; }
+
+blockquote {
+    width: fit-content;
+    max-width: 100%;
+    margin-bottom: 12px;
+    padding: 10px 16px;
+    border-left: 4px solid var(--color-accent);
+    background: var(--color-surface);
+    border-radius: 0 8px 8px 0;
+}
+
 .subtitle { color: var(--color-text); opacity: 0.7; font-size: 14px; }
 .subtitle a { text-decoration: underline; }
 
@@ -552,9 +640,99 @@ h2 { font-size: 18px; font-weight: 600; margin: 20px 0 10px; color: var(--color-
 }
 .grid-compact .card-title, .grid-compact .card-secondary { font-size: 12px; }
 
+/* same card sizing tokens as .grid, laid out as a single non-wrapping row,
+   horizontally scrollable (mouse-drag via carousel.js, native touch/wheel
+   scroll otherwise) once there are more cards than fit - callers already
+   sort newest-first, so whatever's off-screen is always the least-recent,
+   not an arbitrary cut.
+
+   the row is capped at roughly a handful of cards instead of growing to
+   fit everything (inline-grid would otherwise just keep shrink-wrapping
+   wider as more cards are added) - without a cap there'd usually be
+   nothing to scroll to, since most homepage widget content comfortably
+   fits one full-viewport-wide row. That cap lives on .widget itself (see
+   .widget:has(.carousel) below), not as a max-width here - a flex/grid item
+   respecting its own max-width during shrink-to-fit is a basic, solid
+   case; asking an ancestor's shrink-to-fit pass to read a *descendant's*
+   max-width-clamped contribution is a much less common path, and was
+   observed under-clamped in Firefox (widget sized as if the cap wasn't
+   there, leaving dead space once the actually-capped carousel rendered
+   narrower inside it) - likely a sibling issue to the flex bug below,
+   just one level removed. Capping the ancestor directly sidesteps needing
+   that nested computation to work at all, the same fix applied twice now.
+
+   grid, not flex: this used to be display:flex with flex-shrink:0 cards,
+   sized to its own content via width:fit-content so the ancestor .widget
+   could shrink-wrap around it. That combination - a flex container whose
+   own intrinsic width needs computing, with flex-shrink:0 items - hits a
+   real, still-open Firefox bug (bugzilla.mozilla.org/1055887, filed 2011,
+   webcompat:platform-bug): Firefox's flex intrinsic-sizing algorithm
+   disagrees with Chromium's and computes a too-wide result, which showed
+   up here as .widget reserving room for several cards that weren't
+   there. CSS Grid's intrinsic-sizing algorithm doesn't share that bug
+   (see .grid/.grid-compact above, which already rely on it), so
+   grid-auto-flow:column sidesteps the whole issue rather than working
+   around it. inline-grid (not grid) so this shrinks to its own content
+   like the old width:fit-content did, without needing that property.
+
+   vw here, not cqw like .grid/.grid-compact above - deliberate exception
+   to this file's usual container-query convention. .carousel's only
+   caller (the homepage widget) never sits inside a narrower .panel, so
+   cqw bought nothing here, only cost: resolving cqw requires a container-
+   size-settling pass before it's known, and .widget shrink-wraps to
+   .carousel's own width, so that settling was visible on every load as
+   the whole widget growing a beat after first paint. vw resolves in a
+   single pass - no flicker - and is exactly equivalent to cqw for an
+   element that's always full-viewport-width anyway. */
+.carousel {
+    display: inline-grid;
+    grid-auto-flow: column;
+    grid-auto-columns: clamp(100px, 26vw, 160px);
+    gap: clamp(10px, 3vw, 20px);
+    margin-top: 16px;
+    max-width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    cursor: grab;
+    /* proximity, not mandatory - lets a short drag settle between cards
+       (nice for aligning the row) without fighting a drag that's meant to
+       stop mid-card, e.g. to end exactly at the last (partial) one. */
+    scroll-snap-type: x proximity;
+    /* native scrollbar hidden - the drag affordance (cursor:grab, see
+       carousel.js) and partially-cut-off trailing card are what signal
+       "more content this way" instead, same visual language as most
+       carousel/rail UI. Still fully scrollable via touch/wheel/keyboard,
+       this only hides the bar itself. */
+    scrollbar-width: none;
+}
+.carousel::-webkit-scrollbar { display: none; }
+.carousel > .card { scroll-snap-align: start; }
+/* belt-and-suspenders alongside carousel.js's dragstart preventDefault -
+   the browser's native image/link drag (ghost preview) would otherwise
+   fight the drag-to-scroll below the moment the pointer moves over a
+   card's cover or title. -webkit-user-drag has no Firefox equivalent
+   (only WebKit/Blink), which is why carousel.js's JS-level prevention is
+   the one actually load-bearing across every browser - this is just a
+   same-effect hint WebKit already honors before that JS even runs. */
+.carousel img, .carousel a { -webkit-user-drag: none; }
+/* set by carousel.js for the duration of an active mouse drag - swaps the
+   cursor to "grabbing" and blocks text/image selection, which a fast drag
+   would otherwise trigger (native browser behavior for any mousedown+move
+   over selectable content). */
+.carousel.carousel-dragging { cursor: grabbing; scroll-snap-type: none; }
+.carousel.carousel-dragging, .carousel.carousel-dragging * { user-select: none; }
+.carousel-compact { grid-auto-columns: clamp(72px, 20vw, 90px); max-width: min(100%, 460px); }
+.carousel-compact .card-title, .carousel-compact .card-secondary { font-size: 12px; }
+
 .card { display: flex; flex-direction: column; min-width: 0; position: relative; }
 
-.card[data-tooltip]::after, .card[data-tooltip]::before {
+/* anchors the ::after/::before tooltip bubble below to whatever element
+   carries data-tooltip - .card already sets this itself above, this
+   covers any other element (e.g. a standalone info button) reusing the
+   same tooltip mechanism. */
+[data-tooltip] { position: relative; }
+
+[data-tooltip]::after, [data-tooltip]::before {
     z-index: 20;
     position: absolute;
     left: 50%;
@@ -570,7 +748,7 @@ h2 { font-size: 18px; font-weight: 600; margin: 20px 0 10px; color: var(--color-
    degrades gracefully with no JS. The arrow (::before below) intentionally
    keeps pointing straight at the card regardless - only the bubble body
    moves. */
-.card[data-tooltip]::after {
+[data-tooltip]::after {
     content: attr(data-tooltip);
     bottom: 100%;
     width: max-content;
@@ -588,7 +766,7 @@ h2 { font-size: 18px; font-weight: 600; margin: 20px 0 10px; color: var(--color-
     transform: translate(calc(-50% + var(--tooltip-shift, 0px)), 4px);
 }
 
-.card[data-tooltip]::before {
+[data-tooltip]::before {
     content: "";
     bottom: 100%;
     width: 10px;
@@ -600,13 +778,13 @@ h2 { font-size: 18px; font-weight: 600; margin: 20px 0 10px; color: var(--color-
     transform: translate(-50%, 4px) rotate(45deg);
 }
 
-.card[data-tooltip]:hover::after, .card[data-tooltip]:hover::before,
-.card[data-tooltip].tooltip-active::after, .card[data-tooltip].tooltip-active::before {
+[data-tooltip]:hover::after, [data-tooltip]:hover::before,
+[data-tooltip].tooltip-active::after, [data-tooltip].tooltip-active::before {
     opacity: 1;
     transform: translate(-50%, 0) rotate(45deg);
 }
 
-.card[data-tooltip]:hover::after, .card[data-tooltip].tooltip-active::after {
+[data-tooltip]:hover::after, [data-tooltip].tooltip-active::after {
     transform: translate(calc(-50% + var(--tooltip-shift, 0px)), 0);
 }
 
@@ -638,6 +816,26 @@ h2 { font-size: 18px; font-weight: 600; margin: 20px 0 10px; color: var(--color-
 @media (hover: none) {
     .card-info-btn { display: flex; }
 }
+
+/* standalone counterpart to .card-info-btn for use outside a .card (e.g. a
+   section heading) - always visible and inline rather than absolutely
+   positioned/touch-only, since there's no card to hover as an alternative. */
+.info-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 1px solid var(--color-border);
+    background: var(--color-surface);
+    color: var(--color-text);
+    font-size: 11px;
+    font-style: italic;
+    font-family: Georgia, serif;
+    cursor: pointer;
+}
+.info-btn:hover { border-color: var(--color-accent); }
 
 .card-thumb {
     display: block;

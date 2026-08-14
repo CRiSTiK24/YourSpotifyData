@@ -53,6 +53,7 @@ def page(content: str, title: str = "") -> HTMLResponse:
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{escape(page_title)}</title>
+  <link rel="preload" href="/static/fonts/degheest/Director-Variable.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="/static/style.css">
   <script>
   (function () {{
@@ -103,6 +104,7 @@ def page(content: str, title: str = "") -> HTMLResponse:
 <script src="/static/quick-search.js"></script>
 <script src="/static/most-listened.js"></script>
 <script src="/static/preview.js"></script>
+<script src="/static/carousel.js"></script>
 </body>
 </html>"""
     return HTMLResponse(html)
@@ -263,6 +265,40 @@ def card(
 def grid(cards_html: str, *, compact: bool = False) -> str:
     cls = "grid grid-compact" if compact else "grid"
     return f"<div class='{cls}'>{cards_html}</div>"
+
+
+def carousel(cards_html: str, *, compact: bool = False) -> str:
+    cls = "carousel carousel-compact" if compact else "carousel"
+    return f"<div class='{cls}'>{cards_html}</div>"
+
+
+def widget_grid(widgets_html: str) -> str:
+    return f"<div class='widget-grid'>{widgets_html}</div>"
+
+
+def widget(
+    title: str,
+    content_html: str,
+    *,
+    info_tooltip: str | None = None,
+) -> str:
+    tooltip_attr = f" data-tooltip='{escape(info_tooltip)}'" if info_tooltip else ""
+    info_btn = (
+        f"<button type='button' class='info-btn' aria-label='About this widget'"
+        f"{tooltip_attr}>i</button>"
+        if info_tooltip
+        else ""
+    )
+    title_html = (
+        f"""<div class="widget-header"><h2>{escape(title)}</h2>{info_btn}</div>"""
+        if title
+        else info_btn
+    )
+    return f"""
+<div class="widget">
+  {title_html}
+  {content_html}
+</div>"""
 
 
 def hero_image(image_url: str | None, *, raw: bool = False, large: bool = False) -> str:

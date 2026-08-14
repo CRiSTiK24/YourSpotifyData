@@ -21,7 +21,7 @@ router = APIRouter(tags=["albums"])
     description="Album detail with play history",
 )
 def album_detail(album_name: str, request: Request, con: DBDep, artist: str = ""):
-    history = service.load_album_track_history(con, album_name)
+    history = service.load_album_track_history(con, artist, album_name)
 
     heatmap_html, result, base_href = build_heatmap_html(history, f"album_{album_name}", request)
 

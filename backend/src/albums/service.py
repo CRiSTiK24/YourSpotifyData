@@ -20,10 +20,53 @@ def search_albums(con: sqlite3.Connection, query: str) -> list[sqlite3.Row]:
     ).fetchall()
 
 
-def load_album_track_history(con: sqlite3.Connection, album_name: str) -> list[sqlite3.Row]:
+def resolve_album_name_variants(
+    con: sqlite3.Connection, artist_name: str, album_name: str
+) -> list[str]:
+    # Spotify sometimes reports a different album_name string for the same
+    # release depending on which API path supplied it (e.g. your saved-
+    # albums list vs. your streaming history) - a plain "album = ?" match
+    # would then miss plays logged under the other spelling entirely. The
+    # cover-art background job (src/images/service.py) already resolves a
+    # real spotify_album_id per (artist_name, album_name) pair as a side
+    # effect of fetching art, so reusing it here to find every album_name
+    # variant sharing that id costs zero extra Spotify API calls. Falls
+    # back to the literal album_name alone if it was never resolved (e.g.
+    # a delisted album, or the image-fetch job hasn't reached it yet).
+    row = con.execute(
+        "SELECT spotify_album_id FROM album_images WHERE artist_name = ? AND album_name = ?",
+        (artist_name, album_name),
+    ).fetchone()
+    album_id = row["spotify_album_id"] if row else None
+    if not album_id:
+        return [album_name]
+    variants = con.execute(
+        "SELECT album_name FROM album_images WHERE artist_name = ? AND spotify_album_id = ?",
+        (artist_name, album_id),
+    ).fetchall()
+    return [r["album_name"] for r in variants] or [album_name]
+
+
+def load_album_track_history(
+    con: sqlite3.Connection, artist_name: str, album_name: str
+) -> list[sqlite3.Row]:
+    # artist_name is the join key into album_images (see
+    # resolve_album_name_variants), so an empty one (a bare /album/{name}
+    # link with no ?artist=, which every in-app link always supplies, but
+    # an old bookmark or manual URL might not) can't resolve variants -
+    # falls back to the original plain album-name match rather than
+    # erroring or matching nothing.
+    if not artist_name:
+        return con.execute(
+            "SELECT name, singer, time FROM track_history WHERE album = ? ORDER BY time DESC",
+            (album_name,),
+        ).fetchall()
+    variants = resolve_album_name_variants(con, artist_name, album_name)
+    placeholders = ",".join("?" for _ in variants)
     return con.execute(
-        "SELECT name, singer, time FROM track_history WHERE album = ? ORDER BY time DESC",
-        (album_name,),
+        f"SELECT name, singer, time FROM track_history "
+        f"WHERE singer = ? AND album IN ({placeholders}) ORDER BY time DESC",
+        (artist_name, *variants),
     ).fetchall()
 
 
