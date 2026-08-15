@@ -42,16 +42,17 @@ def ensure_track_history_fts_covers_album(con: sqlite3.Connection) -> None:
 
 
 def search_track_history_by_name(
-    con: sqlite3.Connection, user_id: int, query: str
+    con: sqlite3.Connection, user_id: int | None, query: str
 ) -> list[sqlite3.Row]:
     match = fts_match_query(query.split(), column="name")
+    user_clause, user_params = ("th.user_id = ?", [user_id]) if user_id is not None else ("1=1", [])
     return con.execute(
-        """
+        f"""
         SELECT th.name, th.singer, th.time
         FROM track_history_fts
         JOIN track_history th ON th.id = track_history_fts.rowid
-        WHERE track_history_fts MATCH ? AND th.user_id = ?
+        WHERE track_history_fts MATCH ? AND {user_clause}
         ORDER BY th.time DESC
         """,
-        (match, user_id),
+        (match, *user_params),
     ).fetchall()

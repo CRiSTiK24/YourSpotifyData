@@ -28,7 +28,7 @@ router = APIRouter(tags=["artists"])
 ARTIST_TRACKS_BATCH = 20
 
 
-def _artist_tracks_cards_fragment(con, user_id: int, artist_name: str, offset: int) -> str:
+def _artist_tracks_cards_fragment(con, user_id: int | None, artist_name: str, offset: int) -> str:
     tracks = service.load_artist_tracks_page(con, user_id, artist_name, offset, ARTIST_TRACKS_BATCH)
     has_more = len(tracks) > ARTIST_TRACKS_BATCH
     tracks = tracks[:ARTIST_TRACKS_BATCH]
@@ -74,10 +74,11 @@ def most_listened_artists_more(
     end_month: str = "",
     genre: str = "",
 ):
+    user_id = viewed_user["id"] if viewed_user else None
     return HTMLResponse(
         most_listened_artists_rows_html(
             con,
-            viewed_user["id"],
+            user_id,
             offset,
             max_plays,
             parse_month_param(start_month),
@@ -96,7 +97,8 @@ def most_listened_artists_more(
 def artist_detail(
     artist_name: str, request: Request, con: DBDep, viewed_user: users_service.ViewedUserDep
 ):
-    history = service.load_artist_history(con, viewed_user["id"], artist_name)
+    user_id = viewed_user["id"] if viewed_user else None
+    history = service.load_artist_history(con, user_id, artist_name)
     if not history:
         raise ArtistNotFound(artist_name)
 
@@ -125,7 +127,7 @@ def artist_detail(
         )
     else:
         tracks_html = grid(
-            _artist_tracks_cards_fragment(con, viewed_user["id"], artist_name, 0), compact=True
+            _artist_tracks_cards_fragment(con, user_id, artist_name, 0), compact=True
         )
 
     header = detail_header(
@@ -149,4 +151,5 @@ def artist_detail(
 def artist_tracks(
     artist_name: str, con: DBDep, viewed_user: users_service.ViewedUserDep, offset: int = 0
 ):
-    return HTMLResponse(_artist_tracks_cards_fragment(con, viewed_user["id"], artist_name, offset))
+    user_id = viewed_user["id"] if viewed_user else None
+    return HTMLResponse(_artist_tracks_cards_fragment(con, user_id, artist_name, offset))

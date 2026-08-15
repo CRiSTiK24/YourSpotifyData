@@ -44,10 +44,11 @@ def most_listened(
     # confirms this request is that specific carousel-click case avoids
     # stripping it out everywhere else.
     is_genre_swap = request.headers.get("hx-target") == "ml-results"
+    user_id = viewed_user["id"] if viewed_user else None
     return page(
         most_listened_combined_content(
             con,
-            viewed_user["id"],
+            user_id,
             parse_month_param(start_month),
             parse_month_param(end_month, end=True),
             genre,
@@ -72,10 +73,11 @@ def most_listened_more(
     end_month: str = "",
     genre: str = "",
 ):
+    user_id = viewed_user["id"] if viewed_user else None
     return HTMLResponse(
         most_listened_rows_html(
             con,
-            viewed_user["id"],
+            user_id,
             offset,
             max_plays,
             parse_month_param(start_month),
@@ -109,10 +111,11 @@ def most_listened_albums_more(
     end_month: str = "",
     genre: str = "",
 ):
+    user_id = viewed_user["id"] if viewed_user else None
     return HTMLResponse(
         most_listened_albums_rows_html(
             con,
-            viewed_user["id"],
+            user_id,
             offset,
             max_plays,
             parse_month_param(start_month),
@@ -126,4 +129,5 @@ def most_listened_albums_more(
     "/liked-albums", response_class=HTMLResponse, status_code=200, description="All liked albums"
 )
 def liked_albums(con: DBDep, viewed_user: users_service.ViewedUserDep):
-    return page(liked_albums_content(con, viewed_user["id"]), title="Albums I Like")
+    user_id = viewed_user["id"] if viewed_user else None
+    return page(liked_albums_content(con, user_id), title="Albums I Like")

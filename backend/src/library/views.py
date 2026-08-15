@@ -83,7 +83,7 @@ def date_filter_html(
 
 def most_listened_rows_html(
     con: sqlite3.Connection,
-    user_id: int,
+    user_id: int | None,
     offset: int,
     max_plays: int,
     start_period: int = 0,
@@ -124,7 +124,7 @@ def most_listened_rows_html(
 
 def most_listened_albums_rows_html(
     con: sqlite3.Connection,
-    user_id: int,
+    user_id: int | None,
     offset: int,
     max_plays: int,
     start_period: int = 0,
@@ -164,7 +164,7 @@ def most_listened_albums_rows_html(
 
 def most_listened_combined_content(
     con: sqlite3.Connection,
-    user_id: int,
+    user_id: int | None,
     start_period: int = 0,
     end_period: int = 0,
     genre: str = "",
@@ -257,7 +257,7 @@ def most_listened_combined_content(
 """
 
 
-def liked_albums_content(con: sqlite3.Connection, user_id: int) -> str:
+def liked_albums_content(con: sqlite3.Connection, user_id: int | None) -> str:
     albums = service.load_library_albums(con, user_id)
     cards_html = "".join(
         card(

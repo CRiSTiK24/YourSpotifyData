@@ -11,7 +11,7 @@ MOST_LISTENED_ARTISTS_BATCH = 30
 
 def most_listened_artists_rows_html(
     con: sqlite3.Connection,
-    user_id: int,
+    user_id: int | None,
     offset: int,
     max_plays: int,
     start_period: int = 0,

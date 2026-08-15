@@ -25,26 +25,29 @@ def _current_month_period() -> int:
     return now.year * 100 + now.month
 
 
-def _load_recent_discoveries(con: sqlite3.Connection, user_id: int, days: int) -> list[sqlite3.Row]:
+def _load_recent_discoveries(
+    con: sqlite3.Connection, user_id: int | None, days: int
+) -> list[sqlite3.Row]:
+    user_clause, user_params = ("pt.user_id = ?", [user_id]) if user_id is not None else ("1=1", [])
     return con.execute(
-        """
+        f"""
         SELECT pt.track_name AS name, pt.artist_name AS singer, ai.image_url,
                MIN(th.time) AS first_played
         FROM playlist_tracks pt
         JOIN track_history th ON th.name = pt.track_name AND th.singer = pt.artist_name
             AND th.user_id = pt.user_id
         LEFT JOIN album_images ai ON ai.artist_name = pt.artist_name AND ai.album_name = th.album
-        WHERE pt.user_id = ?
+        WHERE {user_clause}
         GROUP BY pt.track_name, pt.artist_name
         HAVING MIN(th.time) >= datetime('now', ?)
         ORDER BY first_played DESC
         """,
-        (user_id, f"-{days} days"),
+        (*user_params, f"-{days} days"),
     ).fetchall()
 
 
 def _load_recently_explored_albums(
-    con: sqlite3.Connection, user_id: int, days: int, min_tracks: int
+    con: sqlite3.Connection, user_id: int | None, days: int, min_tracks: int
 ) -> list[sqlite3.Row]:
     # "Explored" = at least half of the album's tracks (distinct track
     # names ever played from it - there's no canonical tracklist/total-track
@@ -72,14 +75,15 @@ def _load_recently_explored_albums(
     # (singer, album) pair when no id was resolved (album_images covers
     # ~99.99% of this library, but not unconditionally all of it).
     window = f"-{days} days"
+    user_clause, user_params = ("th.user_id = ?", [user_id]) if user_id is not None else ("1=1", [])
     return con.execute(
-        """
+        f"""
         WITH track_first_play AS (
             SELECT th.album, th.singer, th.name, MIN(th.time) AS first_played,
                    COALESCE(ai.spotify_album_id, th.singer || '|' || th.album) AS group_key
             FROM track_history th
             LEFT JOIN album_images ai ON ai.artist_name = th.singer AND ai.album_name = th.album
-            WHERE th.user_id = ? AND th.album IS NOT NULL AND th.album != ''
+            WHERE {user_clause} AND th.album IS NOT NULL AND th.album != ''
               AND th.singer IS NOT NULL AND th.singer != ''
             GROUP BY th.album, th.singer, th.name
         ),
@@ -105,7 +109,7 @@ def _load_recently_explored_albums(
           AND album_stats.recent_tracks * 2 >= album_stats.total_tracks
         ORDER BY album_stats.most_recent_first_play DESC
         """,
-        (user_id, window, window, min_tracks),
+        (*user_params, window, window, min_tracks),
     ).fetchall()
 
 
@@ -118,9 +122,9 @@ def _most_listened_genre_href(genre: str) -> str:
     return u(f"/most-listened?start_month={month}&end_month={month}&genre={quote(genre)}")
 
 
-@router.get("/home", response_class=HTMLResponse, status_code=200, description="Home page")
+@router.get("/now", response_class=HTMLResponse, status_code=200, description="Now page")
 def home(con: DBDep, viewed_user: users_service.ViewedUserDep):
-    user_id = viewed_user["id"]
+    user_id = viewed_user["id"] if viewed_user else None
     greeting = random.choice(TotalWarRomeIIGreetings)
     widgets_html = widget("", f"<blockquote><em>{escape(greeting)}</em></blockquote>")
 

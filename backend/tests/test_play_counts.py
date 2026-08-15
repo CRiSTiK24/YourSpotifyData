@@ -113,3 +113,42 @@ def test_load_most_listened_never_returns_another_users_plays(db, user_id, other
 
     rows = play_counts.load_most_listened(db, user_id, limit=10, offset=0)
     assert [r["name"] for r in rows] == ["My Song"]
+
+
+def test_load_most_listened_with_no_user_id_sums_plays_across_every_user(
+    db, user_id, other_user_id
+):
+    play_counts.ensure_monthly_play_count_tables(db)
+    _insert_play(db, user_id, "Shared Song", "Artist X", "2024-01-01T10:00:00")
+    _insert_play(db, user_id, "Shared Song", "Artist X", "2024-01-02T10:00:00")
+    _insert_play(db, other_user_id, "Shared Song", "Artist X", "2024-01-03T10:00:00")
+
+    rows = play_counts.load_most_listened(db, None, limit=10, offset=0)
+    shared = next(r for r in rows if r["name"] == "Shared Song")
+    assert shared["play_count"] == 3
+
+
+def test_load_most_listened_with_no_user_id_sums_a_specific_period_too(db, user_id, other_user_id):
+    play_counts.ensure_monthly_play_count_tables(db)
+    _insert_play(db, user_id, "Shared Song", "Artist X", "2024-01-01T10:00:00")
+    _insert_play(db, other_user_id, "Shared Song", "Artist X", "2024-01-02T10:00:00")
+    _insert_play(db, other_user_id, "Shared Song", "Artist X", "2024-02-01T10:00:00")
+
+    rows = play_counts.load_most_listened(
+        db, None, limit=10, offset=0, start_period=202401, end_period=202401
+    )
+    shared = next(r for r in rows if r["name"] == "Shared Song")
+    assert shared["play_count"] == 2
+
+
+def test_most_listened_stats_with_no_user_id_counts_distinct_tracks_across_users(
+    db, user_id, other_user_id
+):
+    play_counts.ensure_monthly_play_count_tables(db)
+    _insert_play(db, user_id, "Song A", "Artist X", "2024-01-01T10:00:00")
+    _insert_play(db, other_user_id, "Song A", "Artist X", "2024-01-02T10:00:00")
+    _insert_play(db, other_user_id, "Song B", "Artist Y", "2024-01-01T10:00:00")
+
+    count, max_plays = play_counts.most_listened_stats(db, None)
+    assert count == 2
+    assert max_plays == 2

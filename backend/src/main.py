@@ -15,7 +15,7 @@ from src.auth import service as auth_service
 from src.auth.exceptions import NotAuthenticated, not_authenticated_handler
 from src.auth.router import router as auth_router
 from src.covers.router import router as covers_router
-from src.database import DBDep, ensure_base_schema, get_connection
+from src.database import ensure_base_schema, get_connection
 from src.exceptions import http_exception_handler
 from src.home import router as home_router
 from src.html import can_write_var, current_username, is_owner_home_var, logged_in_var
@@ -23,6 +23,7 @@ from src.images import service as images_service
 from src.library import play_counts as library_play_counts
 from src.library.router import router as library_router
 from src.palette import sync_css_palette
+from src.playlists.router import listing_router as playlists_listing_router
 from src.playlists.router import router as playlists_router
 from src.previews.router import router as previews_router
 from src.profile.router import router as profile_router
@@ -44,6 +45,25 @@ _STATIC_DIR = os.path.join(
 )
 
 logger = logging.getLogger("setup")
+
+# First path segments served at the root, with no "/{username}" prefix (see
+# the app.include_router calls below) - an "all users merged" view rather
+# than any one person's. Checked in the middleware below so these don't
+# fall back to treating the owner as the page's identity the way an
+# unrecognized username normally would (see auth_state_middleware).
+_AGGREGATE_ROOT_SEGMENTS = {
+    "now",
+    "most-listened",
+    "most-listened-albums",
+    "most-listened-artists",
+    "liked-albums",
+    "artists",
+    "artist",
+    "search",
+    "track",
+    "album",
+    "playlists",
+}
 
 
 @asynccontextmanager
@@ -93,8 +113,9 @@ async def auth_state_middleware(request: Request, call_next):
             return await call_next(request)
         first_segment = request.url.path.strip("/").split("/", 1)[0]
         viewed_user = users_service.get_by_username(con, first_segment)
+        is_aggregate = viewed_user is None and first_segment in _AGGREGATE_ROOT_SEGMENTS
         page_username = viewed_user["username"] if viewed_user else owner["username"]
-        current_username.set(page_username)
+        current_username.set("" if is_aggregate else page_username)
 
         current_user = None
         try:
@@ -104,11 +125,13 @@ async def auth_state_middleware(request: Request, call_next):
 
         logged_in_var.set(current_user is not None)
         can_write_var.set(
-            current_user is not None
+            not is_aggregate
+            and current_user is not None
             and (current_user["role"] == "owner" or current_user["username"] == page_username)
         )
         is_owner_home_var.set(
-            current_user is not None
+            not is_aggregate
+            and current_user is not None
             and current_user["role"] == "owner"
             and current_user["username"] == page_username
         )
@@ -124,6 +147,7 @@ user_router.include_router(account_router)
 user_router.include_router(home_router)
 user_router.include_router(search_router)
 user_router.include_router(library_router)
+user_router.include_router(playlists_listing_router)
 user_router.include_router(playlists_router)
 user_router.include_router(artists_router)
 user_router.include_router(albums_router)
@@ -135,6 +159,20 @@ user_router.include_router(profile_router)
 user_router.include_router(users_router)
 
 app.include_router(user_router)
+
+# Same read-only routers as above, mounted a second time with no
+# "/{username}" prefix - resolve_viewed_user (src/users/service.py) returns
+# None here since there's no username path param, which every in-scope
+# route/service function treats as "no filter, merge across every user"
+# rather than one person's data.
+app.include_router(home_router)
+app.include_router(search_router)
+app.include_router(library_router)
+app.include_router(playlists_listing_router)
+app.include_router(artists_router)
+app.include_router(albums_router)
+app.include_router(tracks_router)
+
 app.include_router(auth_router)
 app.include_router(covers_router)
 app.include_router(previews_router)
@@ -142,9 +180,8 @@ app.include_router(setup_router)
 
 
 @app.get("/")
-def root_redirect(con: DBDep):
-    owner = users_service.get_owner(con)
-    return RedirectResponse(url=f"/{owner['username']}/home", status_code=302)
+def root_redirect():
+    return RedirectResponse(url="/now", status_code=302)
 
 
 app.add_exception_handler(HTTPException, http_exception_handler)

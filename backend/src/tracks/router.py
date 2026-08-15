@@ -39,7 +39,7 @@ def track_detail(
     viewed_user: users_service.ViewedUserDep,
     artist: str = "",
 ):
-    user_id = viewed_user["id"]
+    user_id = viewed_user["id"] if viewed_user else None
     history = service.load_track_history(con, user_id, track_name, artist)
     playlists_in = service.load_track_playlists(con, user_id, track_name, artist)
 
@@ -66,7 +66,12 @@ def track_detail(
 
     pl_html = (
         "".join(
-            row(pl["name"], u(f"/playlist/{pl['id']}?name={quote(pl['name'])}"))
+            row(
+                f"{pl['name']} (@{pl['owner_username']})" if pl["owner_username"] else pl["name"],
+                f"/{pl['owner_username']}/playlist/{pl['id']}?name={quote(pl['name'])}"
+                if pl["owner_username"]
+                else u(f"/playlist/{pl['id']}?name={quote(pl['name'])}"),
+            )
             for pl in playlists_in
         )
         or "<p class='info'>Not in any playlist.</p>"

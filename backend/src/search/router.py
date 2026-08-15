@@ -17,7 +17,7 @@ router = APIRouter(tags=["search"])
 QUICK_RESULTS_BATCH = 8
 
 
-def _quick_track_results_html(con, user_id: int, query: str, offset: int = 0) -> str:
+def _quick_track_results_html(con, user_id: int | None, query: str, offset: int = 0) -> str:
     history = service.search_track_history_by_name(con, user_id, query)
     aggregated = aggregate_plays([{"name": r["name"], "singer": r["singer"]} for r in history])
     batch = aggregated[offset : offset + QUICK_RESULTS_BATCH]
@@ -41,7 +41,7 @@ def _quick_track_results_html(con, user_id: int, query: str, offset: int = 0) ->
     )
 
 
-def _quick_artist_results_html(con, user_id: int, query: str, offset: int = 0) -> str:
+def _quick_artist_results_html(con, user_id: int | None, query: str, offset: int = 0) -> str:
     artists = list(artists_service.search_artists(con, user_id, query))
     batch = artists[offset : offset + QUICK_RESULTS_BATCH]
     rows_html = "".join(
@@ -64,7 +64,7 @@ def _quick_artist_results_html(con, user_id: int, query: str, offset: int = 0) -
     )
 
 
-def _quick_album_results_html(con, user_id: int, query: str, offset: int = 0) -> str:
+def _quick_album_results_html(con, user_id: int | None, query: str, offset: int = 0) -> str:
     albums = list(albums_service.search_albums(con, user_id, query))
     batch = albums[offset : offset + QUICK_RESULTS_BATCH]
     rows_html = "".join(
@@ -87,7 +87,7 @@ def _quick_album_results_html(con, user_id: int, query: str, offset: int = 0) ->
     )
 
 
-def _quick_results_html(con, user_id: int, query: str) -> str:
+def _quick_results_html(con, user_id: int | None, query: str) -> str:
     tracks_html = _quick_track_results_html(con, user_id, query)
     artists_html = _quick_artist_results_html(con, user_id, query)
     albums_html = _quick_album_results_html(con, user_id, query)
@@ -123,7 +123,8 @@ def _quick_results_html(con, user_id: int, query: str) -> str:
 )
 def quick_search(con: DBDep, viewed_user: users_service.ViewedUserDep, query: str = ""):
     query = query.strip()
-    return HTMLResponse(_quick_results_html(con, viewed_user["id"], query) if query else "")
+    user_id = viewed_user["id"] if viewed_user else None
+    return HTMLResponse(_quick_results_html(con, user_id, query) if query else "")
 
 
 @router.get(
@@ -140,8 +141,9 @@ def quick_search_more(
     kind: str = "tracks",
 ):
     query = query.strip()
+    user_id = viewed_user["id"] if viewed_user else None
     if kind == "artists":
-        return HTMLResponse(_quick_artist_results_html(con, viewed_user["id"], query, offset))
+        return HTMLResponse(_quick_artist_results_html(con, user_id, query, offset))
     if kind == "albums":
-        return HTMLResponse(_quick_album_results_html(con, viewed_user["id"], query, offset))
-    return HTMLResponse(_quick_track_results_html(con, viewed_user["id"], query, offset))
+        return HTMLResponse(_quick_album_results_html(con, user_id, query, offset))
+    return HTMLResponse(_quick_track_results_html(con, user_id, query, offset))

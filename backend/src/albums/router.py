@@ -37,7 +37,8 @@ def album_detail(
     viewed_user: users_service.ViewedUserDep,
     artist: str = "",
 ):
-    history = service.load_album_track_history(con, viewed_user["id"], artist, album_name)
+    user_id = viewed_user["id"] if viewed_user else None
+    history = service.load_album_track_history(con, user_id, artist, album_name)
 
     heatmap_html, result, base_href = build_heatmap_html(history, f"album_{album_name}", request)
 

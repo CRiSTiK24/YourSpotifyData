@@ -3,7 +3,7 @@ import sqlite3
 from datetime import UTC, datetime
 from typing import Annotated
 
-from fastapi import Depends, HTTPException
+from fastapi import Depends, HTTPException, Request
 
 from src.config import settings
 from src.database import DBDep
@@ -202,11 +202,18 @@ def remove_member(con: sqlite3.Connection, user_id: int) -> None:
     con.commit()
 
 
-def resolve_viewed_user(username: str, con: DBDep) -> sqlite3.Row:
+def resolve_viewed_user(request: Request, con: DBDep) -> sqlite3.Row | None:
+    """Returns None when mounted at a root, no-username path (the aggregate,
+    all-users views - see main.py's app.include_router calls without a
+    "/{username}" prefix), rather than requiring a username segment that
+    doesn't exist on those routes."""
+    username = request.path_params.get("username")
+    if username is None:
+        return None
     user = get_by_username(con, username)
     if user is None:
         raise HTTPException(status_code=404, detail="Not found")
     return user
 
 
-ViewedUserDep = Annotated[sqlite3.Row, Depends(resolve_viewed_user)]
+ViewedUserDep = Annotated[sqlite3.Row | None, Depends(resolve_viewed_user)]

@@ -1,10 +1,16 @@
 import sqlite3
 
 
-def load_playlists(con: sqlite3.Connection, user_id: int) -> list[sqlite3.Row]:
+def load_playlists(con: sqlite3.Connection, user_id: int | None) -> list[sqlite3.Row]:
+    if user_id is not None:
+        return con.execute(
+            "SELECT id, name, image_url, description, user_id, NULL AS owner_username "
+            "FROM playlists WHERE user_id = ? ORDER BY name",
+            (user_id,),
+        ).fetchall()
     return con.execute(
-        "SELECT id, name, image_url, description FROM playlists WHERE user_id = ? ORDER BY name",
-        (user_id,),
+        "SELECT p.id, p.name, p.image_url, p.description, p.user_id, u.username AS owner_username "
+        "FROM playlists p JOIN users u ON u.id = p.user_id ORDER BY u.username, p.name"
     ).fetchall()
 
 

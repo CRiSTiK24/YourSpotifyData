@@ -19,7 +19,8 @@ current_username: ContextVar[str] = ContextVar("current_username", default="")
 
 
 def u(path: str) -> str:
-    return f"/{current_username.get()}{path}"
+    username = current_username.get()
+    return f"/{username}{path}" if username else path
 
 
 _SITE_NAME = "Your Spotify Data"
@@ -94,7 +95,7 @@ def page(content: str, title: str = "") -> HTMLResponse:
 
   <div class="drawer-overlay" id="drawer-overlay"></div>
   <nav class="mobile-drawer" id="mobile-drawer" aria-label="Main menu">
-    <a class="brand" href="{u("/home")}">Home</a>
+    <a class="brand" href="{u("/now")}">Now</a>
     <hr class="sidebar-divider">{nav_links}{sidebar_bottom}
   </nav>
 

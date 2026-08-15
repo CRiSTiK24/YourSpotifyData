@@ -7,12 +7,16 @@ from src.html import card, copy_list_button, grid, page_header, u
 from . import service
 
 
-def playlists_content(con: sqlite3.Connection, user_id: int) -> str:
+def playlists_content(con: sqlite3.Connection, user_id: int | None) -> str:
     pls = service.load_playlists(con, user_id)
     cards_html = "".join(
         card(
             pl["name"],
-            u(f"/playlist/{pl['id']}?name={quote(pl['name'])}"),
+            f"/{pl['owner_username']}/playlist/{pl['id']}?name={quote(pl['name'])}"
+            if pl["owner_username"]
+            else u(f"/playlist/{pl['id']}?name={quote(pl['name'])}"),
+            f"by @{pl['owner_username']}" if pl["owner_username"] else None,
+            f"/{pl['owner_username']}/playlists" if pl["owner_username"] else None,
             image_url=pl["image_url"],
             hover_tooltip=unescape(pl["description"]) if pl["description"] else None,
             raw_cover=True,
@@ -24,7 +28,7 @@ def playlists_content(con: sqlite3.Connection, user_id: int) -> str:
         export_lines.append(pl["name"])
         if pl["description"]:
             export_lines.append(unescape(pl["description"]))
-        for t in service.load_playlist_tracks(con, user_id, pl["id"]):
+        for t in service.load_playlist_tracks(con, pl["user_id"], pl["id"]):
             export_lines.append(f"  * {t['track_name']} - {t['artist_name']}")
         export_lines.append("")
     header = page_header(
