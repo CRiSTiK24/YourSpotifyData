@@ -10,10 +10,15 @@ MOST_LISTENED_ARTISTS_BATCH = 30
 
 
 def most_listened_artists_rows_html(
-    con: sqlite3.Connection, offset: int, max_plays: int, start_period: int = 0, end_period: int = 0
+    con: sqlite3.Connection,
+    offset: int,
+    max_plays: int,
+    start_period: int = 0,
+    end_period: int = 0,
+    genre: str = "",
 ) -> str:
     artists = service.load_artists(
-        con, MOST_LISTENED_ARTISTS_BATCH + 1, offset, start_period, end_period
+        con, MOST_LISTENED_ARTISTS_BATCH + 1, offset, start_period, end_period, genre
     )
     has_more = len(artists) > MOST_LISTENED_ARTISTS_BATCH
     artists = artists[:MOST_LISTENED_ARTISTS_BATCH]
@@ -32,6 +37,7 @@ def most_listened_artists_rows_html(
         max_plays,
         start_period,
         end_period,
+        genre,
     )
     return paginated_fragment(
         rows_html,

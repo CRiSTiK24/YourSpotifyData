@@ -1,7 +1,10 @@
+import json
 import sqlite3
+from html import escape
 from urllib.parse import quote
 
 from src.artists import service as artists_service
+from src.genres import load_top_genres_for_period
 from src.html import (
     card,
     copy_list_button,
@@ -10,35 +13,56 @@ from src.html import (
     page_header,
     paginated_fragment,
     row,
+    word_cloud,
 )
-from src.utils import format_date_param_iso, most_listened_next_href
+from src.utils import format_month_param, most_listened_next_href
 
 from . import play_counts, service
 
 MOST_LISTENED_BATCH = 30
 
 
+def _most_listened_href(start_period: int, end_period: int, genre: str) -> str:
+    params = []
+    if start_period:
+        params.append(f"start_month={format_month_param(start_period)}")
+    if end_period:
+        params.append(f"end_month={format_month_param(end_period)}")
+    if genre:
+        params.append(f"genre={quote(genre)}")
+    return "/most-listened" + (f"?{'&'.join(params)}" if params else "")
+
+
 def date_filter_html(
-    min_period: int, max_period: int, start_period: int, end_period: int, base_href: str
+    min_period: int, max_period: int, start_period: int, end_period: int, genre: str
 ) -> str:
-    start_value = format_date_param_iso(start_period)
-    end_value = format_date_param_iso(end_period, end=True)
-    min_value = format_date_param_iso(min_period)
-    max_value = format_date_param_iso(max_period, end=True)
+    start_value = format_month_param(start_period) if start_period else ""
+    end_value = format_month_param(end_period) if end_period else ""
+    min_value = format_month_param(min_period) if min_period else ""
+    max_value = format_month_param(max_period) if max_period else ""
+    # json.dumps (not html.escape) since this value lands inside a <script>
+    # block, not HTML markup - <script> content isn't entity-decoded by the
+    # browser, so an HTML-escaped quote would show up as literal text
+    # (&quot;) in the JS source instead of closing the string, corrupting
+    # the value read back on the next date/genre navigation. The <
+    # replacement on top guards against a genre containing "</script>"
+    # from breaking out of the block (json.dumps alone doesn't escape it).
+    genre_js = json.dumps(genre).replace("<", "\\u003c")
     return f"""
 <div class="date-filter">
   <label class="date-filter-field">
     <span>From</span>
-    <input type="date" id="date-filter-start" min="{min_value}" max="{max_value}" value="{start_value}">
+    <input type="month" id="date-filter-start" min="{min_value}" max="{max_value}" value="{start_value}" placeholder="YYYY-MM">
   </label>
   <label class="date-filter-field">
     <span>To</span>
-    <input type="date" id="date-filter-end" min="{min_value}" max="{max_value}" value="{end_value}">
+    <input type="month" id="date-filter-end" min="{min_value}" max="{max_value}" value="{end_value}" placeholder="YYYY-MM">
   </label>
 </div>
 <script>
 (function () {{
-  var baseHref = "{base_href}";
+  var baseHref = "/most-listened";
+  var genre = {genre_js};
   var startInput = document.getElementById("date-filter-start");
   var endInput = document.getElementById("date-filter-end");
 
@@ -46,6 +70,7 @@ def date_filter_html(
     var params = [];
     if (startInput.value) {{ params.push("start_month=" + encodeURIComponent(startInput.value)); }}
     if (endInput.value) {{ params.push("end_month=" + encodeURIComponent(endInput.value)); }}
+    if (genre) {{ params.push("genre=" + encodeURIComponent(genre)); }}
     window.location.href = baseHref + (params.length ? "?" + params.join("&") : "");
   }}
 
@@ -56,10 +81,15 @@ def date_filter_html(
 
 
 def most_listened_rows_html(
-    con: sqlite3.Connection, offset: int, max_plays: int, start_period: int = 0, end_period: int = 0
+    con: sqlite3.Connection,
+    offset: int,
+    max_plays: int,
+    start_period: int = 0,
+    end_period: int = 0,
+    genre: str = "",
 ) -> str:
     tracks = play_counts.load_most_listened(
-        con, MOST_LISTENED_BATCH + 1, offset, start_period, end_period
+        con, MOST_LISTENED_BATCH + 1, offset, start_period, end_period, genre
     )
     has_more = len(tracks) > MOST_LISTENED_BATCH
     tracks = tracks[:MOST_LISTENED_BATCH]
@@ -74,7 +104,12 @@ def most_listened_rows_html(
         for t in tracks
     )
     next_href = most_listened_next_href(
-        "/most-listened/more", offset + MOST_LISTENED_BATCH, max_plays, start_period, end_period
+        "/most-listened/more",
+        offset + MOST_LISTENED_BATCH,
+        max_plays,
+        start_period,
+        end_period,
+        genre,
     )
     return paginated_fragment(
         rows_html,
@@ -86,10 +121,15 @@ def most_listened_rows_html(
 
 
 def most_listened_albums_rows_html(
-    con: sqlite3.Connection, offset: int, max_plays: int, start_period: int = 0, end_period: int = 0
+    con: sqlite3.Connection,
+    offset: int,
+    max_plays: int,
+    start_period: int = 0,
+    end_period: int = 0,
+    genre: str = "",
 ) -> str:
     albums = play_counts.load_most_listened_albums(
-        con, MOST_LISTENED_BATCH + 1, offset, start_period, end_period
+        con, MOST_LISTENED_BATCH + 1, offset, start_period, end_period, genre
     )
     has_more = len(albums) > MOST_LISTENED_BATCH
     albums = albums[:MOST_LISTENED_BATCH]
@@ -108,6 +148,7 @@ def most_listened_albums_rows_html(
         max_plays,
         start_period,
         end_period,
+        genre,
     )
     return paginated_fragment(
         rows_html,
@@ -119,36 +160,69 @@ def most_listened_albums_rows_html(
 
 
 def most_listened_combined_content(
-    con: sqlite3.Connection, start_period: int = 0, end_period: int = 0
+    con: sqlite3.Connection,
+    start_period: int = 0,
+    end_period: int = 0,
+    genre: str = "",
+    oob: bool = False,
 ) -> str:
-    songs_total, songs_max = play_counts.most_listened_stats(con, start_period, end_period)
-    albums_total, albums_max = play_counts.most_listened_albums_stats(con, start_period, end_period)
+    songs_total, songs_max = play_counts.most_listened_stats(con, start_period, end_period, genre)
+    albums_total, albums_max = play_counts.most_listened_albums_stats(
+        con, start_period, end_period, genre
+    )
     artists_total, artists_max = artists_service.most_listened_artists_stats(
-        con, start_period, end_period
+        con, start_period, end_period, genre
     )
     min_period, max_period = play_counts.most_listened_period_range(con)
 
-    songs_rows = most_listened_rows_html(con, 0, songs_max, start_period, end_period)
+    songs_rows = most_listened_rows_html(con, 0, songs_max, start_period, end_period, genre)
     albums_rows = lazy_load_trigger(
         most_listened_next_href(
-            "/most-listened-albums/more", 0, albums_max, start_period, end_period
+            "/most-listened-albums/more", 0, albums_max, start_period, end_period, genre
         ),
         "Loading albums…",
     )
     artists_rows = lazy_load_trigger(
         most_listened_next_href(
-            "/most-listened-artists/more", 0, artists_max, start_period, end_period
+            "/most-listened-artists/more", 0, artists_max, start_period, end_period, genre
         ),
         "Loading artists…",
     )
 
-    header = page_header(
-        "My Most Listened",
-        date_filter_html(min_period, max_period, start_period, end_period, "/most-listened"),
+    top_genres = load_top_genres_for_period(con, start_period, end_period)
+    genre_cloud = ""
+    if top_genres:
+        period_desc = (
+            "the selected date range" if start_period or end_period else "my whole history"
+        )
+        tooltip = (
+            f"Genres of artists I've played in {period_desc}, sized by how many plays "
+            f"they're behind - click one to filter Songs/Albums/Artists to it."
+        )
+        cloud_html = word_cloud(
+            [(g["genre"], g["n"]) for g in top_genres],
+            min_size=11,
+            max_size=20,
+            href_for=lambda name: _most_listened_href(
+                start_period, end_period, "" if name == genre else name
+            ),
+            active={genre} if genre else None,
+            extra_class="carousel",
+            hx_swap_target="ml-results",
+            container_id="ml-genre-tags",
+            oob=oob,
+        )
+        genre_cloud = f"<div class='ml-genre-cloud tooltip-below' data-tooltip='{escape(tooltip)}'>{cloud_html}</div>"
+    actions = (
+        f"<div class='page-header-actions'>{genre_cloud}"
+        f"{date_filter_html(min_period, max_period, start_period, end_period, genre)}"
+        f"</div>"
     )
+    header = page_header("My Most Listened", actions)
     return f"""
 {header}
 <hr class="divider">
+<div id="ml-results">
 <div class="ml-tabs">
   <button type="button" class="ml-tab active" data-ml-tab="songs">Songs <span class="ml-tab-count">({songs_total})</span></button>
   <button type="button" class="ml-tab" data-ml-tab="albums">Albums <span class="ml-tab-count">({albums_total})</span></button>
@@ -170,6 +244,7 @@ def most_listened_combined_content(
     <div class="ml-column-header"><span>Artist</span><span>Plays</span></div>
     <div id="most-listened-artists-rows">{artists_rows}</div>
   </div>
+</div>
 </div>
 """
 

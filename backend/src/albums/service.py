@@ -76,3 +76,11 @@ def get_album_image(con: sqlite3.Connection, artist_name: str, album_name: str) 
         (artist_name, album_name),
     ).fetchone()
     return row["image_url"] if row else None
+
+
+def get_album_spotify_id(con: sqlite3.Connection, artist_name: str, album_name: str) -> str | None:
+    row = con.execute(
+        "SELECT spotify_album_id FROM album_images WHERE artist_name = ? AND album_name = ?",
+        (artist_name, album_name),
+    ).fetchone()
+    return row["spotify_album_id"] if row else None

@@ -56,11 +56,21 @@ def artists_redirect():
     description="Infinite-scroll fragment: next batch of most-listened-artists rows",
 )
 def most_listened_artists_more(
-    con: DBDep, offset: int = 0, max_plays: int = 0, start_month: str = "", end_month: str = ""
+    con: DBDep,
+    offset: int = 0,
+    max_plays: int = 0,
+    start_month: str = "",
+    end_month: str = "",
+    genre: str = "",
 ):
     return HTMLResponse(
         most_listened_artists_rows_html(
-            con, offset, max_plays, parse_month_param(start_month), parse_month_param(end_month, end=True)
+            con,
+            offset,
+            max_plays,
+            parse_month_param(start_month),
+            parse_month_param(end_month, end=True),
+            genre,
         )
     )
 

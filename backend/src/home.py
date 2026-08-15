@@ -1,5 +1,6 @@
 import random
 import sqlite3
+from datetime import UTC, datetime
 from html import escape
 from urllib.parse import quote
 
@@ -7,7 +8,8 @@ from fastapi import APIRouter
 from fastapi.responses import HTMLResponse
 
 from src.database import DBDep
-from src.html import card, carousel, page, widget, widget_grid
+from src.genres import load_top_genres_for_period
+from src.html import card, carousel, page, widget, widget_grid, word_cloud
 from src.total_war_rome_ii_greetings import TotalWarRomeIIGreetings
 
 router = APIRouter(tags=["home"])
@@ -15,6 +17,11 @@ router = APIRouter(tags=["home"])
 RECENT_DISCOVERIES_DAYS = 7
 RECENTLY_EXPLORED_ALBUMS_DAYS = 7
 RECENTLY_EXPLORED_ALBUMS_MIN_TRACKS = 4
+
+
+def _current_month_period() -> int:
+    now = datetime.now(UTC)
+    return now.year * 100 + now.month
 
 
 def _load_recent_discoveries(con: sqlite3.Connection, days: int) -> list[sqlite3.Row]:
@@ -99,9 +106,16 @@ def _load_recently_explored_albums(
     ).fetchall()
 
 
-@router.get(
-    "/", response_class=HTMLResponse, status_code=200, description="Home page"
-)
+def _most_listened_genre_href(genre: str) -> str:
+    # matches this widget's own "so far this month" window, so clicking a
+    # genre lands on the exact same period /most-listened's date filter
+    # (start_month/end_month - see library/views.py's date_filter_html)
+    # would otherwise use to filter to it.
+    month = datetime.now(UTC).strftime("%Y-%m")
+    return f"/most-listened?start_month={month}&end_month={month}&genre={quote(genre)}"
+
+
+@router.get("/", response_class=HTMLResponse, status_code=200, description="Home page")
 def home(con: DBDep):
     greeting = random.choice(TotalWarRomeIIGreetings)
     widgets_html = widget("", f"<blockquote><em>{escape(greeting)}</em></blockquote>")
@@ -152,6 +166,23 @@ def home(con: DBDep):
         widgets_html += widget(
             "Recently explored albums",
             carousel(cards_html, compact=True),
+            info_tooltip=info_tooltip,
+        )
+
+    current_period = _current_month_period()
+    top_genres = load_top_genres_for_period(con, current_period, current_period)
+    if top_genres:
+        info_tooltip = (
+            "Genres of artists I've played so far this month, "
+            "sized by how many plays they're behind."
+        )
+        widgets_html += widget(
+            "Most played genres this month",
+            word_cloud(
+                [(g["genre"], g["n"]) for g in top_genres],
+                href_for=_most_listened_genre_href,
+                extra_class="carousel",
+            ),
             info_tooltip=info_tooltip,
         )
 

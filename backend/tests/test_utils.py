@@ -2,7 +2,6 @@ import pytest
 
 from src.utils import (
     aggregate_plays,
-    format_date_param_iso,
     format_month_param,
     fts_match_query,
     most_listened_next_href,
@@ -54,22 +53,12 @@ def test_parse_month_param_accepts_bare_year_as_december_for_an_end_bound():
     assert parse_month_param("2022", end=True) == 202212
 
 
-def test_format_date_param_iso_matches_native_date_input_format():
-    assert format_date_param_iso(202401) == "2024-01-01"
-    assert format_date_param_iso(202402, end=True) == "2024-02-29"
-    assert format_date_param_iso(0) == ""
-
-
 def test_parse_month_param_accepts_iso_date_from_native_date_input():
     # YYYY-MM-DD (year first) must not be confused with the human-typed
     # DD/MM/YYYY (year last) despite both being three '-'/'/' separated
-    # parts - this is exactly what <input type="date"> submits.
+    # parts - parse_month_param still accepts this shape even though the
+    # date-filter UI now submits plain YYYY-MM (<input type="month">).
     assert parse_month_param("2022-12-25") == 202212
-
-
-def test_date_param_iso_round_trips_through_parse_month_param():
-    assert parse_month_param(format_date_param_iso(202406)) == 202406
-    assert parse_month_param(format_date_param_iso(202406, end=True), end=True) == 202406
 
 
 @pytest.mark.parametrize(

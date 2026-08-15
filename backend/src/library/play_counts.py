@@ -1,5 +1,7 @@
 import sqlite3
 
+from src.genres import GENRE_ARTIST_SUBQUERY
+
 
 def ensure_monthly_play_count_tables(con: sqlite3.Connection) -> None:
     row = con.execute(
@@ -245,35 +247,43 @@ def _widen_unbounded_period_range(start_period: int, end_period: int) -> tuple[i
 
 
 def load_most_listened(
-    con: sqlite3.Connection, limit: int, offset: int, start_period: int = 0, end_period: int = 0
+    con: sqlite3.Connection,
+    limit: int,
+    offset: int,
+    start_period: int = 0,
+    end_period: int = 0,
+    genre: str = "",
 ) -> list[sqlite3.Row]:
+    genre_clause = f"AND tpc.singer IN ({GENRE_ARTIST_SUBQUERY})" if genre else ""
+    genre_params = [genre] if genre else []
     if not start_period and not end_period:
         return con.execute(
-            """
+            f"""
             SELECT tpc.name, tpc.singer, tpc.play_count, ai.image_url
             FROM track_play_counts tpc
             LEFT JOIN album_images ai ON ai.artist_name = tpc.singer AND ai.album_name = tpc.album
-            WHERE tpc.period = 0
+            WHERE tpc.period = 0 {genre_clause}
             ORDER BY tpc.play_count DESC
             LIMIT ? OFFSET ?
             """,
-            (limit, offset),
+            (*genre_params, limit, offset),
         ).fetchall()
     lo, hi = _widen_unbounded_period_range(start_period, end_period)
     if lo == hi:
         return con.execute(
-            """
+            f"""
             SELECT tpc.name, tpc.singer, tpc.play_count, ai.image_url
             FROM track_play_counts tpc
             LEFT JOIN album_images ai ON ai.artist_name = tpc.singer AND ai.album_name = tpc.album
-            WHERE tpc.period = ?
+            WHERE tpc.period = ? {genre_clause}
             ORDER BY tpc.play_count DESC
             LIMIT ? OFFSET ?
             """,
-            (lo, limit, offset),
+            (lo, *genre_params, limit, offset),
         ).fetchall()
+    genre_clause_g = f"AND g.singer IN ({GENRE_ARTIST_SUBQUERY})" if genre else ""
     return con.execute(
-        """
+        f"""
         SELECT g.name, g.singer, g.play_count, ai.image_url
         FROM (
             SELECT name, singer, SUM(play_count) AS play_count, MAX(album) AS album
@@ -282,71 +292,85 @@ def load_most_listened(
             GROUP BY name, singer
         ) g
         LEFT JOIN album_images ai ON ai.artist_name = g.singer AND ai.album_name = g.album
+        WHERE 1=1 {genre_clause_g}
         ORDER BY g.play_count DESC
         LIMIT ? OFFSET ?
         """,
-        (lo, hi, limit, offset),
+        (lo, hi, *genre_params, limit, offset),
     ).fetchall()
 
 
 def most_listened_stats(
-    con: sqlite3.Connection, start_period: int = 0, end_period: int = 0
+    con: sqlite3.Connection, start_period: int = 0, end_period: int = 0, genre: str = ""
 ) -> tuple[int, int]:
+    genre_clause = f"AND singer IN ({GENRE_ARTIST_SUBQUERY})" if genre else ""
+    genre_params = [genre] if genre else []
     if not start_period and not end_period:
         row = con.execute(
-            "SELECT COUNT(*), COALESCE(MAX(play_count), 0) FROM track_play_counts WHERE period = 0"
+            f"SELECT COUNT(*), COALESCE(MAX(play_count), 0) FROM track_play_counts "
+            f"WHERE period = 0 {genre_clause}",
+            genre_params,
         ).fetchone()
         return row[0], row[1]
     lo, hi = _widen_unbounded_period_range(start_period, end_period)
     if lo == hi:
         row = con.execute(
-            "SELECT COUNT(*), COALESCE(MAX(play_count), 0) FROM track_play_counts WHERE period = ?",
-            (lo,),
+            f"SELECT COUNT(*), COALESCE(MAX(play_count), 0) FROM track_play_counts "
+            f"WHERE period = ? {genre_clause}",
+            (lo, *genre_params),
         ).fetchone()
         return row[0], row[1]
     row = con.execute(
-        """
+        f"""
         SELECT COUNT(*), COALESCE(MAX(play_count), 0) FROM (
             SELECT SUM(play_count) AS play_count FROM track_play_counts
-            WHERE period BETWEEN ? AND ? AND period != 0
+            WHERE period BETWEEN ? AND ? AND period != 0 {genre_clause}
             GROUP BY name, singer
         )
         """,
-        (lo, hi),
+        (lo, hi, *genre_params),
     ).fetchone()
     return row[0], row[1]
 
 
 def load_most_listened_albums(
-    con: sqlite3.Connection, limit: int, offset: int, start_period: int = 0, end_period: int = 0
+    con: sqlite3.Connection,
+    limit: int,
+    offset: int,
+    start_period: int = 0,
+    end_period: int = 0,
+    genre: str = "",
 ) -> list[sqlite3.Row]:
+    genre_clause = f"AND apc.singer IN ({GENRE_ARTIST_SUBQUERY})" if genre else ""
+    genre_params = [genre] if genre else []
     if not start_period and not end_period:
         return con.execute(
-            """
+            f"""
             SELECT apc.album, apc.singer, apc.play_count, ai.image_url
             FROM album_play_counts apc
             LEFT JOIN album_images ai ON ai.artist_name = apc.singer AND ai.album_name = apc.album
-            WHERE apc.period = 0
+            WHERE apc.period = 0 {genre_clause}
             ORDER BY apc.play_count DESC
             LIMIT ? OFFSET ?
             """,
-            (limit, offset),
+            (*genre_params, limit, offset),
         ).fetchall()
     lo, hi = _widen_unbounded_period_range(start_period, end_period)
     if lo == hi:
         return con.execute(
-            """
+            f"""
             SELECT apc.album, apc.singer, apc.play_count, ai.image_url
             FROM album_play_counts apc
             LEFT JOIN album_images ai ON ai.artist_name = apc.singer AND ai.album_name = apc.album
-            WHERE apc.period = ?
+            WHERE apc.period = ? {genre_clause}
             ORDER BY apc.play_count DESC
             LIMIT ? OFFSET ?
             """,
-            (lo, limit, offset),
+            (lo, *genre_params, limit, offset),
         ).fetchall()
+    genre_clause_g = f"AND g.singer IN ({GENRE_ARTIST_SUBQUERY})" if genre else ""
     return con.execute(
-        """
+        f"""
         SELECT g.album, g.singer, g.play_count, ai.image_url
         FROM (
             SELECT album, singer, SUM(play_count) AS play_count
@@ -355,37 +379,43 @@ def load_most_listened_albums(
             GROUP BY album, singer
         ) g
         LEFT JOIN album_images ai ON ai.artist_name = g.singer AND ai.album_name = g.album
+        WHERE 1=1 {genre_clause_g}
         ORDER BY g.play_count DESC
         LIMIT ? OFFSET ?
         """,
-        (lo, hi, limit, offset),
+        (lo, hi, *genre_params, limit, offset),
     ).fetchall()
 
 
 def most_listened_albums_stats(
-    con: sqlite3.Connection, start_period: int = 0, end_period: int = 0
+    con: sqlite3.Connection, start_period: int = 0, end_period: int = 0, genre: str = ""
 ) -> tuple[int, int]:
+    genre_clause = f"AND singer IN ({GENRE_ARTIST_SUBQUERY})" if genre else ""
+    genre_params = [genre] if genre else []
     if not start_period and not end_period:
         row = con.execute(
-            "SELECT COUNT(*), COALESCE(MAX(play_count), 0) FROM album_play_counts WHERE period = 0"
+            f"SELECT COUNT(*), COALESCE(MAX(play_count), 0) FROM album_play_counts "
+            f"WHERE period = 0 {genre_clause}",
+            genre_params,
         ).fetchone()
         return row[0], row[1]
     lo, hi = _widen_unbounded_period_range(start_period, end_period)
     if lo == hi:
         row = con.execute(
-            "SELECT COUNT(*), COALESCE(MAX(play_count), 0) FROM album_play_counts WHERE period = ?",
-            (lo,),
+            f"SELECT COUNT(*), COALESCE(MAX(play_count), 0) FROM album_play_counts "
+            f"WHERE period = ? {genre_clause}",
+            (lo, *genre_params),
         ).fetchone()
         return row[0], row[1]
     row = con.execute(
-        """
+        f"""
         SELECT COUNT(*), COALESCE(MAX(play_count), 0) FROM (
             SELECT SUM(play_count) AS play_count FROM album_play_counts
-            WHERE period BETWEEN ? AND ? AND period != 0
+            WHERE period BETWEEN ? AND ? AND period != 0 {genre_clause}
             GROUP BY album, singer
         )
         """,
-        (lo, hi),
+        (lo, hi, *genre_params),
     ).fetchone()
     return row[0], row[1]
 

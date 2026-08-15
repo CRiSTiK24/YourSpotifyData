@@ -1,4 +1,7 @@
+import colorsys
+import math
 import os
+from collections.abc import Callable
 from contextvars import ContextVar
 from html import escape
 from urllib.parse import quote
@@ -119,6 +122,13 @@ def button(label: str, href: str, *, hx_boost: bool | None = None) -> str:
     return f"<a class='btn' href='{escape(href)}'{boost_attr}>{escape(label)}</a>"
 
 
+def spotify_open_button(open_url: str) -> str:
+    return (
+        f"<a class='btn' style='margin-left:auto' href='{escape(open_url)}' "
+        "target='_blank' rel='noopener noreferrer'>Open in Spotify</a>"
+    )
+
+
 def copy_list_button(lines: list[str], element_id: str, label: str = "Copy List") -> str:
     text = "\n".join(lines)
     id_esc = escape(element_id)
@@ -174,7 +184,7 @@ def _recolored_cover_src(
     return src
 
 
-def _preview_play_button(track_name: str, preview_artist: str | None, extra_class: str) -> str:
+def preview_play_button(track_name: str, preview_artist: str | None, extra_class: str) -> str:
     if not preview_artist:
         return ""
     return (
@@ -197,7 +207,7 @@ def row(
 ) -> str:
     cover_src = _recolored_cover_src(image_url, size=64)
     thumb = f"<img class='row-thumb' src='{escape(cover_src)}' loading='lazy'>" if cover_src else ""
-    play_btn = _preview_play_button(primary_label, preview_artist, "row-play-btn")
+    play_btn = preview_play_button(primary_label, preview_artist, "row-play-btn")
     left = f"<a class='row-primary' href='{escape(primary_href)}'>{escape(primary_label)}</a>"
     if secondary_label and secondary_href:
         left += (
@@ -248,7 +258,7 @@ def card(
         if hover_tooltip
         else ""
     )
-    play_btn = _preview_play_button(primary_label, preview_artist, "card-play-btn")
+    play_btn = preview_play_button(primary_label, preview_artist, "card-play-btn")
     return f"""
 <div class="card"{tooltip_attr}>
   <div class="card-cover-wrap">
@@ -270,6 +280,83 @@ def grid(cards_html: str, *, compact: bool = False) -> str:
 def carousel(cards_html: str, *, compact: bool = False) -> str:
     cls = "carousel carousel-compact" if compact else "carousel"
     return f"<div class='{cls}'>{cards_html}</div>"
+
+
+def word_cloud(
+    items: list[tuple[str, int]],
+    *,
+    min_size: int = 14,
+    max_size: int = 40,
+    href_for: Callable[[str], str] | None = None,
+    active: set[str] | None = None,
+    extra_class: str = "",
+    hx_swap_target: str = "",
+    container_id: str = "",
+    oob: bool = False,
+) -> str:
+    if not items:
+        return ""
+    # Hues are assigned by alphabetical rank (not display order) and evenly
+    # spaced around the wheel, so any two labels always sit far apart in hue
+    # regardless of how many share similar play counts, and a given label's
+    # color stays roughly stable across re-renders instead of reshuffling
+    # whenever its count (and therefore sort position) changes.
+    by_name = sorted({name for name, _ in items})
+    hue_step = 360 / len(by_name)
+    hues = {name: idx * hue_step for idx, name in enumerate(by_name)}
+
+    counts = [count for _, count in items]
+    lo, hi = math.log(min(counts) + 1), math.log(max(counts) + 1)
+    span = hi - lo or 1
+
+    tags = []
+    for name, count in sorted(items, key=lambda item: item[1], reverse=True):
+        t = (math.log(count + 1) - lo) / span
+        size = min_size + t * (max_size - min_size)
+        r, g, b = colorsys.hls_to_rgb(hues[name] / 360, 0.68, 0.62)
+        color = f"#{int(r * 255):02x}{int(g * 255):02x}{int(b * 255):02x}"
+        plural = "" if count == 1 else "s"
+        title = f"{escape(name)} · {count} play{plural}"
+        is_active = active is not None and name in active
+        tag_class = "word-cloud-tag active" if is_active else "word-cloud-tag"
+        # var(--wc-scale, 1) lets CSS shrink every tag proportionally at
+        # narrow viewports (see .widget .word-cloud.carousel's mobile
+        # override) without losing the size-hierarchy this px value
+        # already encodes relative to the other tags.
+        style = f"font-size:calc({size:.1f}px * var(--wc-scale, 1));color:{color}"
+        if href_for:
+            href = escape(href_for(name))
+            # hx-get re-requests this same href but only swaps/selects
+            # hx_swap_target's subtree from the response instead of the
+            # full #content htmx's global hx-boost would otherwise swap
+            # (see CLAUDE.md's hx-boost override gotcha) - href itself is
+            # left as a real link, so this degrades to a normal full
+            # navigation with JS disabled.
+            hx_attrs = (
+                f" hx-get='{href}' hx-target='#{hx_swap_target}' hx-select='#{hx_swap_target}' "
+                f"hx-swap='outerHTML' hx-push-url='true'"
+                if hx_swap_target
+                else ""
+            )
+            tags.append(
+                f"<a class='{tag_class}' href='{href}' style='{style}'{hx_attrs} "
+                f"title='{title}'>{escape(name)}</a>"
+            )
+        else:
+            tags.append(
+                f"<span class='{tag_class}' style='{style}' title='{title}'>{escape(name)}</span>"
+            )
+    cls = f"word-cloud {extra_class}" if extra_class else "word-cloud"
+    id_attr = f" id='{escape(container_id)}'" if container_id else ""
+    # hx-swap-oob="innerHTML" (rather than the default outerHTML) replaces
+    # only the <a> tags inside this element, not the element itself - the
+    # carousel div's own scrollLeft lives on that element, so leaving it
+    # in place (only its children swap) is what keeps the carousel from
+    # jumping back to the start on every genre click, even though this
+    # fragment rides along in every /most-listened response regardless of
+    # which genre (if any) triggered it.
+    oob_attr = " hx-swap-oob='innerHTML'" if oob else ""
+    return f"<div class='{cls}'{id_attr}{oob_attr}>{''.join(tags)}</div>"
 
 
 def widget_grid(widgets_html: str) -> str:

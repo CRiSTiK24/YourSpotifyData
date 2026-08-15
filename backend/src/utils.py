@@ -1,6 +1,6 @@
-import calendar
 import re
 from collections import defaultdict
+from urllib.parse import quote
 
 
 def aggregate_plays(plays: list) -> list[tuple[str, str | None, int]]:
@@ -52,35 +52,19 @@ def format_month_param(period: int) -> str:
     return f"{period // 100:04d}-{period % 100:02d}"
 
 
-def _synthesized_date_parts(period: int, *, end: bool) -> tuple[int, int, int] | None:
-    if not period:
-        return None
-    year, month = divmod(period, 100)
-    day = calendar.monthrange(year, month)[1] if end else 1
-    return year, month, day
-
-
-def format_date_param_iso(period: int, *, end: bool = False) -> str:
-    """Same as format_date_param, but YYYY-MM-DD - the only format a native
-    <input type="date"> accepts for its value/min/max attributes (the
-    picker itself then displays it in the user's own OS/locale format)."""
-    parts = _synthesized_date_parts(period, end=end)
-    if not parts:
-        return ""
-    year, month, day = parts
-    return f"{year:04d}-{month:02d}-{day:02d}"
-
-
 def pluralize(n: int, word: str) -> str:
     return f"{n} {word}{'s' if n != 1 else ''}"
 
 
 def most_listened_next_href(
-    path: str, offset: int, max_plays: int, start_period: int, end_period: int
+    path: str, offset: int, max_plays: int, start_period: int, end_period: int, genre: str = ""
 ) -> str:
     start_month = format_month_param(start_period) if start_period else ""
     end_month = format_month_param(end_period) if end_period else ""
-    return f"{path}?offset={offset}&max_plays={max_plays}&start_month={start_month}&end_month={end_month}"
+    href = f"{path}?offset={offset}&max_plays={max_plays}&start_month={start_month}&end_month={end_month}"
+    if genre:
+        href += f"&genre={quote(genre)}"
+    return href
 
 
 def fts_match_query(words: list[str], column: str | None = None) -> str:

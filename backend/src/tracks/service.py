@@ -5,7 +5,7 @@ def load_track_history(
     con: sqlite3.Connection, track_name: str, artist_name: str
 ) -> list[sqlite3.Row]:
     return con.execute(
-        "SELECT name, singer, album, time FROM track_history "
+        "SELECT name, singer, album, time, spotify_track_uri FROM track_history "
         "WHERE name = ? AND (singer = ? OR singer IS NULL) ORDER BY time DESC",
         (track_name, artist_name),
     ).fetchall()

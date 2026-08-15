@@ -17,6 +17,7 @@ from src.html import (
     hero_image,
     logged_in_var,
     page,
+    spotify_open_button,
 )
 from src.scrobbler import library_sync as library_sync_service
 from src.scrobbler.exceptions import NotConnected
@@ -156,9 +157,7 @@ def playlist_detail(
         + [f"* {t['track_name']} - {t['artist_name']}" for t in tracks]
     )
     spotify_link_html = (
-        f"<a class='btn' style='margin-left:auto' "
-        f"href='https://open.spotify.com/playlist/{escape(playlist['spotify_playlist_id'])}' "
-        "target='_blank' rel='noopener noreferrer'>Open in Spotify</a>"
+        spotify_open_button(f"https://open.spotify.com/playlist/{playlist['spotify_playlist_id']}")
         if playlist["spotify_playlist_id"]
         else ""
     )

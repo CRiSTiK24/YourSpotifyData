@@ -6,7 +6,7 @@ from fastapi.responses import HTMLResponse
 
 from src.database import DBDep
 from src.heatmap import build_heatmap_html, resolve_period_filter
-from src.html import detail_header, detail_layout, hero_image, link, page, row
+from src.html import detail_header, detail_layout, hero_image, link, page, row, spotify_open_button
 from src.utils import aggregate_plays, pluralize
 
 from . import service
@@ -54,4 +54,11 @@ def album_detail(album_name: str, request: Request, con: DBDep, artist: str = ""
         hero_image(service.get_album_image(con, artist, album_name), large=True),
         heatmap_html,
     )
-    return page(detail_layout(header, "Tracks", tracks_html), title=album_name)
+    album_id = service.get_album_spotify_id(con, artist, album_name)
+    spotify_open_html = (
+        spotify_open_button(f"https://open.spotify.com/album/{album_id}") if album_id else ""
+    )
+    return page(
+        detail_layout(header, "Tracks", tracks_html, list_actions=spotify_open_html),
+        title=album_name,
+    )
