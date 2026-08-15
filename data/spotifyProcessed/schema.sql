@@ -3,11 +3,12 @@
 -- below is scoped to a user_id from this table (except album_images and
 -- artist_images, a shared name-keyed cover-art cache - see CLAUDE.md).
 CREATE TABLE IF NOT EXISTS users (
-    id          INTEGER PRIMARY KEY AUTOINCREMENT,
-    username    TEXT NOT NULL UNIQUE,
-    email       TEXT NOT NULL UNIQUE,
-    role        TEXT NOT NULL CHECK (role IN ('owner','member')),
-    created_at  TEXT NOT NULL
+    id              INTEGER PRIMARY KEY AUTOINCREMENT,
+    username        TEXT NOT NULL UNIQUE,
+    email           TEXT NOT NULL UNIQUE,
+    role            TEXT NOT NULL CHECK (role IN ('owner','member')),
+    created_at      TEXT NOT NULL,
+    playlist_rules  TEXT
 );
 
 CREATE TABLE IF NOT EXISTS playlists (

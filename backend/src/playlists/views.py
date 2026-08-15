@@ -1,13 +1,15 @@
 import sqlite3
-from html import unescape
+from html import escape, unescape
 from urllib.parse import quote
 
-from src.html import card, copy_list_button, grid, page_header, u
+from src.html import can_write_var, card, copy_list_button, grid, page_header, u
 
 from . import service
 
 
-def playlists_content(con: sqlite3.Connection, user_id: int | None) -> str:
+def playlists_content(
+    con: sqlite3.Connection, user_id: int | None, playlist_rules: str | None = None
+) -> str:
     pls = service.load_playlists(con, user_id)
     cards_html = "".join(
         card(
@@ -35,16 +37,19 @@ def playlists_content(con: sqlite3.Connection, user_id: int | None) -> str:
         f"Playlists ({len(pls)})",
         copy_list_button(export_lines, "playlists-list"),
     )
-    rules_html = """
-<ul class="subtitle">
-<li>A song can only stay if I can hear it and resonate just by playing it in my mind.</li>
-<li>No duplicate artists, however if it's a collaboration it counts as a different one</li>
-<li>All songs need to share the aesthetic. This one is pretty personal as I end up merging
-lot's of genres if it feels right to me.</li>
-<li>It's a living thing! I will remove songs I no longer think they are amazing no matter
-how much I loved them in the past. VERY HARD to remove those, but we gotta do what we
-gotta do :(</li>
-</ul>"""
+    rules_html = ""
+    if user_id is not None and can_write_var.get():
+        rules_html = f"""
+<form class="description-form" action="{u("/playlists/rules")}" method="post">
+  <textarea name="playlist_rules" class="description-input" maxlength="2000" rows="4"
+    aria-label="Playlist curation rules"
+    placeholder="Curation rules for this page (one per line)…">{escape(playlist_rules or "")}</textarea>
+  <button type="submit" class="btn">Save rules</button>
+</form>
+"""
+    elif playlist_rules:
+        lines = "".join(f"<li>{escape(line)}</li>" for line in playlist_rules.splitlines() if line)
+        rules_html = f'<ul class="subtitle">{lines}</ul>'
     return f"""
 {header}
 {rules_html}

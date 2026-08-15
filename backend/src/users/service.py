@@ -15,10 +15,33 @@ MAX_USERS = 5
 _USERNAME_RE = re.compile(r"^[a-zA-Z0-9_.-]{1,64}$")
 
 # top-level path segments already owned by global (non-per-user) routes -
-# see main.py's app.include_router calls for auth/covers/previews/static -
-# plus "admin", which every user's own /{username}/admin route would shadow
-# if someone were allowed to name themselves that.
-RESERVED_USERNAMES = {"login", "logout", "static", "cover", "preview", "favicon.ico", "admin"}
+# see main.py's app.include_router calls for auth/covers/previews/static,
+# plus "admin" (every user's own /{username}/admin route would shadow it)
+# and main.py's own _AGGREGATE_ROOT_SEGMENTS (kept in sync manually - a
+# circular import blocks pulling that set in directly - since a user
+# registered under one of these would make the aggregate route at e.g.
+# /now resolve to that person's page instead of the merged view).
+RESERVED_USERNAMES = {
+    "login",
+    "logout",
+    "static",
+    "cover",
+    "preview",
+    "favicon.ico",
+    "admin",
+    "now",
+    "most-listened",
+    "most-listened-albums",
+    "most-listened-artists",
+    "liked-albums",
+    "artists",
+    "artist",
+    "search",
+    "track",
+    "album",
+    "playlists",
+    "theme",
+}
 
 # Tables that were single-tenant before multiuser support and need a
 # user_id column backfilled to the owner for any pre-existing rows.
@@ -57,6 +80,8 @@ def ensure_schema(con: sqlite3.Connection) -> None:
         "role TEXT NOT NULL CHECK (role IN ('owner','member')), "
         "created_at TEXT NOT NULL)"
     )
+    if not _has_column(con, "users", "playlist_rules"):
+        con.execute("ALTER TABLE users ADD COLUMN playlist_rules TEXT")
 
     owner = con.execute("SELECT * FROM users WHERE role = 'owner'").fetchone()
     if owner is None:
@@ -155,6 +180,13 @@ def set_username(con: sqlite3.Connection, user_id: int, username: str) -> str:
     con.execute("UPDATE users SET username = ? WHERE id = ?", (username, user_id))
     con.commit()
     return username
+
+
+def set_playlist_rules(con: sqlite3.Connection, user_id: int, rules: str) -> None:
+    con.execute(
+        "UPDATE users SET playlist_rules = ? WHERE id = ?", (rules.strip() or None, user_id)
+    )
+    con.commit()
 
 
 def create_owner(con: sqlite3.Connection, username: str, email: str) -> sqlite3.Row:

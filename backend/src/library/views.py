@@ -180,6 +180,7 @@ def most_listened_combined_content(
         con, user_id, start_period, end_period, genre
     )
     min_period, max_period = play_counts.most_listened_period_range(con, user_id)
+    possessive, subject_pronoun = ("our", "we") if user_id is None else ("my", "I")
 
     songs_rows = most_listened_rows_html(
         con, user_id, 0, songs_max, start_period, end_period, genre
@@ -201,10 +202,12 @@ def most_listened_combined_content(
     genre_cloud = ""
     if top_genres:
         period_desc = (
-            "the selected date range" if start_period or end_period else "my whole history"
+            "the selected date range"
+            if start_period or end_period
+            else f"{possessive} whole history"
         )
         tooltip = (
-            f"Genres of artists I've played in {period_desc}, sized by how many plays "
+            f"Genres of artists {subject_pronoun}'ve played in {period_desc}, sized by how many plays "
             f"they're behind - click one to filter Songs/Albums/Artists to it."
         )
         cloud_html = word_cloud(
@@ -226,7 +229,7 @@ def most_listened_combined_content(
         f"{date_filter_html(min_period, max_period, start_period, end_period, genre)}"
         f"</div>"
     )
-    header = page_header("My Most Listened", actions)
+    header = page_header("Our Most Listened" if user_id is None else "My Most Listened", actions)
     return f"""
 {header}
 <hr class="divider">

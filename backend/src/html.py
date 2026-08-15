@@ -61,11 +61,12 @@ def page(content: str, title: str = "") -> HTMLResponse:
       {theme_link}
       <a href="/login">Login</a>
     </div>"""
+    is_aggregate = not current_username.get()
     nav_links = f"""
-    <a href="{u("/playlists")}">See my curated playlists!</a>
-    <a href="{u("/liked-albums")}">Albums I like</a>
+    <a href="{u("/playlists")}">See {"our" if is_aggregate else "my"} curated playlists!</a>
+    <a href="{u("/liked-albums")}">Albums {"we" if is_aggregate else "I"} like</a>
     <hr class="sidebar-divider">
-    <a href="{u("/most-listened")}">My most listened</a>"""
+    <a href="{u("/most-listened")}">{"Our" if is_aggregate else "My"} most listened</a>"""
     html = f"""<!DOCTYPE html>
 <html lang="en">
 <head>

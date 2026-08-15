@@ -130,4 +130,5 @@ def most_listened_albums_more(
 )
 def liked_albums(con: DBDep, viewed_user: users_service.ViewedUserDep):
     user_id = viewed_user["id"] if viewed_user else None
-    return page(liked_albums_content(con, user_id), title="Albums I Like")
+    title = "Albums We Like" if user_id is None else "Albums I Like"
+    return page(liked_albums_content(con, user_id), title=title)

@@ -47,7 +47,22 @@ listing_router = APIRouter(tags=["playlists"])
 )
 def playlists(con: DBDep, viewed_user: users_service.ViewedUserDep):
     user_id = viewed_user["id"] if viewed_user else None
-    return page(playlists_content(con, user_id), title="Playlists")
+    playlist_rules = viewed_user["playlist_rules"] if viewed_user else None
+    return page(playlists_content(con, user_id, playlist_rules), title="Playlists")
+
+
+@router.post(
+    "/playlists/rules",
+    status_code=302,
+    description="Set the curation rules shown on this account's own Playlists page "
+    "(write-access only)",
+    dependencies=[Depends(require_write_access)],
+)
+def update_playlist_rules(
+    con: DBDep, viewed_user: users_service.ViewedUserDep, playlist_rules: str = Form("")
+):
+    users_service.set_playlist_rules(con, viewed_user["id"], playlist_rules)
+    return RedirectResponse(url=u("/playlists"), status_code=302)
 
 
 @router.post(

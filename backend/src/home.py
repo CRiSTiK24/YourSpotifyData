@@ -125,6 +125,7 @@ def _most_listened_genre_href(genre: str) -> str:
 @router.get("/now", response_class=HTMLResponse, status_code=200, description="Now page")
 def home(con: DBDep, viewed_user: users_service.ViewedUserDep):
     user_id = viewed_user["id"] if viewed_user else None
+    possessive, subject_pronoun = ("our", "we") if user_id is None else ("my", "I")
     greeting = random.choice(TotalWarRomeIIGreetings)
     widgets_html = widget("", f"<blockquote><em>{escape(greeting)}</em></blockquote>")
 
@@ -142,7 +143,7 @@ def home(con: DBDep, viewed_user: users_service.ViewedUserDep):
             for t in discoveries
         )
         info_tooltip = (
-            f"Tracks saved to one of my playlists that I listened to for "
+            f"Tracks saved to one of {possessive} playlists that {subject_pronoun} listened to for "
             f"the first time in the last {RECENT_DISCOVERIES_DAYS} days."
         )
         widgets_html += widget(
@@ -167,7 +168,7 @@ def home(con: DBDep, viewed_user: users_service.ViewedUserDep):
         )
         info_tooltip = (
             f"Albums with at least {RECENTLY_EXPLORED_ALBUMS_MIN_TRACKS} tracks "
-            f"in my play history, where at least half of those tracks "
+            f"in {possessive} play history, where at least half of those tracks "
             f"got their first-ever play in the last {RECENTLY_EXPLORED_ALBUMS_DAYS} "
             f"days."
         )
@@ -181,7 +182,7 @@ def home(con: DBDep, viewed_user: users_service.ViewedUserDep):
     top_genres = load_top_genres_for_period(con, user_id, current_period, current_period)
     if top_genres:
         info_tooltip = (
-            "Genres of artists I've played so far this month, "
+            f"Genres of artists {subject_pronoun}'ve played so far this month, "
             "sized by how many plays they're behind."
         )
         widgets_html += widget(

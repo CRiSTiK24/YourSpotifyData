@@ -63,6 +63,7 @@ _AGGREGATE_ROOT_SEGMENTS = {
     "track",
     "album",
     "playlists",
+    "theme",
 }
 
 
@@ -172,6 +173,7 @@ app.include_router(playlists_listing_router)
 app.include_router(artists_router)
 app.include_router(albums_router)
 app.include_router(tracks_router)
+app.include_router(theme_router)
 
 app.include_router(auth_router)
 app.include_router(covers_router)
