@@ -50,16 +50,18 @@ def ensure_schema_columns(con):
     con.commit()
 
 
-def get_snapshot_ids(con) -> dict:
+def get_snapshot_ids(con, user_id) -> dict:
     """name -> stored spotify_snapshot_id, for the API sync to decide which
     playlists' tracks actually need refetching."""
     return {
         row[0]: row[1]
-        for row in con.execute("SELECT name, spotify_snapshot_id FROM playlists")
+        for row in con.execute(
+            "SELECT name, spotify_snapshot_id FROM playlists WHERE user_id = ?", (user_id,)
+        )
     }
 
 
-def save_to_db(con, playlists, remove_missing=True):
+def save_to_db(con, playlists, user_id, remove_missing=True):
     """The uploaded Playlist*.json files are treated as the full, current
     set of the user's playlists. On each import: existing playlists are
     matched by name and have their tracks replaced (so removed/reordered
@@ -76,17 +78,25 @@ def save_to_db(con, playlists, remove_missing=True):
     list is skipped entirely rather than re-fetched and re-written - the
     dict then omits "tracks"). Zip uploads never set these, so their
     behavior is unchanged."""
-    before_playlists = con.execute("SELECT COUNT(*) FROM playlists").fetchone()[0]
-    before_tracks = con.execute("SELECT COUNT(*) FROM playlist_tracks").fetchone()[0]
+    before_playlists = con.execute(
+        "SELECT COUNT(*) FROM playlists WHERE user_id = ?", (user_id,)
+    ).fetchone()[0]
+    before_tracks = con.execute(
+        "SELECT COUNT(*) FROM playlist_tracks WHERE user_id = ?", (user_id,)
+    ).fetchone()[0]
 
     cur = con.cursor()
     seen_ids = []
     for pl in playlists:
-        row = cur.execute("SELECT id FROM playlists WHERE name = ?", (pl["name"],)).fetchone()
+        row = cur.execute(
+            "SELECT id FROM playlists WHERE user_id = ? AND name = ?", (user_id, pl["name"])
+        ).fetchone()
         if row:
             playlist_id = row[0]
         else:
-            cur.execute("INSERT INTO playlists (name) VALUES (?)", (pl["name"],))
+            cur.execute(
+                "INSERT INTO playlists (user_id, name) VALUES (?, ?)", (user_id, pl["name"])
+            )
             playlist_id = cur.lastrowid
         seen_ids.append(playlist_id)
 
@@ -109,18 +119,22 @@ def save_to_db(con, playlists, remove_missing=True):
         cur.execute("DELETE FROM playlist_tracks WHERE playlist_id = ?", (playlist_id,))
         cur.executemany(
             "INSERT OR IGNORE INTO playlist_tracks "
-            "(playlist_id, track_name, artist_name, spotify_track_uri) VALUES (?, ?, ?, ?)",
-            [(playlist_id, t["trackName"], t["artistName"], t["trackUri"]) for t in pl["tracks"]],
+            "(user_id, playlist_id, track_name, artist_name, spotify_track_uri) "
+            "VALUES (?, ?, ?, ?, ?)",
+            [
+                (user_id, playlist_id, t["trackName"], t["artistName"], t["trackUri"])
+                for t in pl["tracks"]
+            ],
         )
 
     if remove_missing:
         placeholders = ",".join("?" * len(seen_ids))
+        id_filter = f"id NOT IN ({placeholders})" if seen_ids else "1=1"
         stale_ids = [
             row[0]
             for row in cur.execute(
-                f"SELECT id FROM playlists WHERE id NOT IN ({placeholders})"
-                if seen_ids else "SELECT id FROM playlists",
-                seen_ids,
+                f"SELECT id FROM playlists WHERE user_id = ? AND {id_filter}",
+                (user_id, *seen_ids),
             )
         ]
         for playlist_id in stale_ids:
@@ -130,9 +144,13 @@ def save_to_db(con, playlists, remove_missing=True):
     con.commit()
 
     return {
-        "new_playlists": con.execute("SELECT COUNT(*) FROM playlists").fetchone()[0]
+        "new_playlists": con.execute(
+            "SELECT COUNT(*) FROM playlists WHERE user_id = ?", (user_id,)
+        ).fetchone()[0]
         - before_playlists,
-        "new_playlist_tracks": con.execute("SELECT COUNT(*) FROM playlist_tracks").fetchone()[0]
+        "new_playlist_tracks": con.execute(
+            "SELECT COUNT(*) FROM playlist_tracks WHERE user_id = ?", (user_id,)
+        ).fetchone()[0]
         - before_tracks,
     }
 
@@ -149,7 +167,13 @@ def main():
     con = sqlite3.connect(DB_PATH)
     with open(SCHEMA_PATH) as f:
         con.executescript(f.read())
-    counts = save_to_db(con, playlists, remove_missing=found_files)
+    owner_row = con.execute("SELECT id FROM users WHERE role = 'owner'").fetchone()
+    if owner_row is None:
+        raise SystemExit(
+            "No owner account exists yet - start the web app once (it seeds the owner "
+            "from OWNER_USERNAME/ALLOWED_EMAIL) before running this script directly."
+        )
+    counts = save_to_db(con, playlists, owner_row[0], remove_missing=found_files)
     con.close()
 
     print(f"Added {counts['new_playlists']} new playlists, "

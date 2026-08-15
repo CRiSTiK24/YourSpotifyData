@@ -2,7 +2,8 @@ from fastapi import APIRouter, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 
 from src.database import DBDep
-from src.html import page
+from src.html import page, u
+from src.users import service as users_service
 from src.utils import parse_month_param
 
 from .views import (
@@ -23,7 +24,12 @@ router = APIRouter(tags=["library"])
     "columns on desktop, tabs on mobile (see most_listened_combined_content)",
 )
 def most_listened(
-    request: Request, con: DBDep, start_month: str = "", end_month: str = "", genre: str = ""
+    request: Request,
+    con: DBDep,
+    viewed_user: users_service.ViewedUserDep,
+    start_month: str = "",
+    end_month: str = "",
+    genre: str = "",
 ):
     # the genre carousel's own hx-get (hx-target='#ml-results') marks its
     # tags hx-swap-oob so a click patches them in place without resetting
@@ -41,6 +47,7 @@ def most_listened(
     return page(
         most_listened_combined_content(
             con,
+            viewed_user["id"],
             parse_month_param(start_month),
             parse_month_param(end_month, end=True),
             genre,
@@ -58,6 +65,7 @@ def most_listened(
 )
 def most_listened_more(
     con: DBDep,
+    viewed_user: users_service.ViewedUserDep,
     offset: int = 0,
     max_plays: int = 0,
     start_month: str = "",
@@ -67,6 +75,7 @@ def most_listened_more(
     return HTMLResponse(
         most_listened_rows_html(
             con,
+            viewed_user["id"],
             offset,
             max_plays,
             parse_month_param(start_month),
@@ -82,7 +91,7 @@ def most_listened_more(
     description="Album browsing merged into /most-listened (Albums tab/column)",
 )
 def most_listened_albums_redirect():
-    return RedirectResponse(url="/most-listened", status_code=302)
+    return RedirectResponse(url=u("/most-listened"), status_code=302)
 
 
 @router.get(
@@ -93,6 +102,7 @@ def most_listened_albums_redirect():
 )
 def most_listened_albums_more(
     con: DBDep,
+    viewed_user: users_service.ViewedUserDep,
     offset: int = 0,
     max_plays: int = 0,
     start_month: str = "",
@@ -102,6 +112,7 @@ def most_listened_albums_more(
     return HTMLResponse(
         most_listened_albums_rows_html(
             con,
+            viewed_user["id"],
             offset,
             max_plays,
             parse_month_param(start_month),
@@ -114,5 +125,5 @@ def most_listened_albums_more(
 @router.get(
     "/liked-albums", response_class=HTMLResponse, status_code=200, description="All liked albums"
 )
-def liked_albums(con: DBDep):
-    return page(liked_albums_content(con), title="Albums I Like")
+def liked_albums(con: DBDep, viewed_user: users_service.ViewedUserDep):
+    return page(liked_albums_content(con, viewed_user["id"]), title="Albums I Like")

@@ -1,0 +1,2 @@
+class UserValidationError(ValueError):
+    pass

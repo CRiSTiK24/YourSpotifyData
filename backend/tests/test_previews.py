@@ -14,10 +14,11 @@ def test_extract_preview_url_returns_none_when_absent():
     assert _extract_preview_url(html) is None
 
 
-def test_resolve_track_id_extracts_id_from_track_history_uri(db):
+def test_resolve_track_id_extracts_id_from_track_history_uri(db, user_id):
     db.execute(
-        "INSERT INTO track_history (name, singer, time, spotify_track_uri) "
-        "VALUES ('Song', 'Artist', '2024-01-01T00:00:00Z', 'spotify:track:abc123')"
+        "INSERT INTO track_history (user_id, name, singer, time, spotify_track_uri) "
+        "VALUES (?, 'Song', 'Artist', '2024-01-01T00:00:00Z', 'spotify:track:abc123')",
+        (user_id,),
     )
     db.commit()
     assert resolve_track_id(db, "Song", "Artist") == "abc123"

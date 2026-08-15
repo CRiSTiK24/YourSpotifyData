@@ -8,7 +8,7 @@ import time
 import urllib.error
 import urllib.request
 
-from src.config import settings
+from src import app_settings
 from src.database import get_connection
 
 TOKEN_URL = "https://accounts.spotify.com/api/token"
@@ -41,9 +41,10 @@ class _TokenState:
 _token_state = _TokenState()
 
 
-def _refresh_token_sync() -> str:
+def _refresh_token_sync(con: sqlite3.Connection) -> str:
+    eff = app_settings.get(con)
     credentials = base64.b64encode(
-        f"{settings.spotify_client_id}:{settings.spotify_client_secret}".encode()
+        f"{eff.spotify_client_id}:{eff.spotify_client_secret}".encode()
     ).decode()
     req = urllib.request.Request(
         TOKEN_URL,
@@ -75,14 +76,14 @@ def _get_sync(path: str, token: str) -> tuple[int, dict | None, dict]:
         return e.code, parsed, dict(e.headers)
 
 
-async def _ensure_token() -> str:
+async def _ensure_token(con: sqlite3.Connection) -> str:
     if _token_state.token is None or time.monotonic() >= _token_state.expiry:
-        await asyncio.to_thread(_refresh_token_sync)
+        await asyncio.to_thread(_refresh_token_sync, con)
     return _token_state.token
 
 
-async def _api_get_or_none_on_404(path: str) -> dict | None:
-    token = await _ensure_token()
+async def _api_get_or_none_on_404(con: sqlite3.Connection, path: str) -> dict | None:
+    token = await _ensure_token(con)
     while True:
         status, body, headers = await asyncio.to_thread(_get_sync, path, token)
         if status == 200:
@@ -90,7 +91,7 @@ async def _api_get_or_none_on_404(path: str) -> dict | None:
         if status == 404:
             return None
         if status == 401:
-            token = await asyncio.to_thread(_refresh_token_sync)
+            token = await asyncio.to_thread(_refresh_token_sync, con)
             continue
         if status == 429:
             retry_after = int(headers.get("Retry-After", "5"))
@@ -238,13 +239,13 @@ def _artist_uri(con, artist_name):
 async def _fetch_one_album(con, artist_name, album_name) -> None:
     try:
         album_id = _uri_to_id(_album_uri(con, artist_name, album_name))
-        data = await _api_get_or_none_on_404(f"/albums/{album_id}") if album_id else None
+        data = await _api_get_or_none_on_404(con, f"/albums/{album_id}") if album_id else None
         if data:
             _upsert_album(con, artist_name, album_name, data["id"], _best_image(data["images"]))
             return
 
         track_id = _uri_to_id(_representative_track_uri(con, artist_name, album_name))
-        track = await _api_get_or_none_on_404(f"/tracks/{track_id}") if track_id else None
+        track = await _api_get_or_none_on_404(con, f"/tracks/{track_id}") if track_id else None
         if track and track.get("album"):
             alb = track["album"]
             _upsert_album(con, artist_name, album_name, alb["id"], _best_image(alb["images"]))
@@ -261,7 +262,7 @@ async def _fetch_one_artist(con, artist_name) -> None:
 
         if not artist_id:
             track_id = _uri_to_id(_representative_track_uri(con, artist_name))
-            track = await _api_get_or_none_on_404(f"/tracks/{track_id}") if track_id else None
+            track = await _api_get_or_none_on_404(con, f"/tracks/{track_id}") if track_id else None
             if track:
                 for a in track.get("artists", []):
                     if a["name"].lower() == artist_name.lower():
@@ -269,7 +270,7 @@ async def _fetch_one_artist(con, artist_name) -> None:
                         break
 
         if artist_id:
-            data = await _api_get_or_none_on_404(f"/artists/{artist_id}")
+            data = await _api_get_or_none_on_404(con, f"/artists/{artist_id}")
             if data:
                 _upsert_artist(
                     con,
@@ -288,13 +289,14 @@ async def _fetch_one_artist(con, artist_name) -> None:
 
 
 async def image_fetch_loop() -> None:
-    if not settings.spotify_client_id or not settings.spotify_client_secret:
-        logger.warning("SPOTIFY_CLIENT_ID/SECRET not set, image fetch loop disabled")
-        return
-
     con = get_connection()
     try:
         while True:
+            eff = app_settings.get(con)
+            if not eff.spotify_client_id or not eff.spotify_client_secret:
+                await asyncio.sleep(IDLE_POLL_SECONDS)
+                continue
+
             missing_album = _next_missing_album(con)
             if missing_album:
                 await _fetch_one_album(con, *missing_album)

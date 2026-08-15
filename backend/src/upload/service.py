@@ -79,18 +79,21 @@ def extract_matches_to_sanitized_paths(
     return extracted
 
 
-def create_job(con: sqlite3.Connection) -> int:
+def create_job(con: sqlite3.Connection, user_id: int) -> int:
     now = datetime.now(UTC).isoformat()
     cur = con.execute(
-        "INSERT INTO import_jobs (status, message, created_at, updated_at) VALUES (?, ?, ?, ?)",
-        ("queued", None, now, now),
+        "INSERT INTO import_jobs (user_id, status, message, created_at, updated_at) "
+        "VALUES (?, ?, ?, ?, ?)",
+        (user_id, "queued", None, now, now),
     )
     con.commit()
     return cur.lastrowid
 
 
-def get_job(con: sqlite3.Connection, job_id: int) -> sqlite3.Row | None:
-    return con.execute("SELECT * FROM import_jobs WHERE id = ?", (job_id,)).fetchone()
+def get_job(con: sqlite3.Connection, job_id: int, user_id: int) -> sqlite3.Row | None:
+    return con.execute(
+        "SELECT * FROM import_jobs WHERE id = ? AND user_id = ?", (job_id, user_id)
+    ).fetchone()
 
 
 def _update_job(con: sqlite3.Connection, job_id: int, **fields) -> None:
@@ -111,7 +114,7 @@ def _parse_summary(stdout: str) -> dict:
     return {}
 
 
-def process_upload(job_id: int, zip_path: str) -> None:
+def process_upload(job_id: int, zip_path: str, user_id: int) -> None:
     con = get_connection()
     try:
         _update_job(con, job_id, status="extracting")
@@ -122,7 +125,7 @@ def process_upload(job_id: int, zip_path: str) -> None:
         counts: dict = {}
         for script in UPLOAD_PROCESSOR_SCRIPTS:
             result = subprocess.run(
-                [sys.executable, os.path.join(PROCESSORS_DIR, script)],
+                [sys.executable, os.path.join(PROCESSORS_DIR, script), "--user-id", str(user_id)],
                 capture_output=True,
                 text=True,
                 cwd=BASE_DIR,

@@ -5,22 +5,24 @@ from urllib.parse import quote
 from fastapi import APIRouter, Depends, Form, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 
-from src.auth.service import require_auth
+from src.auth.service import require_write_access
 from src.database import DBDep
 from src.heatmap import build_heatmap_html, resolve_period_filter
 from src.html import (
+    can_write_var,
     card,
     copy_list_button,
     detail_header,
     detail_layout,
     grid,
     hero_image,
-    logged_in_var,
     page,
     spotify_open_button,
+    u,
 )
 from src.scrobbler import library_sync as library_sync_service
 from src.scrobbler.exceptions import NotConnected
+from src.users import service as users_service
 from src.utils import aggregate_plays, pluralize
 
 from . import service
@@ -32,18 +34,24 @@ logger = logging.getLogger("playlists")
 
 
 @router.get("/playlists", response_class=HTMLResponse, status_code=200, description="All playlists")
-def playlists(con: DBDep):
-    return page(playlists_content(con), title="Playlists")
+def playlists(con: DBDep, viewed_user: users_service.ViewedUserDep):
+    return page(playlists_content(con, viewed_user["id"]), title="Playlists")
 
 
 @router.post(
     "/playlist/{playlist_id}/description",
     status_code=302,
-    description="Edit a playlist's description and push it to Spotify (logged-in only)",
-    dependencies=[Depends(require_auth)],
+    description="Edit a playlist's description and push it to Spotify (write-access only)",
+    dependencies=[Depends(require_write_access)],
 )
-def update_description(playlist_id: int, con: DBDep, description: str = Form(""), name: str = ""):
-    playlist = service.get_playlist(con, playlist_id)
+def update_description(
+    playlist_id: int,
+    con: DBDep,
+    viewed_user: users_service.ViewedUserDep,
+    description: str = Form(""),
+    name: str = "",
+):
+    playlist = service.get_playlist(con, viewed_user["id"], playlist_id)
     if playlist is None:
         raise PlaylistNotFound(playlist_id)
 
@@ -51,7 +59,7 @@ def update_description(playlist_id: int, con: DBDep, description: str = Form("")
     if playlist["spotify_playlist_id"]:
         try:
             library_sync_service.set_playlist_description_via_spotify_api(
-                con, playlist["spotify_playlist_id"], description
+                con, viewed_user["id"], playlist["spotify_playlist_id"], description
             )
             saved = "ok"
         except NotConnected:
@@ -61,9 +69,9 @@ def update_description(playlist_id: int, con: DBDep, description: str = Form("")
             saved = "error"
     else:
         saved = "unlinked"
-    service.set_local_description(con, playlist_id, description)
+    service.set_local_description(con, viewed_user["id"], playlist_id, description)
     return RedirectResponse(
-        url=f"/playlist/{playlist_id}?name={quote(name)}&saved={saved}", status_code=302
+        url=u(f"/playlist/{playlist_id}?name={quote(name)}&saved={saved}"), status_code=302
     )
 
 
@@ -74,14 +82,21 @@ def update_description(playlist_id: int, con: DBDep, description: str = Form("")
     description="Playlist detail with play history",
 )
 def playlist_detail(
-    playlist_id: int, request: Request, con: DBDep, name: str = "", saved: str = ""
+    playlist_id: int,
+    request: Request,
+    con: DBDep,
+    viewed_user: users_service.ViewedUserDep,
+    name: str = "",
+    saved: str = "",
 ):
-    playlist = service.get_playlist(con, playlist_id)
+    playlist = service.get_playlist(con, viewed_user["id"], playlist_id)
     if playlist is None:
         raise PlaylistNotFound(playlist_id)
 
-    tracks = service.load_playlist_tracks(con, playlist_id)
-    history = service.load_playlist_history_with_album_for_cover_lookup(con, playlist_id)
+    tracks = service.load_playlist_tracks(con, viewed_user["id"], playlist_id)
+    history = service.load_playlist_history_with_album_for_cover_lookup(
+        con, viewed_user["id"], playlist_id
+    )
 
     heatmap_html, result, base_href = build_heatmap_html(
         history, f"playlist_{playlist_id}", request
@@ -99,9 +114,9 @@ def playlist_detail(
             "".join(
                 card(
                     n,
-                    f"/track/{quote(n)}?artist={quote(s or '')}",
+                    u(f"/track/{quote(n)}?artist={quote(s or '')}"),
                     s,
-                    f"/artist/{quote(s)}" if s else None,
+                    u(f"/artist/{quote(s)}") if s else None,
                     note=str(c),
                     image_url=images.get(album_by_name.get(n)),
                     preview_artist=s,
@@ -115,9 +130,9 @@ def playlist_detail(
             "".join(
                 card(
                     t["track_name"],
-                    f"/track/{quote(t['track_name'])}?artist={quote(t['artist_name'])}",
+                    u(f"/track/{quote(t['track_name'])}?artist={quote(t['artist_name'])}"),
                     t["artist_name"],
-                    f"/artist/{quote(t['artist_name'])}",
+                    u(f"/artist/{quote(t['artist_name'])}"),
                     image_url=t["image_url"],
                     preview_artist=t["artist_name"],
                 )
@@ -136,9 +151,9 @@ def playlist_detail(
         f"<p class='subtitle'>{escape(save_notes[saved])}</p>" if saved in save_notes else ""
     )
     description_line = unescape(playlist["description"]) if playlist["description"] else ""
-    if logged_in_var.get():
+    if can_write_var.get():
         description_html = f"""
-<form class="description-form" action="/playlist/{playlist_id}/description?name={quote(name)}" method="post">
+<form class="description-form" action="{u(f"/playlist/{playlist_id}/description?name={quote(name)}")}" method="post">
   <textarea name="description" class="description-input" maxlength="300"
             placeholder="Add a description…">{escape(description_line)}</textarea>
   <button type="submit" class="btn">Save description</button>

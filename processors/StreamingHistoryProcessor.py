@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import argparse
 import glob
 import json
 import os
@@ -55,7 +56,7 @@ def process_streaming_history():
     return tracks
 
 
-def save_to_db(con, tracks):
+def save_to_db(con, tracks, user_id):
     """Insert only entries not already stored, so re-running against the
     same (or an overlapping/backfilling) export is a no-op/incremental
     rather than duplicating history. Matches on (name, singer, time) as a
@@ -64,7 +65,9 @@ def save_to_db(con, tracks):
     granularity) - a plain max-time cutoff would wrongly skip any backfill
     that lands before the newest timestamp already in the DB."""
     existing = Counter(
-        con.execute("SELECT name, singer, time FROM track_history").fetchall()
+        con.execute(
+            "SELECT name, singer, time FROM track_history WHERE user_id = ?", (user_id,)
+        ).fetchall()
     )
     new_tracks = []
     for t in tracks:
@@ -75,15 +78,27 @@ def save_to_db(con, tracks):
             new_tracks.append(t)
 
     con.executemany(
-        "INSERT INTO track_history (name, singer, album, time, spotify_track_uri) "
-        "VALUES (?, ?, ?, ?, ?)",
-        [(t["name"], t["singer"], t["album"], t["time"], t["uri"]) for t in new_tracks],
+        "INSERT INTO track_history (user_id, name, singer, album, time, spotify_track_uri) "
+        "VALUES (?, ?, ?, ?, ?, ?)",
+        [
+            (user_id, t["name"], t["singer"], t["album"], t["time"], t["uri"])
+            for t in new_tracks
+        ],
     )
     con.commit()
     return len(new_tracks)
 
 
 def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--user-id",
+        type=int,
+        default=None,
+        help="attribute imported history to this user id (defaults to the owner account)",
+    )
+    args = parser.parse_args()
+
     tracks = process_streaming_history()
     print(f"Found {len(tracks)} track history entries\n")
     for t in tracks[:20]:
@@ -94,7 +109,16 @@ def main():
     con = sqlite3.connect(DB_PATH)
     with open(SCHEMA_PATH) as f:
         con.executescript(f.read())
-    new_count = save_to_db(con, tracks)
+    user_id = args.user_id
+    if user_id is None:
+        owner_row = con.execute("SELECT id FROM users WHERE role = 'owner'").fetchone()
+        if owner_row is None:
+            raise SystemExit(
+                "No owner account exists yet - start the web app once (it seeds the owner "
+                "from OWNER_USERNAME/ALLOWED_EMAIL) before running this script directly."
+            )
+        user_id = owner_row[0]
+    new_count = save_to_db(con, tracks, user_id)
     con.close()
 
     print(f"\nAdded {new_count} new entries, saved to {DB_PATH}")

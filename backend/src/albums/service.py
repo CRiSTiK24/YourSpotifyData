@@ -3,7 +3,7 @@ import sqlite3
 from src.utils import fts_match_query
 
 
-def search_albums(con: sqlite3.Connection, query: str) -> list[sqlite3.Row]:
+def search_albums(con: sqlite3.Connection, user_id: int, query: str) -> list[sqlite3.Row]:
     match = fts_match_query(query.split(), column="album")
     return con.execute(
         """
@@ -11,12 +11,13 @@ def search_albums(con: sqlite3.Connection, query: str) -> list[sqlite3.Row]:
         FROM track_history_fts
         JOIN track_history th ON th.id = track_history_fts.rowid
         LEFT JOIN album_images ai ON ai.artist_name = th.singer AND ai.album_name = th.album
-        WHERE track_history_fts MATCH ? AND th.album IS NOT NULL AND th.album != ''
+        WHERE track_history_fts MATCH ? AND th.user_id = ?
+          AND th.album IS NOT NULL AND th.album != ''
           AND th.singer IS NOT NULL AND th.singer != ''
         GROUP BY th.album, th.singer
         ORDER BY play_count DESC
         """,
-        (match,),
+        (match, user_id),
     ).fetchall()
 
 
@@ -48,7 +49,7 @@ def resolve_album_name_variants(
 
 
 def load_album_track_history(
-    con: sqlite3.Connection, artist_name: str, album_name: str
+    con: sqlite3.Connection, user_id: int, artist_name: str, album_name: str
 ) -> list[sqlite3.Row]:
     # artist_name is the join key into album_images (see
     # resolve_album_name_variants), so an empty one (a bare /album/{name}
@@ -58,15 +59,16 @@ def load_album_track_history(
     # erroring or matching nothing.
     if not artist_name:
         return con.execute(
-            "SELECT name, singer, time FROM track_history WHERE album = ? ORDER BY time DESC",
-            (album_name,),
+            "SELECT name, singer, time FROM track_history "
+            "WHERE album = ? AND user_id = ? ORDER BY time DESC",
+            (album_name, user_id),
         ).fetchall()
     variants = resolve_album_name_variants(con, artist_name, album_name)
     placeholders = ",".join("?" for _ in variants)
     return con.execute(
         f"SELECT name, singer, time FROM track_history "
-        f"WHERE singer = ? AND album IN ({placeholders}) ORDER BY time DESC",
-        (artist_name, *variants),
+        f"WHERE singer = ? AND album IN ({placeholders}) AND user_id = ? ORDER BY time DESC",
+        (artist_name, *variants, user_id),
     ).fetchall()
 
 

@@ -1,3 +1,5 @@
+from datetime import UTC, datetime, timedelta
+
 import pytest
 
 from src.utils import (
@@ -7,6 +9,7 @@ from src.utils import (
     most_listened_next_href,
     parse_month_param,
     pluralize,
+    relative_time,
 )
 
 
@@ -22,6 +25,35 @@ from src.utils import (
 )
 def test_pluralize_only_omits_s_for_exactly_one(n, word, expected):
     assert pluralize(n, word) == expected
+
+
+@pytest.mark.parametrize(
+    "delta, expected",
+    [
+        (timedelta(seconds=30), "just now"),
+        (timedelta(minutes=1), "1 minute ago"),
+        (timedelta(minutes=5), "5 minutes ago"),
+        (timedelta(hours=1), "1 hour ago"),
+        (timedelta(hours=3), "3 hours ago"),
+        (timedelta(days=1), "1 day ago"),
+        (timedelta(days=10), "10 days ago"),
+        (timedelta(days=60), "2 months ago"),
+        (timedelta(days=400), "1 year ago"),
+    ],
+)
+def test_relative_time_picks_the_coarsest_unit_that_fits(delta, expected):
+    then = (datetime.now(UTC) - delta).isoformat()
+    assert relative_time(then) == expected
+
+
+def test_relative_time_treats_a_naive_timestamp_as_utc():
+    # scrobbler_tokens timestamps are always stored via an aware
+    # datetime.now(UTC).isoformat(), but this guards against a future
+    # regression that stores one without tzinfo - comparing an aware "now"
+    # against a naive "then" raises TypeError instead of silently
+    # misreading the offset, so this must not crash.
+    naive = (datetime.now(UTC) - timedelta(minutes=5)).replace(tzinfo=None).isoformat()
+    assert relative_time(naive) == "5 minutes ago"
 
 
 @pytest.mark.parametrize("period", [0, 1, 12, 202401, 999912])

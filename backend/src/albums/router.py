@@ -6,7 +6,17 @@ from fastapi.responses import HTMLResponse
 
 from src.database import DBDep
 from src.heatmap import build_heatmap_html, resolve_period_filter
-from src.html import detail_header, detail_layout, hero_image, link, page, row, spotify_open_button
+from src.html import (
+    detail_header,
+    detail_layout,
+    hero_image,
+    link,
+    page,
+    row,
+    spotify_open_button,
+    u,
+)
+from src.users import service as users_service
 from src.utils import aggregate_plays, pluralize
 
 from . import service
@@ -20,8 +30,14 @@ router = APIRouter(tags=["albums"])
     status_code=200,
     description="Album detail with play history",
 )
-def album_detail(album_name: str, request: Request, con: DBDep, artist: str = ""):
-    history = service.load_album_track_history(con, artist, album_name)
+def album_detail(
+    album_name: str,
+    request: Request,
+    con: DBDep,
+    viewed_user: users_service.ViewedUserDep,
+    artist: str = "",
+):
+    history = service.load_album_track_history(con, viewed_user["id"], artist, album_name)
 
     heatmap_html, result, base_href = build_heatmap_html(history, f"album_{album_name}", request)
 
@@ -30,7 +46,7 @@ def album_detail(album_name: str, request: Request, con: DBDep, artist: str = ""
     tracks_html = "".join(
         row(
             name,
-            f"/track/{quote(name)}?artist={quote(singer or artist)}",
+            u(f"/track/{quote(name)}?artist={quote(singer or artist)}"),
             note=str(count),
             preview_artist=singer or artist,
         )
@@ -38,7 +54,7 @@ def album_detail(album_name: str, request: Request, con: DBDep, artist: str = ""
     )
 
     artist_line = (
-        f"<p class='subtitle'>Artist: {link(artist, f'/artist/{quote(artist)}')}</p>"
+        f"<p class='subtitle'>Artist: {link(artist, u(f'/artist/{quote(artist)}'))}</p>"
         if artist
         else ""
     )

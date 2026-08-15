@@ -1446,6 +1446,106 @@ input[type="date"] { color-scheme: dark; }
     flex-shrink: 0;
 }
 
+/* Account hub (/{username}/account): each section (Upload, Scrobbler,
+   Profile, Admin) is its own .widget card, stacked full-width rather than
+   .widget-grid's wrap-to-fit flow - these carry forms/tables that want the
+   panel's full width, not a small stat-tile footprint. */
+.account-sections { display: flex; flex-direction: column; gap: 16px; margin-top: 16px; }
+.account-sections .widget { max-width: none; }
+
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    border: 1px solid var(--color-border);
+    background: var(--color-bg);
+}
+.status-badge::before {
+    content: "";
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--color-border);
+    flex-shrink: 0;
+}
+.status-badge.connected::before { background: var(--color-accent); }
+
+.account-stat-list { list-style: none; padding: 0; margin: 12px 0; display: flex; flex-direction: column; gap: 6px; font-size: 14px; }
+/* mobile-first: label above value (a long ISO timestamp doesn't fit next
+   to its label on a narrow panel without an ugly mid-value wrap) - row
+   layout restored at the min-width:700px breakpoint below. */
+.account-stat-list li { display: flex; flex-direction: column; gap: 2px; }
+.account-stat-list .label { opacity: 0.7; }
+
+.account-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+
+/* overflow-x wrapper, not the table itself: keeps the table's own border-
+   radius/edges intact while still letting it scroll horizontally on a
+   narrow panel instead of squeezing every column unreadably thin. */
+.admin-users-wrap { overflow-x: auto; margin: 12px 0; }
+.admin-users { width: 100%; border-collapse: collapse; font-size: 14px; white-space: nowrap; }
+.admin-users th {
+    text-align: left;
+    color: var(--color-text);
+    opacity: 0.7;
+    font-weight: 600;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    padding: 8px 16px 8px 0;
+    border-bottom: 1px solid var(--color-border);
+}
+.admin-users td { padding: 10px 16px 10px 0; border-bottom: 1px solid var(--color-border); vertical-align: middle; }
+.admin-users tr:last-child td { border-bottom: none; }
+.admin-users .btn { padding: 4px 10px; font-size: 12px; }
+.admin-users .role-tag {
+    display: inline-block;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    padding: 2px 8px;
+    border-radius: 999px;
+    border: 1px solid var(--color-border);
+    opacity: 0.85;
+}
+
+.file-drop {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin: 12px 0;
+    padding: 12px;
+    border: 1px dashed var(--color-border);
+    border-radius: 8px;
+    background: var(--color-bg);
+}
+.file-drop input[type="file"] { color: var(--color-text); font-size: 13px; max-width: 100%; }
+
+/* stacked label + input fields (/setup) - .search-form's own inputs assume
+   a single-row layout (label-less, input flush against its submit button),
+   which doesn't fit a multi-field form asking for several unrelated
+   values one after another. The label text's .subtitle span is a separate
+   element from the input (not a shared opacity ancestor) so the muted
+   label color doesn't fade the input's own text along with it. */
+.form-field { display: block; margin: 12px 0; }
+.form-field .subtitle { display: block; margin-bottom: 4px; }
+.form-field input {
+    display: block;
+    width: 100%;
+    max-width: 420px;
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    color: var(--color-text);
+    padding: 8px 12px;
+    font-size: 14px;
+}
+.form-field input:focus { outline: none; border-color: var(--color-accent); }
+
 /* Mobile-first: every rule above this point is the phone-and-up default.
    Breakpoints below only add complexity back in for wider viewports, per
    https://web.dev mobile-first guidance - the small-screen case is the one
@@ -1488,6 +1588,7 @@ input[type="date"] { color-scheme: dark; }
     .date-filter { flex-wrap: nowrap; }
     .theme-row { flex-wrap: nowrap; }
     .preview-bar-info { display: flex; }
+    .account-stat-list li { flex-direction: row; justify-content: space-between; align-items: center; gap: 12px; }
 
     .ml-tabs { display: none; }
     .ml-genre-cloud { order: 0; flex: 1; }

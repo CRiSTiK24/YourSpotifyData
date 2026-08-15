@@ -19,3 +19,23 @@ def db():
         con.executescript(f.read())
     yield con
     con.close()
+
+
+@pytest.fixture
+def user_id(db):
+    cur = db.execute(
+        "INSERT INTO users (username, email, role, created_at) "
+        "VALUES ('owner', 'owner@example.com', 'owner', '2024-01-01T00:00:00Z')"
+    )
+    db.commit()
+    return cur.lastrowid
+
+
+@pytest.fixture
+def other_user_id(db):
+    cur = db.execute(
+        "INSERT INTO users (username, email, role, created_at) "
+        "VALUES ('member', 'member@example.com', 'member', '2024-01-01T00:00:00Z')"
+    )
+    db.commit()
+    return cur.lastrowid

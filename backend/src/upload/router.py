@@ -5,37 +5,42 @@ from html import escape
 from fastapi import APIRouter, BackgroundTasks, Depends, UploadFile
 from fastapi.responses import HTMLResponse, RedirectResponse
 
-from src.auth.service import require_auth
+from src.auth.service import require_write_access
 from src.database import DBDep
-from src.html import page
+from src.html import page, u
+from src.users import service as users_service
 
 from . import service
 from .exceptions import JobNotFound
 
-router = APIRouter(tags=["upload"], dependencies=[Depends(require_auth)])
+router = APIRouter(tags=["upload"], dependencies=[Depends(require_write_access)])
 
 
-@router.get(
-    "/upload",
-    response_class=HTMLResponse,
-    status_code=200,
-    description="Upload a Spotify export zip",
-)
-def upload_form():
-    content = """
-<h1>Upload Spotify export</h1>
+def upload_form_html() -> str:
+    return f"""
 <p class="subtitle">Drop your GDPR export zip. Only data newer than what's
 already imported gets added — safe to re-upload the same or a newer export.</p>
-<form action="/upload" method="post" enctype="multipart/form-data">
-  <input type="file" name="file" accept=".zip" required>
-  <button type="submit">Upload</button>
+<form action="{u("/upload")}" method="post" enctype="multipart/form-data">
+  <div class="file-drop">
+    <input type="file" name="file" accept=".zip" required>
+  </div>
+  <button type="submit" class="btn">Upload</button>
 </form>
 """
-    return page(content, title="Upload")
+
+
+@router.get("/upload", status_code=302, description="Upload now lives on the account page")
+def upload_redirect():
+    return RedirectResponse(url=u("/account"), status_code=302)
 
 
 @router.post("/upload", status_code=200, description="Accept a zip and start processing")
-async def upload_submit(background_tasks: BackgroundTasks, con: DBDep, file: UploadFile):
+async def upload_submit(
+    background_tasks: BackgroundTasks,
+    con: DBDep,
+    viewed_user: users_service.ViewedUserDep,
+    file: UploadFile,
+):
     fd, tmp_path = tempfile.mkstemp(suffix=".zip")
     size = 0
     with os.fdopen(fd, "wb") as f:
@@ -51,9 +56,9 @@ async def upload_submit(background_tasks: BackgroundTasks, con: DBDep, file: Upl
                 )
             f.write(chunk)
 
-    job_id = service.create_job(con)
-    background_tasks.add_task(service.process_upload, job_id, tmp_path)
-    return RedirectResponse(url=f"/upload/{job_id}", status_code=303)
+    job_id = service.create_job(con, viewed_user["id"])
+    background_tasks.add_task(service.process_upload, job_id, tmp_path, viewed_user["id"])
+    return RedirectResponse(url=u(f"/upload/{job_id}"), status_code=303)
 
 
 def _status_block(job) -> str:
@@ -62,7 +67,7 @@ def _status_block(job) -> str:
         poll_attrs = ""
     else:
         poll_attrs = (
-            f" hx-get='/upload/{job['id']}/status' hx-trigger='every 2s' hx-target='this' "
+            f" hx-get='{u(f'/upload/{job["id"]}/status')}' hx-trigger='every 2s' hx-target='this' "
             f"hx-select='unset' hx-swap='outerHTML'"
         )
 
@@ -87,8 +92,8 @@ def _status_block(job) -> str:
     status_code=200,
     description="Import job status page",
 )
-def upload_status(job_id: int, con: DBDep):
-    job = service.get_job(con, job_id)
+def upload_status(job_id: int, con: DBDep, viewed_user: users_service.ViewedUserDep):
+    job = service.get_job(con, job_id, viewed_user["id"])
     if job is None:
         raise JobNotFound(job_id)
     content = f"""
@@ -104,8 +109,8 @@ def upload_status(job_id: int, con: DBDep):
     status_code=200,
     description="Polled job status fragment",
 )
-def upload_status_fragment(job_id: int, con: DBDep):
-    job = service.get_job(con, job_id)
+def upload_status_fragment(job_id: int, con: DBDep, viewed_user: users_service.ViewedUserDep):
+    job = service.get_job(con, job_id, viewed_user["id"])
     if job is None:
         raise JobNotFound(job_id)
     return HTMLResponse(_status_block(job))

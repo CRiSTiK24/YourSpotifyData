@@ -36,68 +36,68 @@ def process_library():
     return tracks, albums, artists
 
 
-def _count(con, table):
-    return con.execute(f"SELECT COUNT(*) FROM {table}").fetchone()[0]
+def _count(con, table, user_id):
+    return con.execute(f"SELECT COUNT(*) FROM {table} WHERE user_id = ?", (user_id,)).fetchone()[0]
 
 
-def _sync_table(cur, table, key_cols, uri_col, items, key_values_fn):
+def _sync_table(cur, table, user_id, key_cols, uri_col, items, key_values_fn):
     """Upsert each item by its unique key columns, then delete any existing
     row whose key isn't present in this snapshot - so unliking a track/album/
     artist on Spotify removes it locally too, instead of only ever adding."""
-    key_where = " AND ".join(f"{c} = ?" for c in key_cols)
+    key_where = " AND ".join(f"{c} = ?" for c in key_cols) + " AND user_id = ?"
     seen_ids = []
     for item in items:
         keys = key_values_fn(item)
-        row = cur.execute(f"SELECT id FROM {table} WHERE {key_where}", keys).fetchone()
+        row = cur.execute(f"SELECT id FROM {table} WHERE {key_where}", (*keys, user_id)).fetchone()
         if row:
             item_id = row[0]
             if item["uri"] is not None:
                 cur.execute(f"UPDATE {table} SET {uri_col} = ? WHERE id = ?", (item["uri"], item_id))
         else:
-            cols = ", ".join(key_cols + [uri_col])
-            placeholders = ", ".join("?" * (len(key_cols) + 1))
+            cols = ", ".join([*key_cols, uri_col, "user_id"])
+            placeholders = ", ".join("?" * (len(key_cols) + 2))
             cur.execute(
                 f"INSERT INTO {table} ({cols}) VALUES ({placeholders})",
-                keys + (item["uri"],),
+                (*keys, item["uri"], user_id),
             )
             item_id = cur.lastrowid
         seen_ids.append(item_id)
 
     placeholders = ",".join("?" * len(seen_ids))
+    id_filter = f"id NOT IN ({placeholders})" if seen_ids else "1=1"
     cur.execute(
-        f"DELETE FROM {table} WHERE id NOT IN ({placeholders})" if seen_ids else f"DELETE FROM {table}",
-        seen_ids,
+        f"DELETE FROM {table} WHERE user_id = ? AND {id_filter}", (user_id, *seen_ids)
     )
 
 
-def save_to_db(con, tracks, albums, artists):
+def save_to_db(con, tracks, albums, artists, user_id):
     """YourLibrary.json always reflects the full current state of the
     user's library, so each import fully syncs the DB to match it: existing
     liked items are kept/updated, new ones are added, and ones no longer in
     the file (unliked) are removed."""
-    before_tracks = _count(con, "library_tracks")
-    before_albums = _count(con, "library_albums")
-    before_artists = _count(con, "library_artists")
+    before_tracks = _count(con, "library_tracks", user_id)
+    before_albums = _count(con, "library_albums", user_id)
+    before_artists = _count(con, "library_artists", user_id)
 
     cur = con.cursor()
     _sync_table(
-        cur, "library_tracks", ["track_name", "artist_name"], "spotify_track_uri",
+        cur, "library_tracks", user_id, ["track_name", "artist_name"], "spotify_track_uri",
         tracks, lambda t: (t["track_name"], t["artist_name"]),
     )
     _sync_table(
-        cur, "library_albums", ["album_name", "artist_name"], "spotify_album_uri",
+        cur, "library_albums", user_id, ["album_name", "artist_name"], "spotify_album_uri",
         albums, lambda a: (a["album_name"], a["artist_name"]),
     )
     _sync_table(
-        cur, "library_artists", ["artist_name"], "spotify_artist_uri",
+        cur, "library_artists", user_id, ["artist_name"], "spotify_artist_uri",
         artists, lambda a: (a["artist_name"],),
     )
     con.commit()
 
     return {
-        "new_library_tracks": _count(con, "library_tracks") - before_tracks,
-        "new_library_albums": _count(con, "library_albums") - before_albums,
-        "new_library_artists": _count(con, "library_artists") - before_artists,
+        "new_library_tracks": _count(con, "library_tracks", user_id) - before_tracks,
+        "new_library_albums": _count(con, "library_albums", user_id) - before_albums,
+        "new_library_artists": _count(con, "library_artists", user_id) - before_artists,
     }
 
 
@@ -125,7 +125,13 @@ def main():
     con = sqlite3.connect(DB_PATH)
     with open(SCHEMA_PATH) as f:
         con.executescript(f.read())
-    counts = save_to_db(con, tracks, albums, artists)
+    owner_row = con.execute("SELECT id FROM users WHERE role = 'owner'").fetchone()
+    if owner_row is None:
+        raise SystemExit(
+            "No owner account exists yet - start the web app once (it seeds the owner "
+            "from OWNER_USERNAME/ALLOWED_EMAIL) before running this script directly."
+        )
+    counts = save_to_db(con, tracks, albums, artists, owner_row[0])
     con.close()
 
     print(f"\nAdded {counts['new_library_tracks']} new tracks, "

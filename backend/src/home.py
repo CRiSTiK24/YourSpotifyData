@@ -9,8 +9,9 @@ from fastapi.responses import HTMLResponse
 
 from src.database import DBDep
 from src.genres import load_top_genres_for_period
-from src.html import card, carousel, page, widget, widget_grid, word_cloud
+from src.html import card, carousel, page, u, widget, widget_grid, word_cloud
 from src.total_war_rome_ii_greetings import TotalWarRomeIIGreetings
+from src.users import service as users_service
 
 router = APIRouter(tags=["home"])
 
@@ -24,24 +25,26 @@ def _current_month_period() -> int:
     return now.year * 100 + now.month
 
 
-def _load_recent_discoveries(con: sqlite3.Connection, days: int) -> list[sqlite3.Row]:
+def _load_recent_discoveries(con: sqlite3.Connection, user_id: int, days: int) -> list[sqlite3.Row]:
     return con.execute(
         """
         SELECT pt.track_name AS name, pt.artist_name AS singer, ai.image_url,
                MIN(th.time) AS first_played
         FROM playlist_tracks pt
         JOIN track_history th ON th.name = pt.track_name AND th.singer = pt.artist_name
+            AND th.user_id = pt.user_id
         LEFT JOIN album_images ai ON ai.artist_name = pt.artist_name AND ai.album_name = th.album
+        WHERE pt.user_id = ?
         GROUP BY pt.track_name, pt.artist_name
         HAVING MIN(th.time) >= datetime('now', ?)
         ORDER BY first_played DESC
         """,
-        (f"-{days} days",),
+        (user_id, f"-{days} days"),
     ).fetchall()
 
 
 def _load_recently_explored_albums(
-    con: sqlite3.Connection, days: int, min_tracks: int
+    con: sqlite3.Connection, user_id: int, days: int, min_tracks: int
 ) -> list[sqlite3.Row]:
     # "Explored" = at least half of the album's tracks (distinct track
     # names ever played from it - there's no canonical tracklist/total-track
@@ -76,7 +79,7 @@ def _load_recently_explored_albums(
                    COALESCE(ai.spotify_album_id, th.singer || '|' || th.album) AS group_key
             FROM track_history th
             LEFT JOIN album_images ai ON ai.artist_name = th.singer AND ai.album_name = th.album
-            WHERE th.album IS NOT NULL AND th.album != ''
+            WHERE th.user_id = ? AND th.album IS NOT NULL AND th.album != ''
               AND th.singer IS NOT NULL AND th.singer != ''
             GROUP BY th.album, th.singer, th.name
         ),
@@ -102,7 +105,7 @@ def _load_recently_explored_albums(
           AND album_stats.recent_tracks * 2 >= album_stats.total_tracks
         ORDER BY album_stats.most_recent_first_play DESC
         """,
-        (window, window, min_tracks),
+        (user_id, window, window, min_tracks),
     ).fetchall()
 
 
@@ -112,22 +115,23 @@ def _most_listened_genre_href(genre: str) -> str:
     # (start_month/end_month - see library/views.py's date_filter_html)
     # would otherwise use to filter to it.
     month = datetime.now(UTC).strftime("%Y-%m")
-    return f"/most-listened?start_month={month}&end_month={month}&genre={quote(genre)}"
+    return u(f"/most-listened?start_month={month}&end_month={month}&genre={quote(genre)}")
 
 
-@router.get("/", response_class=HTMLResponse, status_code=200, description="Home page")
-def home(con: DBDep):
+@router.get("/home", response_class=HTMLResponse, status_code=200, description="Home page")
+def home(con: DBDep, viewed_user: users_service.ViewedUserDep):
+    user_id = viewed_user["id"]
     greeting = random.choice(TotalWarRomeIIGreetings)
     widgets_html = widget("", f"<blockquote><em>{escape(greeting)}</em></blockquote>")
 
-    discoveries = _load_recent_discoveries(con, RECENT_DISCOVERIES_DAYS)
+    discoveries = _load_recent_discoveries(con, user_id, RECENT_DISCOVERIES_DAYS)
     if discoveries:
         cards_html = "".join(
             card(
                 t["name"],
-                f"/track/{quote(t['name'])}?artist={quote(t['singer'])}",
+                u(f"/track/{quote(t['name'])}?artist={quote(t['singer'])}"),
                 t["singer"],
-                f"/artist/{quote(t['singer'])}",
+                u(f"/artist/{quote(t['singer'])}"),
                 image_url=t["image_url"],
                 preview_artist=t["singer"],
             )
@@ -144,15 +148,15 @@ def home(con: DBDep):
         )
 
     explored_albums = _load_recently_explored_albums(
-        con, RECENTLY_EXPLORED_ALBUMS_DAYS, RECENTLY_EXPLORED_ALBUMS_MIN_TRACKS
+        con, user_id, RECENTLY_EXPLORED_ALBUMS_DAYS, RECENTLY_EXPLORED_ALBUMS_MIN_TRACKS
     )
     if explored_albums:
         cards_html = "".join(
             card(
                 a["album"],
-                f"/album/{quote(a['album'])}?artist={quote(a['singer'])}",
+                u(f"/album/{quote(a['album'])}?artist={quote(a['singer'])}"),
                 a["singer"],
-                f"/artist/{quote(a['singer'])}",
+                u(f"/artist/{quote(a['singer'])}"),
                 image_url=a["image_url"],
             )
             for a in explored_albums
@@ -170,7 +174,7 @@ def home(con: DBDep):
         )
 
     current_period = _current_month_period()
-    top_genres = load_top_genres_for_period(con, current_period, current_period)
+    top_genres = load_top_genres_for_period(con, user_id, current_period, current_period)
     if top_genres:
         info_tooltip = (
             "Genres of artists I've played so far this month, "

@@ -1,5 +1,6 @@
 import os
 
+from pydantic import model_validator
 from pydantic_settings import BaseSettings
 
 _BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
@@ -15,6 +16,7 @@ class Settings(BaseSettings):
 
     allowed_email: str = ""
     resend_api_key: str = ""
+    owner_username: str = ""
 
     spotify_redirect_uri: str = ""
 
@@ -27,6 +29,12 @@ class Settings(BaseSettings):
             os.path.join(_BACKEND_DIR, ".env"),
         )
     }
+
+    @model_validator(mode="after")
+    def _default_owner_username(self) -> "Settings":
+        if not self.owner_username and self.allowed_email:
+            self.owner_username = self.allowed_email.split("@", 1)[0]
+        return self
 
 
 settings = Settings()

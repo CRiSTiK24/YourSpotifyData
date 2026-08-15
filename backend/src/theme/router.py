@@ -1,10 +1,9 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter
 from fastapi.responses import HTMLResponse
 
-from src.auth.service import require_auth
 from src.html import hero_image, page
 
-router = APIRouter(tags=["theme"], dependencies=[Depends(require_auth)])
+router = APIRouter(tags=["theme"])
 
 _UNWRAPPED_SPOTIFY_PREVIEW_COVER_URL = (
     "https://image-cdn-fa.spotifycdn.com/image/ab67706c0000da842386ebf29b389a9682f494a6"

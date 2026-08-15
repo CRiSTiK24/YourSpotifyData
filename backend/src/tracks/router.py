@@ -16,7 +16,9 @@ from src.html import (
     preview_play_button,
     row,
     spotify_open_button,
+    u,
 )
+from src.users import service as users_service
 from src.utils import pluralize
 
 from . import service
@@ -30,9 +32,16 @@ router = APIRouter(tags=["tracks"])
     status_code=200,
     description="Track detail with play history",
 )
-def track_detail(track_name: str, request: Request, con: DBDep, artist: str = ""):
-    history = service.load_track_history(con, track_name, artist)
-    playlists_in = service.load_track_playlists(con, track_name, artist)
+def track_detail(
+    track_name: str,
+    request: Request,
+    con: DBDep,
+    viewed_user: users_service.ViewedUserDep,
+    artist: str = "",
+):
+    user_id = viewed_user["id"]
+    history = service.load_track_history(con, user_id, track_name, artist)
+    playlists_in = service.load_track_playlists(con, user_id, track_name, artist)
 
     album_name = next((r["album"] for r in history if r["album"]), None)
     track_uri = next((r["spotify_track_uri"] for r in history if r["spotify_track_uri"]), None)
@@ -42,12 +51,12 @@ def track_detail(track_name: str, request: Request, con: DBDep, artist: str = ""
         else ""
     )
     album_line = (
-        f"<p class='subtitle'>Album: {link(album_name, f'/album/{quote(album_name)}?artist={quote(artist)}')}</p>"
+        f"<p class='subtitle'>Album: {link(album_name, u(f'/album/{quote(album_name)}?artist={quote(artist)}'))}</p>"
         if album_name
         else ""
     )
     artist_line = (
-        f"<p class='subtitle'>Artist: {link(artist, f'/artist/{quote(artist)}')}</p>"
+        f"<p class='subtitle'>Artist: {link(artist, u(f'/artist/{quote(artist)}'))}</p>"
         if artist
         else ""
     )
@@ -57,7 +66,8 @@ def track_detail(track_name: str, request: Request, con: DBDep, artist: str = ""
 
     pl_html = (
         "".join(
-            row(pl["name"], f"/playlist/{pl['id']}?name={quote(pl['name'])}") for pl in playlists_in
+            row(pl["name"], u(f"/playlist/{pl['id']}?name={quote(pl['name'])}"))
+            for pl in playlists_in
         )
         or "<p class='info'>Not in any playlist.</p>"
     )

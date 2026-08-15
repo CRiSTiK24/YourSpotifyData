@@ -1,5 +1,6 @@
 import re
 from collections import defaultdict
+from datetime import UTC, datetime
 from urllib.parse import quote
 
 
@@ -54,6 +55,28 @@ def format_month_param(period: int) -> str:
 
 def pluralize(n: int, word: str) -> str:
     return f"{n} {word}{'s' if n != 1 else ''}"
+
+
+def relative_time(iso_str: str) -> str:
+    then = datetime.fromisoformat(iso_str)
+    if then.tzinfo is None:
+        then = then.replace(tzinfo=UTC)
+    seconds = (datetime.now(UTC) - then).total_seconds()
+    if seconds < 60:
+        return "just now"
+    minutes = int(seconds // 60)
+    if minutes < 60:
+        return f"{pluralize(minutes, 'minute')} ago"
+    hours = int(minutes // 60)
+    if hours < 24:
+        return f"{pluralize(hours, 'hour')} ago"
+    days = int(hours // 24)
+    if days < 30:
+        return f"{pluralize(days, 'day')} ago"
+    months = int(days // 30)
+    if months < 12:
+        return f"{pluralize(months, 'month')} ago"
+    return f"{pluralize(int(days // 365), 'year')} ago"
 
 
 def most_listened_next_href(

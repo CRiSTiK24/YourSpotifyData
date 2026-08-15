@@ -10,6 +10,7 @@ def _period_bounds(start_period: int, end_period: int) -> tuple[int, int]:
 
 def load_artists(
     con: sqlite3.Connection,
+    user_id: int,
     limit: int,
     offset: int,
     start_period: int = 0,
@@ -24,11 +25,11 @@ def load_artists(
             SELECT apc.singer, apc.play_count, ai.image_url
             FROM artist_play_counts apc
             LEFT JOIN artist_images ai ON ai.artist_name = apc.singer
-            WHERE apc.period = 0 {genre_clause}
+            WHERE apc.user_id = ? AND apc.period = 0 {genre_clause}
             ORDER BY apc.play_count DESC
             LIMIT ? OFFSET ?
             """,
-            (*genre_params, limit, offset),
+            (user_id, *genre_params, limit, offset),
         ).fetchall()
     lo, hi = _period_bounds(start_period, end_period)
     if lo == hi:
@@ -37,11 +38,11 @@ def load_artists(
             SELECT apc.singer, apc.play_count, ai.image_url
             FROM artist_play_counts apc
             LEFT JOIN artist_images ai ON ai.artist_name = apc.singer
-            WHERE apc.period = ? {genre_clause}
+            WHERE apc.user_id = ? AND apc.period = ? {genre_clause}
             ORDER BY apc.play_count DESC
             LIMIT ? OFFSET ?
             """,
-            (lo, *genre_params, limit, offset),
+            (user_id, lo, *genre_params, limit, offset),
         ).fetchall()
     genre_clause_g = f"AND g.singer IN ({GENRE_ARTIST_SUBQUERY})" if genre else ""
     return con.execute(
@@ -50,7 +51,7 @@ def load_artists(
         FROM (
             SELECT singer, SUM(play_count) AS play_count
             FROM artist_play_counts
-            WHERE period BETWEEN ? AND ? AND period != 0
+            WHERE user_id = ? AND period BETWEEN ? AND ? AND period != 0
             GROUP BY singer
         ) g
         LEFT JOIN artist_images ai ON ai.artist_name = g.singer
@@ -58,44 +59,48 @@ def load_artists(
         ORDER BY g.play_count DESC
         LIMIT ? OFFSET ?
         """,
-        (lo, hi, *genre_params, limit, offset),
+        (user_id, lo, hi, *genre_params, limit, offset),
     ).fetchall()
 
 
 def most_listened_artists_stats(
-    con: sqlite3.Connection, start_period: int = 0, end_period: int = 0, genre: str = ""
+    con: sqlite3.Connection,
+    user_id: int,
+    start_period: int = 0,
+    end_period: int = 0,
+    genre: str = "",
 ) -> tuple[int, int]:
     genre_clause = f"AND singer IN ({GENRE_ARTIST_SUBQUERY})" if genre else ""
     genre_params = [genre] if genre else []
     if not start_period and not end_period:
         row = con.execute(
             f"SELECT COUNT(*), COALESCE(MAX(play_count), 0) FROM artist_play_counts "
-            f"WHERE period = 0 {genre_clause}",
-            genre_params,
+            f"WHERE user_id = ? AND period = 0 {genre_clause}",
+            (user_id, *genre_params),
         ).fetchone()
         return row[0], row[1]
     lo, hi = _period_bounds(start_period, end_period)
     if lo == hi:
         row = con.execute(
             f"SELECT COUNT(*), COALESCE(MAX(play_count), 0) FROM artist_play_counts "
-            f"WHERE period = ? {genre_clause}",
-            (lo, *genre_params),
+            f"WHERE user_id = ? AND period = ? {genre_clause}",
+            (user_id, lo, *genre_params),
         ).fetchone()
         return row[0], row[1]
     row = con.execute(
         f"""
         SELECT COUNT(*), COALESCE(MAX(play_count), 0) FROM (
             SELECT SUM(play_count) AS play_count FROM artist_play_counts
-            WHERE period BETWEEN ? AND ? AND period != 0 {genre_clause}
+            WHERE user_id = ? AND period BETWEEN ? AND ? AND period != 0 {genre_clause}
             GROUP BY singer
         )
         """,
-        (lo, hi, *genre_params),
+        (user_id, lo, hi, *genre_params),
     ).fetchone()
     return row[0], row[1]
 
 
-def search_artists(con: sqlite3.Connection, query: str) -> list[sqlite3.Row]:
+def search_artists(con: sqlite3.Connection, user_id: int, query: str) -> list[sqlite3.Row]:
     match = fts_match_query(query.split(), column="singer")
     return con.execute(
         """
@@ -103,18 +108,22 @@ def search_artists(con: sqlite3.Connection, query: str) -> list[sqlite3.Row]:
         FROM track_history_fts
         JOIN track_history th ON th.id = track_history_fts.rowid
         LEFT JOIN artist_images ai ON ai.artist_name = th.singer
-        WHERE track_history_fts MATCH ? AND th.singer IS NOT NULL AND th.singer != ''
+        WHERE track_history_fts MATCH ? AND th.user_id = ?
+          AND th.singer IS NOT NULL AND th.singer != ''
         GROUP BY th.singer
         ORDER BY play_count DESC
         """,
-        (match,),
+        (match, user_id),
     ).fetchall()
 
 
-def load_artist_history(con: sqlite3.Connection, artist_name: str) -> list[sqlite3.Row]:
+def load_artist_history(
+    con: sqlite3.Connection, user_id: int, artist_name: str
+) -> list[sqlite3.Row]:
     return con.execute(
-        "SELECT name, singer, album, time FROM track_history WHERE singer = ? ORDER BY time DESC",
-        (artist_name,),
+        "SELECT name, singer, album, time FROM track_history "
+        "WHERE singer = ? AND user_id = ? ORDER BY time DESC",
+        (artist_name, user_id),
     ).fetchall()
 
 
@@ -133,19 +142,19 @@ def album_image_urls_by_name(
 
 
 def load_artist_tracks_page(
-    con: sqlite3.Connection, artist_name: str, offset: int, limit: int
+    con: sqlite3.Connection, user_id: int, artist_name: str, offset: int, limit: int
 ) -> list[sqlite3.Row]:
     return con.execute(
         """
         SELECT th.name, COUNT(*) as cnt, ai.image_url
         FROM track_history th
         LEFT JOIN album_images ai ON ai.artist_name = th.singer AND ai.album_name = th.album
-        WHERE th.singer = ?
+        WHERE th.singer = ? AND th.user_id = ?
         GROUP BY th.name
         ORDER BY cnt DESC, th.name
         LIMIT ? OFFSET ?
         """,
-        (artist_name, limit + 1, offset),
+        (artist_name, user_id, limit + 1, offset),
     ).fetchall()
 
 

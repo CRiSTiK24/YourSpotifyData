@@ -11,7 +11,11 @@ GENRE_ARTIST_SUBQUERY = (
 
 
 def load_top_genres_for_period(
-    con: sqlite3.Connection, start_period: int, end_period: int, limit: int | None = None
+    con: sqlite3.Connection,
+    user_id: int,
+    start_period: int,
+    end_period: int,
+    limit: int | None = None,
 ) -> list[sqlite3.Row]:
     # mirrors track_play_counts.period (see library/play_counts.py's
     # ensure_monthly_play_count_tables): CAST(strftime('%Y%m', time) AS
@@ -28,12 +32,12 @@ def load_top_genres_for_period(
             FROM track_history th
             JOIN artist_images ai ON ai.artist_name = th.singer
             JOIN json_each(ai.genres) je
-            WHERE je.value IS NOT NULL AND je.value != ''
+            WHERE th.user_id = ? AND je.value IS NOT NULL AND je.value != ''
             GROUP BY je.value
             ORDER BY n DESC
             {limit_clause}
             """,
-            limit_params,
+            (user_id, *limit_params),
         ).fetchall()
     lo, hi = start_period or 190001, end_period or 999912
     return con.execute(
@@ -42,11 +46,11 @@ def load_top_genres_for_period(
         FROM track_history th
         JOIN artist_images ai ON ai.artist_name = th.singer
         JOIN json_each(ai.genres) je
-        WHERE CAST(strftime('%Y%m', th.time) AS INTEGER) BETWEEN ? AND ?
+        WHERE th.user_id = ? AND CAST(strftime('%Y%m', th.time) AS INTEGER) BETWEEN ? AND ?
           AND je.value IS NOT NULL AND je.value != ''
         GROUP BY je.value
         ORDER BY n DESC
         {limit_clause}
         """,
-        (lo, hi, *limit_params),
+        (user_id, lo, hi, *limit_params),
     ).fetchall()

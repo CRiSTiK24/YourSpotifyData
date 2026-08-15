@@ -13,6 +13,13 @@ _STATIC_DIR = os.path.join(
 )
 
 logged_in_var: ContextVar[bool] = ContextVar("logged_in", default=False)
+can_write_var: ContextVar[bool] = ContextVar("can_write", default=False)
+is_owner_home_var: ContextVar[bool] = ContextVar("is_owner_home", default=False)
+current_username: ContextVar[str] = ContextVar("current_username", default="")
+
+
+def u(path: str) -> str:
+    return f"/{current_username.get()}{path}"
 
 
 _SITE_NAME = "Your Spotify Data"
@@ -25,7 +32,7 @@ def _quick_search_widget(id_prefix: str) -> str:
     <div class="quick-search">
       <input id="{input_id}" class="quick-search-input" type="text" name="query" autocomplete="off"
         placeholder="Search…" aria-label="Search"
-        hx-get="/search" hx-trigger="input changed delay:300ms" hx-target="#{results_id}"
+        hx-get="{u("/search")}" hx-trigger="input changed delay:300ms" hx-target="#{results_id}"
         hx-select="unset" hx-swap="innerHTML">
       <div id="{results_id}" class="quick-search-results"></div>
     </div>"""
@@ -33,23 +40,31 @@ def _quick_search_widget(id_prefix: str) -> str:
 
 def page(content: str, title: str = "") -> HTMLResponse:
     page_title = f"{title} · {_SITE_NAME}" if title else _SITE_NAME
-    if logged_in_var.get():
-        sidebar_bottom = """
+    theme_link = f'<a href="{u("/theme")}">Theme</a>'
+    if can_write_var.get():
+        setup_link = '<a href="/setup">Instance settings</a>' if is_owner_home_var.get() else ""
+        sidebar_bottom = f"""
     <div class="sidebar-bottom">
-      <a href="/upload">Upload</a>
-      <a href="/scrobbler">Scrobbler</a>
-      <a href="/theme">Theme</a>
+      <a href="{u("/account")}">Account</a>
+      {theme_link}
+      {setup_link}
+    </div>"""
+    elif logged_in_var.get():
+        sidebar_bottom = f"""
+    <div class="sidebar-bottom">
+      {theme_link}
     </div>"""
     else:
-        sidebar_bottom = """
+        sidebar_bottom = f"""
     <div class="sidebar-bottom">
+      {theme_link}
       <a href="/login">Login</a>
     </div>"""
-    nav_links = """
-    <a href="/playlists">See my curated playlists!</a>
-    <a href="/liked-albums">Albums I like</a>
+    nav_links = f"""
+    <a href="{u("/playlists")}">See my curated playlists!</a>
+    <a href="{u("/liked-albums")}">Albums I like</a>
     <hr class="sidebar-divider">
-    <a href="/most-listened">My most listened</a>"""
+    <a href="{u("/most-listened")}">My most listened</a>"""
     html = f"""<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -79,7 +94,7 @@ def page(content: str, title: str = "") -> HTMLResponse:
 
   <div class="drawer-overlay" id="drawer-overlay"></div>
   <nav class="mobile-drawer" id="mobile-drawer" aria-label="Main menu">
-    <a class="brand" href="/">Home</a>
+    <a class="brand" href="{u("/home")}">Home</a>
     <hr class="sidebar-divider">{nav_links}{sidebar_bottom}
   </nav>
 
@@ -368,6 +383,7 @@ def widget(
     content_html: str,
     *,
     info_tooltip: str | None = None,
+    id: str | None = None,
 ) -> str:
     tooltip_attr = f" data-tooltip='{escape(info_tooltip)}'" if info_tooltip else ""
     info_btn = (
@@ -381,8 +397,9 @@ def widget(
         if title
         else info_btn
     )
+    id_attr = f' id="{escape(id)}"' if id else ""
     return f"""
-<div class="widget">
+<div class="widget"{id_attr}>
   {title_html}
   {content_html}
 </div>"""

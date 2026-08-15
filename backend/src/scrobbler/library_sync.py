@@ -74,10 +74,10 @@ def _fetch_current_user_id(access_token: str) -> str:
 
 
 def _fetch_owned_playlists(
-    con: sqlite3.Connection, access_token: str, my_user_id: str
+    con: sqlite3.Connection, access_token: str, my_user_id: str, user_id: int
 ) -> list[dict]:
     _playlist_processor.ensure_schema_columns(con)
-    known_snapshots = _playlist_processor.get_snapshot_ids(con)
+    known_snapshots = _playlist_processor.get_snapshot_ids(con, user_id)
 
     playlists = []
     for pl in _paginate(access_token, f"{API_BASE}/me/playlists?limit=50"):
@@ -166,9 +166,9 @@ def _fetch_followed_artists(access_token: str) -> list[dict]:
 
 
 def set_playlist_description_via_spotify_api(
-    con: sqlite3.Connection, spotify_playlist_id: str, description: str
+    con: sqlite3.Connection, user_id: int, spotify_playlist_id: str, description: str
 ) -> None:
-    access_token = scrobbler_service.ensure_access_token(con)
+    access_token = scrobbler_service.ensure_access_token(con, user_id)
     body = json.dumps({"description": description}).encode()
     req = urllib.request.Request(
         f"{API_BASE}/playlists/{spotify_playlist_id}/details",
@@ -183,24 +183,24 @@ def set_playlist_description_via_spotify_api(
         pass
 
 
-def sync_once(con: sqlite3.Connection) -> dict:
-    access_token = scrobbler_service.ensure_access_token(con)
+def sync_once(con: sqlite3.Connection, user_id: int) -> dict:
+    access_token = scrobbler_service.ensure_access_token(con, user_id)
     my_user_id = _fetch_current_user_id(access_token)
 
-    playlists = _fetch_owned_playlists(con, access_token, my_user_id)
-    counts = _playlist_processor.save_to_db(con, playlists, remove_missing=True)
+    playlists = _fetch_owned_playlists(con, access_token, my_user_id, user_id)
+    counts = _playlist_processor.save_to_db(con, playlists, user_id, remove_missing=True)
 
     tracks = _fetch_liked_tracks(access_token)
     albums = _fetch_liked_albums(access_token)
     artists = _fetch_followed_artists(access_token)
-    counts.update(_library_processor.save_to_db(con, tracks, albums, artists))
+    counts.update(_library_processor.save_to_db(con, tracks, albums, artists, user_id))
 
     return counts
 
 
-async def _sync_and_log(con: sqlite3.Connection) -> None:
-    counts = await asyncio.to_thread(sync_once, con)
-    logger.info("library sync complete: %s", counts)
+async def _sync_and_log(con: sqlite3.Connection, user_id: int) -> None:
+    counts = await asyncio.to_thread(sync_once, con, user_id)
+    logger.info("library sync complete for user %d: %s", user_id, counts)
 
 
 async def sync_loop() -> None:
@@ -208,5 +208,5 @@ async def sync_loop() -> None:
         _sync_and_log,
         interval_seconds=settings.library_sync_poll_seconds,
         logger=logger,
-        require_connected=lambda con: scrobbler_service.get_status(con) is not None,
+        connected_user_ids=scrobbler_service.connected_user_ids,
     )

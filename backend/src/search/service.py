@@ -41,15 +41,17 @@ def ensure_track_history_fts_covers_album(con: sqlite3.Connection) -> None:
     con.commit()
 
 
-def search_track_history_by_name(con: sqlite3.Connection, query: str) -> list[sqlite3.Row]:
+def search_track_history_by_name(
+    con: sqlite3.Connection, user_id: int, query: str
+) -> list[sqlite3.Row]:
     match = fts_match_query(query.split(), column="name")
     return con.execute(
         """
         SELECT th.name, th.singer, th.time
         FROM track_history_fts
         JOIN track_history th ON th.id = track_history_fts.rowid
-        WHERE track_history_fts MATCH ?
+        WHERE track_history_fts MATCH ? AND th.user_id = ?
         ORDER BY th.time DESC
         """,
-        (match,),
+        (match, user_id),
     ).fetchall()

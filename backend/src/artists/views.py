@@ -1,7 +1,7 @@
 import sqlite3
 from urllib.parse import quote
 
-from src.html import paginated_fragment, row
+from src.html import paginated_fragment, row, u
 from src.utils import most_listened_next_href
 
 from . import service
@@ -11,6 +11,7 @@ MOST_LISTENED_ARTISTS_BATCH = 30
 
 def most_listened_artists_rows_html(
     con: sqlite3.Connection,
+    user_id: int,
     offset: int,
     max_plays: int,
     start_period: int = 0,
@@ -18,21 +19,21 @@ def most_listened_artists_rows_html(
     genre: str = "",
 ) -> str:
     artists = service.load_artists(
-        con, MOST_LISTENED_ARTISTS_BATCH + 1, offset, start_period, end_period, genre
+        con, user_id, MOST_LISTENED_ARTISTS_BATCH + 1, offset, start_period, end_period, genre
     )
     has_more = len(artists) > MOST_LISTENED_ARTISTS_BATCH
     artists = artists[:MOST_LISTENED_ARTISTS_BATCH]
     rows_html = "".join(
         row(
             a["singer"],
-            f"/artist/{quote(a['singer'])}",
+            u(f"/artist/{quote(a['singer'])}"),
             note=str(a["play_count"]),
             image_url=a["image_url"],
         )
         for a in artists
     )
     next_href = most_listened_next_href(
-        "/most-listened-artists/more",
+        u("/most-listened-artists/more"),
         offset + MOST_LISTENED_ARTISTS_BATCH,
         max_plays,
         start_period,
