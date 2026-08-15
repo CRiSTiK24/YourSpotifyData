@@ -238,6 +238,20 @@ body.preview-bar-visible .content { padding-bottom: 52px; }
     outline: none;
 }
 .quick-search-input:focus { border-color: var(--color-accent); }
+/* the profile-switcher <select> next to the search box - flex:none (not
+   the search box's flex:1) so it stays content-sized instead of sharing
+   the row equally, and a max-width so a long username can't push the
+   search box down to nothing at phone widths. */
+.profile-switcher {
+    flex: none;
+    max-width: 40vw;
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    color: var(--color-text);
+    padding: 8px 10px;
+    font-size: 14px;
+}
 /* empty (no query yet, or cleared) means hidden; htmx fills this with
    .row/.info markup as the user types, or clears it back to empty on
    navigation - see the htmx:afterSwap handler in mobile-nav.js */

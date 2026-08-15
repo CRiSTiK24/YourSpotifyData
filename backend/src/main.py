@@ -18,7 +18,14 @@ from src.covers.router import router as covers_router
 from src.database import ensure_base_schema, get_connection
 from src.exceptions import http_exception_handler
 from src.home import router as home_router
-from src.html import can_write_var, current_username, is_owner_home_var, logged_in_var
+from src.html import (
+    AGGREGATE_ROOT_SEGMENTS,
+    available_usernames_var,
+    can_write_var,
+    current_username,
+    is_owner_home_var,
+    logged_in_var,
+)
 from src.images import service as images_service
 from src.library import play_counts as library_play_counts
 from src.library.router import router as library_router
@@ -45,26 +52,6 @@ _STATIC_DIR = os.path.join(
 )
 
 logger = logging.getLogger("setup")
-
-# First path segments served at the root, with no "/{username}" prefix (see
-# the app.include_router calls below) - an "all users merged" view rather
-# than any one person's. Checked in the middleware below so these don't
-# fall back to treating the owner as the page's identity the way an
-# unrecognized username normally would (see auth_state_middleware).
-_AGGREGATE_ROOT_SEGMENTS = {
-    "now",
-    "most-listened",
-    "most-listened-albums",
-    "most-listened-artists",
-    "liked-albums",
-    "artists",
-    "artist",
-    "search",
-    "track",
-    "album",
-    "playlists",
-    "theme",
-}
 
 
 @asynccontextmanager
@@ -114,9 +101,10 @@ async def auth_state_middleware(request: Request, call_next):
             return await call_next(request)
         first_segment = request.url.path.strip("/").split("/", 1)[0]
         viewed_user = users_service.get_by_username(con, first_segment)
-        is_aggregate = viewed_user is None and first_segment in _AGGREGATE_ROOT_SEGMENTS
+        is_aggregate = viewed_user is None and first_segment in AGGREGATE_ROOT_SEGMENTS
         page_username = viewed_user["username"] if viewed_user else owner["username"]
         current_username.set("" if is_aggregate else page_username)
+        available_usernames_var.set([u["username"] for u in users_service.list_users(con)])
 
         current_user = None
         try:

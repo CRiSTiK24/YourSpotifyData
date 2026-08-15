@@ -7,6 +7,7 @@ from fastapi import Depends, HTTPException, Request
 
 from src.config import settings
 from src.database import DBDep
+from src.html import AGGREGATE_ROOT_SEGMENTS
 
 from .exceptions import UserValidationError
 
@@ -16,11 +17,10 @@ _USERNAME_RE = re.compile(r"^[a-zA-Z0-9_.-]{1,64}$")
 
 # top-level path segments already owned by global (non-per-user) routes -
 # see main.py's app.include_router calls for auth/covers/previews/static,
-# plus "admin" (every user's own /{username}/admin route would shadow it)
-# and main.py's own _AGGREGATE_ROOT_SEGMENTS (kept in sync manually - a
-# circular import blocks pulling that set in directly - since a user
-# registered under one of these would make the aggregate route at e.g.
-# /now resolve to that person's page instead of the merged view).
+# "admin" (every user's own /{username}/admin route would shadow it), and
+# AGGREGATE_ROOT_SEGMENTS (a user registered under one of those would make
+# the aggregate route at e.g. /now resolve to that person's page instead of
+# the merged view).
 RESERVED_USERNAMES = {
     "login",
     "logout",
@@ -29,19 +29,7 @@ RESERVED_USERNAMES = {
     "preview",
     "favicon.ico",
     "admin",
-    "now",
-    "most-listened",
-    "most-listened-albums",
-    "most-listened-artists",
-    "liked-albums",
-    "artists",
-    "artist",
-    "search",
-    "track",
-    "album",
-    "playlists",
-    "theme",
-}
+} | AGGREGATE_ROOT_SEGMENTS
 
 # Tables that were single-tenant before multiuser support and need a
 # user_id column backfilled to the owner for any pre-existing rows.

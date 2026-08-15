@@ -1,4 +1,5 @@
 import colorsys
+import json
 import math
 import os
 from collections.abc import Callable
@@ -12,10 +13,33 @@ _STATIC_DIR = os.path.join(
     os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "frontend", "static"
 )
 
+# First path segments served at the root, with no "/{username}" prefix - an
+# "all users merged" view rather than any one person's. Canonical source for
+# this set: main.py's app.include_router calls and auth_state_middleware use
+# it to decide routing/identity, users/service.py's RESERVED_USERNAMES folds
+# it in so no one can register a colliding username, and _profile_switcher()
+# below sends it to the browser so switching profiles can tell whether the
+# current page has an aggregate equivalent to land on.
+AGGREGATE_ROOT_SEGMENTS = {
+    "now",
+    "most-listened",
+    "most-listened-albums",
+    "most-listened-artists",
+    "liked-albums",
+    "artists",
+    "artist",
+    "search",
+    "track",
+    "album",
+    "playlists",
+    "theme",
+}
+
 logged_in_var: ContextVar[bool] = ContextVar("logged_in", default=False)
 can_write_var: ContextVar[bool] = ContextVar("can_write", default=False)
 is_owner_home_var: ContextVar[bool] = ContextVar("is_owner_home", default=False)
 current_username: ContextVar[str] = ContextVar("current_username", default="")
+available_usernames_var: ContextVar[list[str]] = ContextVar("available_usernames", default=[])
 
 
 def u(path: str) -> str:
@@ -37,6 +61,30 @@ def _quick_search_widget(id_prefix: str) -> str:
         hx-select="unset" hx-swap="innerHTML">
       <div id="{results_id}" class="quick-search-results"></div>
     </div>"""
+
+
+def _profile_switcher() -> str:
+    usernames = available_usernames_var.get()
+    if not usernames:
+        return ""
+    current = current_username.get()
+    options = [f'<option value=""{" selected" if not current else ""}>All (merged)</option>']
+    options += [
+        f'<option value="{escape(name)}"{" selected" if name == current else ""}>{escape(name)}</option>'
+        for name in usernames
+    ]
+    # target/aggregate resolution (preserving whatever sub-page you're on
+    # across the switch, rather than always landing on /now) needs to know
+    # every real username - to tell an aggregate-mode bare path like
+    # "/playlists" apart from a per-user path's first segment - and which
+    # first segments even have an aggregate equivalent to land on when
+    # switching *to* "All merged" - see profile-switcher.js.
+    return f"""
+    <select class="profile-switcher" aria-label="Switch profile"
+      data-usernames='{escape(json.dumps(usernames))}'
+      data-aggregate-segments='{escape(json.dumps(sorted(AGGREGATE_ROOT_SEGMENTS)))}'>
+      {"".join(options)}
+    </select>"""
 
 
 def page(content: str, title: str = "") -> HTMLResponse:
@@ -91,6 +139,7 @@ def page(content: str, title: str = "") -> HTMLResponse:
     <button type="button" class="hamburger-btn" id="hamburger-btn" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-drawer">
       <span></span><span></span><span></span>
     </button>
+    {_profile_switcher()}
     {_quick_search_widget("topbar")}
   </header>
 
@@ -119,6 +168,7 @@ def page(content: str, title: str = "") -> HTMLResponse:
     <input type="range" class="preview-bar-volume" id="preview-bar-volume" min="0" max="1" step="0.01" aria-label="Volume">
   </div>
 </div>
+<script src="/static/profile-switcher.js"></script>
 <script src="/static/mobile-nav.js"></script>
 <script src="/static/tooltips.js"></script>
 <script src="/static/quick-search.js"></script>
