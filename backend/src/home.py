@@ -1,7 +1,5 @@
-import random
 import sqlite3
 from datetime import UTC, datetime
-from html import escape
 from urllib.parse import quote
 
 from fastapi import APIRouter
@@ -10,7 +8,6 @@ from fastapi.responses import HTMLResponse
 from src.database import DBDep
 from src.genres import load_top_genres_for_period
 from src.html import card, carousel, page, u, widget, widget_grid, word_cloud
-from src.total_war_rome_ii_greetings import TotalWarRomeIIGreetings
 from src.users import service as users_service
 
 router = APIRouter(tags=["home"])
@@ -126,8 +123,7 @@ def _most_listened_genre_href(genre: str) -> str:
 def home(con: DBDep, viewed_user: users_service.ViewedUserDep):
     user_id = viewed_user["id"] if viewed_user else None
     possessive, subject_pronoun = ("our", "we") if user_id is None else ("my", "I")
-    greeting = random.choice(TotalWarRomeIIGreetings)
-    widgets_html = widget("", f"<blockquote><em>{escape(greeting)}</em></blockquote>")
+    widgets_html = ""
 
     discoveries = _load_recent_discoveries(con, user_id, RECENT_DISCOVERIES_DAYS)
     if discoveries:
@@ -150,6 +146,7 @@ def home(con: DBDep, viewed_user: users_service.ViewedUserDep):
             "New supercool tracks",
             carousel(cards_html, compact=True),
             info_tooltip=info_tooltip,
+            id="discoveries-widget",
         )
 
     explored_albums = _load_recently_explored_albums(
@@ -176,6 +173,7 @@ def home(con: DBDep, viewed_user: users_service.ViewedUserDep):
             "Recently explored albums",
             carousel(cards_html, compact=True),
             info_tooltip=info_tooltip,
+            id="explored-albums-widget",
         )
 
     current_period = _current_month_period()
@@ -193,6 +191,7 @@ def home(con: DBDep, viewed_user: users_service.ViewedUserDep):
                 extra_class="carousel",
             ),
             info_tooltip=info_tooltip,
+            id="genre-widget",
         )
 
     return page(widget_grid(widgets_html))

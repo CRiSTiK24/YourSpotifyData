@@ -426,13 +426,10 @@ h2 { font-size: 18px; font-weight: 600; margin: 20px 0 10px; color: var(--color-
     border-radius: 8px;
     padding: 16px;
 }
-/* caps a carousel-widget's width at roughly a handful of cards, the rest
-   reachable by scrolling the carousel itself (see .carousel below for why
-   this cap lives here instead of on .carousel's own max-width). 520px is
-   sized for the compact carousel's cards (~5 at their 90px ceiling) - the
-   only variant in use; revisit if a non-compact carousel widget shows up. */
-.widget:has(.carousel) { max-width: min(100%, 520px); }
-.widget:has(.word-cloud) { max-width: min(100%, 480px); }
+/* every carousel/word-cloud widget on /now takes the full row instead of
+   shrink-wrapping to its content - being carousels, extra width just
+   surfaces more cards/tags without scrolling, on both mobile and desktop. */
+.widget:has(.carousel) { width: 100%; max-width: 100%; }
 /* mobile-first: the homepage word-cloud's font sizes (14-40px, see
    word_cloud()'s min_size/max_size) are sized for a full desktop widget -
    at phone widths a single tag can eat the entire row, leaving only 1-2
@@ -798,7 +795,7 @@ blockquote {
    over selectable content). */
 .carousel.carousel-dragging { cursor: grabbing; scroll-snap-type: none; }
 .carousel.carousel-dragging, .carousel.carousel-dragging * { user-select: none; }
-.carousel-compact { grid-auto-columns: clamp(72px, 20vw, 90px); max-width: min(100%, 460px); }
+.carousel-compact { grid-auto-columns: clamp(72px, 20vw, 90px); }
 .carousel-compact .card-title, .carousel-compact .card-secondary { font-size: 12px; }
 
 .card { display: flex; flex-direction: column; min-width: 0; position: relative; }
