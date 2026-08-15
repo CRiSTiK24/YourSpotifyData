@@ -131,7 +131,7 @@ def page(content: str, title: str = "") -> HTMLResponse:
     }} catch (e) {{}}
   }})();
   </script>
-  <script src="https://unpkg.com/htmx.org@2.0.4" integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+" crossorigin="anonymous"></script>
+  <script src="/static/htmx.min.js"></script>
 </head>
 <body hx-boost="true" hx-target="#content" hx-select="#content" hx-swap="outerHTML transition:true">
 <div class="shell">
@@ -150,7 +150,7 @@ def page(content: str, title: str = "") -> HTMLResponse:
   </nav>
 
   <div class="content-column">
-    <main class="content" id="content">
+    <main class="content" id="content" hx-history-elt>
 {content}
     </main>
   </div>
@@ -211,31 +211,6 @@ def page_header(title: str, actions: str = "") -> str:
   <h1>{escape(title)}</h1>
   {actions}
 </div>"""
-
-
-def search_form(
-    action: str,
-    placeholder: str,
-    *,
-    value: str = "",
-    autofocus: bool = True,
-    name: str = "query",
-    hx_target: str = "#content",
-    hx_select: str = "#content",
-    hx_swap: str = "outerHTML",
-    hx_push_url: bool = True,
-) -> str:
-    autofocus_attr = " autofocus" if autofocus else ""
-    value_attr = f" value='{escape(value)}'" if value else ""
-    action_esc = escape(action)
-    push_url = "true" if hx_push_url else "false"
-    return f"""
-<form class="search-form" action="{action_esc}" method="get" autocomplete="off">
-  <input id="live-search-input" name="{escape(name)}" type="text" autocomplete="off"{value_attr} placeholder="{escape(placeholder)}"{autofocus_attr}
-    onkeydown="if(event.key==='Enter'){{event.preventDefault();}}"
-    hx-get="{action_esc}" hx-trigger="input changed delay:300ms" hx-target="{escape(hx_target)}"
-    hx-select="{escape(hx_select)}" hx-swap="{escape(hx_swap)}" hx-push-url="{push_url}" hx-preserve="true">
-</form>"""
 
 
 def _recolored_cover_src(

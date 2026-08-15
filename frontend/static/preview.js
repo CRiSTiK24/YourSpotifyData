@@ -15,6 +15,7 @@
 
   var audio = new Audio();
   audio.volume = parseFloat(localStorage.getItem(VOLUME_STORAGE_KEY) || "1");
+  document.getElementById("preview-bar-volume").value = audio.volume;
   var activeBtn = null;
 
   // The other, more likely, source of "duplicated" audio: two browser tabs
@@ -31,15 +32,21 @@
     };
   }
 
-  var bar = document.getElementById("preview-bar");
-  var barTrack = document.getElementById("preview-bar-track");
-  var barArtist = document.getElementById("preview-bar-artist");
-  var barFill = document.getElementById("preview-bar-fill");
-  var barProgress = document.getElementById("preview-bar-progress");
-  var barToggle = document.getElementById("preview-bar-toggle");
-  var barToggleIcon = document.getElementById("preview-bar-toggle-icon");
-  var barVolume = document.getElementById("preview-bar-volume");
-  barVolume.value = audio.volume;
+  // Looked up fresh on every use rather than cached once - the preview bar
+  // sits outside #content (see page() in html.py) on the assumption that
+  // htmx-boosted navigation, and its own history-cache restore, only ever
+  // touch #content and leave this persistent chrome alone. That assumption
+  // turned out false: a history-cache-hit "back" navigation can replace
+  // this bar's DOM with a stale snapshot of it too (frozen at whatever
+  // track/artist was showing when you'd navigated away). A reference
+  // captured once at script load would keep pointing at the old, now-
+  // invisible node forever after that - every future update landing on an
+  // element nobody can see, while the actually-visible (stale) one never
+  // changes again. Fresh lookups sidestep the problem entirely: whichever
+  // node is live right now is the one that gets updated.
+  function el(id) {
+    return document.getElementById(id);
+  }
 
   function reset(btn) {
     btn.classList.remove("playing");
@@ -48,14 +55,14 @@
   }
 
   function showBar(track, artist) {
-    barTrack.textContent = track;
-    barArtist.textContent = artist;
-    bar.hidden = false;
+    el("preview-bar-track").textContent = track;
+    el("preview-bar-artist").textContent = artist;
+    el("preview-bar").hidden = false;
     document.body.classList.add("preview-bar-visible");
   }
 
   function hideBar() {
-    bar.hidden = true;
+    el("preview-bar").hidden = true;
     document.body.classList.remove("preview-bar-visible");
   }
 
@@ -70,8 +77,10 @@
   // silently losing it.
   function saveSession() {
     if (!audio.src) return;
-    var track = activeBtn ? activeBtn.dataset.previewTrack : barTrack.textContent;
-    var artist = activeBtn ? activeBtn.dataset.previewArtist : barArtist.textContent;
+    var track = activeBtn ? activeBtn.dataset.previewTrack : el("preview-bar-track").textContent;
+    var artist = activeBtn
+      ? activeBtn.dataset.previewArtist
+      : el("preview-bar-artist").textContent;
     if (!track) return;
     sessionStorage.setItem(
       SESSION_KEY,
@@ -104,8 +113,10 @@
   // After a boosted swap or a history (back/forward) restore, the DOM
   // activeBtn pointed at may be gone (or, for a history-cache restore, a
   // stale snapshot of a button that's no longer actually playing) - relink
-  // to a same-track/artist button if this page happens to render one, and
-  // sweep away any other "playing" icon that doesn't match reality.
+  // to a same-track/artist button if this page happens to render one, sweep
+  // away any other "playing" icon that doesn't match reality, and re-assert
+  // the bar's own text/volume in case *that* got replaced by a stale
+  // snapshot too (see el() above).
   function relinkActiveBtn() {
     if (activeBtn && !activeBtn.isConnected) {
       var playing = !audio.paused && !audio.ended;
@@ -120,17 +131,25 @@
     document.querySelectorAll(".preview-btn.playing").forEach(function (btn) {
       if (btn !== activeBtn) reset(btn);
     });
+    if (audio.src && activeBtn) {
+      showBar(activeBtn.dataset.previewTrack, activeBtn.dataset.previewArtist);
+    }
+    el("preview-bar-volume").value = audio.volume;
   }
 
   function play(track, artist) {
-    var wasActive = activeBtn;
-    if (wasActive) reset(wasActive);
+    // Sweeps every ".playing" button, not just the tracked activeBtn - a
+    // stale one can otherwise survive indefinitely (e.g. a class baked
+    // into an htmx history-cache snapshot restored while activeBtn was
+    // wrongly null, see the popstate handler below) since activeBtn being
+    // wrong is exactly the case reset(wasActive) alone can't catch.
+    document.querySelectorAll(".preview-btn.playing").forEach(reset);
     activeBtn = findMatchingButton(track, artist);
     showBar(track, artist);
     if (channel) channel.postMessage("stop");
     audio.src = "/preview?track=" + encodeURIComponent(track) + "&artist=" + encodeURIComponent(artist);
     audio.play().catch(function () {
-      if (barTrack.textContent === track) stop();
+      if (el("preview-bar-track").textContent === track) stop();
     });
   }
 
@@ -153,7 +172,7 @@
     audio.addEventListener("loadedmetadata", function onLoaded() {
       audio.removeEventListener("loadedmetadata", onLoaded);
       audio.currentTime = resumeAt;
-      if (audio.duration) barFill.style.width = (resumeAt / audio.duration) * 100 + "%";
+      if (audio.duration) el("preview-bar-fill").style.width = (resumeAt / audio.duration) * 100 + "%";
     });
     // Deliberately not auto-playing: browsers block autoplay-with-sound
     // without a fresh user gesture anyway, and resuming sound the instant
@@ -169,15 +188,36 @@
       var icon = activeBtn.querySelector(".preview-icon");
       if (icon) icon.textContent = playing ? PAUSE_ICON : PLAY_ICON;
     }
-    barToggle.setAttribute("aria-label", playing ? "Pause" : "Resume");
-    barToggleIcon.textContent = playing ? TOGGLE_PAUSE_ICON : PLAY_ICON;
+    el("preview-bar-toggle").setAttribute("aria-label", playing ? "Pause" : "Resume");
+    el("preview-bar-toggle-icon").textContent = playing ? TOGGLE_PAUSE_ICON : PLAY_ICON;
   }
 
+  // Delegated on document (not attached directly to #preview-bar-progress/
+  // #preview-bar-volume) for the same reason showBar()/hideBar() above use
+  // el() instead of a cached reference: a listener bound directly to a
+  // specific node stops firing the moment that node gets replaced by a
+  // history-cache restore, silently breaking seek/volume with no error to
+  // notice. Delegation only ever cares what's live under the click/input
+  // right now, so it can't go stale.
   document.addEventListener("click", function (e) {
     if (e.target.closest("#preview-bar-toggle")) {
       if (!audio.src) return;
       if (audio.paused) audio.play();
       else audio.pause();
+      return;
+    }
+
+    var progress = e.target.closest("#preview-bar-progress");
+    if (progress) {
+      if (!audio.src || !audio.duration) return;
+      var rect = progress.getBoundingClientRect();
+      var fraction = (e.clientX - rect.left) / rect.width;
+      audio.currentTime = Math.max(0, Math.min(1, fraction)) * audio.duration;
+      // Seeking on an ended (or manually paused) track wouldn't otherwise
+      // resume playback on its own - without this, clicking a point on the
+      // bar after a preview finished would silently move the position with
+      // no audible feedback.
+      if (audio.paused) audio.play();
       return;
     }
 
@@ -210,27 +250,16 @@
     play(track, artist);
   });
 
-  barProgress.addEventListener("click", function (e) {
-    if (!audio.src || !audio.duration) return;
-    var rect = barProgress.getBoundingClientRect();
-    var fraction = (e.clientX - rect.left) / rect.width;
-    audio.currentTime = Math.max(0, Math.min(1, fraction)) * audio.duration;
-    // Seeking on an ended (or manually paused) track wouldn't otherwise
-    // resume playback on its own - without this, clicking a point on the
-    // bar after a preview finished would silently move the position with
-    // no audible feedback.
-    if (audio.paused) audio.play();
-  });
-
-  barVolume.addEventListener("input", function () {
-    audio.volume = parseFloat(barVolume.value);
+  document.addEventListener("input", function (e) {
+    if (!e.target.closest("#preview-bar-volume")) return;
+    audio.volume = parseFloat(e.target.value);
     localStorage.setItem(VOLUME_STORAGE_KEY, String(audio.volume));
   });
 
   audio.addEventListener("timeupdate", function () {
     saveSession();
     if (!audio.duration) return;
-    barFill.style.width = (audio.currentTime / audio.duration) * 100 + "%";
+    el("preview-bar-fill").style.width = (audio.currentTime / audio.duration) * 100 + "%";
   });
   audio.addEventListener("play", syncPlayingState);
   audio.addEventListener("pause", function () {
@@ -252,8 +281,36 @@
   });
 
   document.addEventListener("htmx:afterSwap", relinkActiveBtn);
-  window.addEventListener("popstate", relinkActiveBtn);
+  window.addEventListener("popstate", function () {
+    relinkActiveBtn();
+    // A history-cache hit (going back to a page htmx already has a local
+    // snapshot of) can restore #content near-instantly without going
+    // through the normal request/swap pipeline - htmx:afterSwap isn't
+    // guaranteed to fire for that path, and popstate itself can fire
+    // before that restore has actually landed in the DOM. Losing that
+    // race here left activeBtn wrongly null (findMatchingButton searching
+    // stale, pre-restore content) with nothing ever correcting it - the
+    // *next* play() call would then skip clearing the old button (its
+    // "if (wasActive) reset(wasActive)" no-ops on null), so the snapshot's
+    // own baked-in .playing class from before you'd navigated away stayed
+    // stuck forever, alongside whatever you played next. Re-checking once
+    // more next tick catches the DOM once the restore has actually
+    // happened, rather than leaving that race's loser as the final state.
+    setTimeout(relinkActiveBtn, 0);
+  });
   window.addEventListener("pagehide", saveSession);
+  // Coming back to a bfcache-frozen page (browser back/forward that didn't
+  // need a real reload) resumes this exact script instance mid-flight, not
+  // a fresh run - restoreSession() below never re-fires. Browsers commonly
+  // pause any playing media before freezing a page for bfcache, which
+  // already fires audio's own "pause" event and keeps the icon/bar in sync
+  // - but that's not guaranteed everywhere, so this re-syncs unconditionally
+  // on resume as a safety net rather than trusting that always held true
+  // while the page was frozen.
+  window.addEventListener("pageshow", function () {
+    relinkActiveBtn();
+    syncPlayingState();
+  });
 
   restoreSession();
 })();
