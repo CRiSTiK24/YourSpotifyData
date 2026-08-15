@@ -41,14 +41,6 @@ def date_filter_html(
     end_value = format_month_param(end_period) if end_period else ""
     min_value = format_month_param(min_period) if min_period else ""
     max_value = format_month_param(max_period) if max_period else ""
-    # json.dumps (not html.escape) since this value lands inside a <script>
-    # block, not HTML markup - <script> content isn't entity-decoded by the
-    # browser, so an HTML-escaped quote would show up as literal text
-    # (&quot;) in the JS source instead of closing the string, corrupting
-    # the value read back on the next date/genre navigation. The <
-    # replacement on top guards against a genre containing "</script>"
-    # from breaking out of the block (json.dumps alone doesn't escape it).
-    genre_js = json.dumps(genre).replace("<", "\\u003c")
     return f"""
 <div class="date-filter">
   <label class="date-filter-field">
@@ -63,14 +55,22 @@ def date_filter_html(
 <script>
 (function () {{
   var baseHref = {json.dumps(u("/most-listened"))};
-  var genre = {genre_js};
   var startInput = document.getElementById("date-filter-start");
   var endInput = document.getElementById("date-filter-end");
 
+  // Reads genre from the URL at click time, not a value baked in when
+  // this script last ran - a genre-tag click only swaps #ml-results (see
+  // word_cloud()'s hx_swap_target usage above, which deliberately avoids
+  // resetting the genre carousel's scroll position by not re-rendering
+  // this whole header), so this script tag itself never re-executes when
+  // the genre changes. A closured genre value from render time would
+  // silently go stale the moment you then touched a date field, dropping
+  // whatever genre was actually selected back out of the URL.
   function navigate() {{
     var params = [];
     if (startInput.value) {{ params.push("start_month=" + encodeURIComponent(startInput.value)); }}
     if (endInput.value) {{ params.push("end_month=" + encodeURIComponent(endInput.value)); }}
+    var genre = new URLSearchParams(window.location.search).get("genre");
     if (genre) {{ params.push("genre=" + encodeURIComponent(genre)); }}
     window.location.href = baseHref + (params.length ? "?" + params.join("&") : "");
   }}
