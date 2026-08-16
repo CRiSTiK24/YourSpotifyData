@@ -27,12 +27,15 @@ def _code_form(email: str) -> str:
 
 @router.get("/login", response_class=HTMLResponse, status_code=200, description="Login form")
 def login_form():
-    content = """
+    content = f"""
 <h1>Login</h1>
 <form class="search-form" action="/login" method="post">
   <input name="email" type="email" placeholder="you@example.com" aria-label="Email address" autofocus required>
   <button type="submit">Send code</button>
 </form>
+<p class="subtitle">This instance is limited to {users_service.MAX_USERS} accounts. If you don't
+have one yet, contact whoever hosts this instance to get an account with music access set up
+for you.</p>
 """
     return page(content, title="Login")
 

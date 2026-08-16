@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 from fastapi.responses import HTMLResponse
 
-from src.html import hero_image, page
+from src.html import hero_image, page, static_url
 
 router = APIRouter(tags=["theme"])
 
@@ -68,6 +68,6 @@ this device until cleared.</p>
 <div class="theme-grid">
 {range_rows}
 </div>
-<script src="/static/theme.js"></script>
+<script src="{static_url("theme.js")}"></script>
 """
     return page(content, title="Theme")

@@ -31,18 +31,6 @@ def most_listened(
     end_month: str = "",
     genre: str = "",
 ):
-    # the genre carousel's own hx-get (hx-target='#ml-results') marks its
-    # tags hx-swap-oob so a click patches them in place without resetting
-    # the carousel's scroll position (see word_cloud()'s oob param) - but
-    # any other htmx-driven request to this same route (hx-boost nav from
-    # the hamburger menu, a homepage genre link, etc.) also has htmx
-    # extract-and-discard that oob element on arrival, since there's no
-    # existing #ml-genre-tags in the DOM yet to patch into - which would
-    # otherwise delete it from the response before the real page's own
-    # #content swap ever inserts it, rendering the carousel empty until a
-    # real (non-htmx) reload. Only setting oob=True when HX-Target
-    # confirms this request is that specific carousel-click case avoids
-    # stripping it out everywhere else.
     is_genre_swap = request.headers.get("hx-target") == "ml-results"
     user_id = viewed_user["id"] if viewed_user else None
     return page(

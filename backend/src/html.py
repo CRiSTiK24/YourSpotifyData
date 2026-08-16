@@ -1,4 +1,5 @@
 import colorsys
+import hashlib
 import json
 import math
 import os
@@ -13,13 +14,16 @@ _STATIC_DIR = os.path.join(
     os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "frontend", "static"
 )
 
-# First path segments served at the root, with no "/{username}" prefix - an
-# "all users merged" view rather than any one person's. Canonical source for
-# this set: main.py's app.include_router calls and auth_state_middleware use
-# it to decide routing/identity, users/service.py's RESERVED_USERNAMES folds
-# it in so no one can register a colliding username, and _profile_switcher()
-# below sends it to the browser so switching profiles can tell whether the
-# current page has an aggregate equivalent to land on.
+_static_versions: dict[str, str] = {}
+
+
+def static_url(filename: str) -> str:
+    if filename not in _static_versions:
+        with open(os.path.join(_STATIC_DIR, filename), "rb") as f:
+            _static_versions[filename] = hashlib.sha256(f.read()).hexdigest()[:10]
+    return f"/static/{filename}?v={_static_versions[filename]}"
+
+
 AGGREGATE_ROOT_SEGMENTS = {
     "now",
     "most-listened",
@@ -73,12 +77,6 @@ def _profile_switcher() -> str:
         f'<option value="{escape(name)}"{" selected" if name == current else ""}>{escape(name)}</option>'
         for name in usernames
     ]
-    # target/aggregate resolution (preserving whatever sub-page you're on
-    # across the switch, rather than always landing on /now) needs to know
-    # every real username - to tell an aggregate-mode bare path like
-    # "/playlists" apart from a per-user path's first segment - and which
-    # first segments even have an aggregate equivalent to land on when
-    # switching *to* "All merged" - see profile-switcher.js.
     return f"""
     <select class="profile-switcher" aria-label="Switch profile"
       data-usernames='{escape(json.dumps(usernames))}'
@@ -104,9 +102,8 @@ def page(content: str, title: str = "") -> HTMLResponse:
       {theme_link}
     </div>"""
     else:
-        sidebar_bottom = f"""
+        sidebar_bottom = """
     <div class="sidebar-bottom">
-      {theme_link}
       <a href="/login">Login</a>
     </div>"""
     is_aggregate = not current_username.get()
@@ -122,7 +119,7 @@ def page(content: str, title: str = "") -> HTMLResponse:
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{escape(page_title)}</title>
   <link rel="preload" href="/static/fonts/degheest/Director-Variable.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="/static/style.css">
+  <link rel="stylesheet" href="{static_url("style.css")}">
   <script>
   (function () {{
     try {{
@@ -131,7 +128,7 @@ def page(content: str, title: str = "") -> HTMLResponse:
     }} catch (e) {{}}
   }})();
   </script>
-  <script src="/static/htmx.min.js"></script>
+  <script src="{static_url("htmx.min.js")}"></script>
 </head>
 <body hx-boost="true" hx-target="#content" hx-select="#content" hx-swap="outerHTML transition:true">
 <div class="shell">
@@ -168,13 +165,13 @@ def page(content: str, title: str = "") -> HTMLResponse:
     <input type="range" class="preview-bar-volume" id="preview-bar-volume" min="0" max="1" step="0.01" aria-label="Volume">
   </div>
 </div>
-<script src="/static/profile-switcher.js"></script>
-<script src="/static/mobile-nav.js"></script>
-<script src="/static/tooltips.js"></script>
-<script src="/static/quick-search.js"></script>
-<script src="/static/most-listened.js"></script>
-<script src="/static/preview.js"></script>
-<script src="/static/carousel.js"></script>
+<script src="{static_url("profile-switcher.js")}"></script>
+<script src="{static_url("mobile-nav.js")}"></script>
+<script src="{static_url("tooltips.js")}"></script>
+<script src="{static_url("quick-search.js")}"></script>
+<script src="{static_url("most-listened.js")}"></script>
+<script src="{static_url("preview.js")}"></script>
+<script src="{static_url("carousel.js")}"></script>
 </body>
 </html>"""
     return HTMLResponse(html)
@@ -338,11 +335,6 @@ def word_cloud(
 ) -> str:
     if not items:
         return ""
-    # Hues are assigned by alphabetical rank (not display order) and evenly
-    # spaced around the wheel, so any two labels always sit far apart in hue
-    # regardless of how many share similar play counts, and a given label's
-    # color stays roughly stable across re-renders instead of reshuffling
-    # whenever its count (and therefore sort position) changes.
     by_name = sorted({name for name, _ in items})
     hue_step = 360 / len(by_name)
     hues = {name: idx * hue_step for idx, name in enumerate(by_name)}
@@ -361,19 +353,9 @@ def word_cloud(
         title = f"{escape(name)} · {count} play{plural}"
         is_active = active is not None and name in active
         tag_class = "word-cloud-tag active" if is_active else "word-cloud-tag"
-        # var(--wc-scale, 1) lets CSS shrink every tag proportionally at
-        # narrow viewports (see .widget .word-cloud.carousel's mobile
-        # override) without losing the size-hierarchy this px value
-        # already encodes relative to the other tags.
         style = f"font-size:calc({size:.1f}px * var(--wc-scale, 1));color:{color}"
         if href_for:
             href = escape(href_for(name))
-            # hx-get re-requests this same href but only swaps/selects
-            # hx_swap_target's subtree from the response instead of the
-            # full #content htmx's global hx-boost would otherwise swap
-            # (see CLAUDE.md's hx-boost override gotcha) - href itself is
-            # left as a real link, so this degrades to a normal full
-            # navigation with JS disabled.
             hx_attrs = (
                 f" hx-get='{href}' hx-target='#{hx_swap_target}' hx-select='#{hx_swap_target}' "
                 f"hx-swap='outerHTML' hx-push-url='true'"
@@ -390,13 +372,6 @@ def word_cloud(
             )
     cls = f"word-cloud {extra_class}" if extra_class else "word-cloud"
     id_attr = f" id='{escape(container_id)}'" if container_id else ""
-    # hx-swap-oob="innerHTML" (rather than the default outerHTML) replaces
-    # only the <a> tags inside this element, not the element itself - the
-    # carousel div's own scrollLeft lives on that element, so leaving it
-    # in place (only its children swap) is what keeps the carousel from
-    # jumping back to the start on every genre click, even though this
-    # fragment rides along in every /most-listened response regardless of
-    # which genre (if any) triggered it.
     oob_attr = " hx-swap-oob='innerHTML'" if oob else ""
     return f"<div class='{cls}'{id_attr}{oob_attr}>{''.join(tags)}</div>"
 
@@ -486,13 +461,6 @@ def detail_layout(
 
 
 def infinite_scroll_trigger(next_href: str) -> str:
-    # 'intersect once' does the loading automatically as this scrolls into
-    # view, but it's a real fallback, not decoration: some of these sit
-    # inside their own independently-scrolling container (e.g. .ml-column
-    # on desktop, not the page itself), and scrolling the wrong element
-    # never brings an invisible sentinel into view - 'click' on the same
-    # element means there's always a visible, working way to load more
-    # even if the automatic trigger never fires for whatever reason.
     return (
         f"<button type='button' class='infinite-scroll-trigger' "
         f"hx-get='{escape(next_href)}' hx-trigger='intersect once, click' hx-target='this' "

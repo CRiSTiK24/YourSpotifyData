@@ -17,12 +17,6 @@ def aggregate_plays(plays: list) -> list[tuple[str, str | None, int]]:
 
 
 def parse_month_param(value: str, *, end: bool = False) -> int:
-    """Parses a period boundary as YYYY-MM-DD (native <input type="date">),
-    YYYY-MM (native <input type="month">), or the human-typed MM/YYYY,
-    DD/MM/YYYY, or YYYY. A bare year has no month of its own, so `end`
-    picks which edge of that year it means - January for a start bound,
-    December for an end bound - so "2022" as a range on its own still
-    covers the whole year."""
     if not value:
         return 0
     parts = re.split(r"[/-]", value.strip())
@@ -34,11 +28,6 @@ def parse_month_param(value: str, *, end: bool = False) -> int:
             year, month = (int(a), int(b)) if len(a) == 4 else (int(b), int(a))
         elif len(parts) == 3:
             a, b, c = parts
-            # YYYY-MM-DD (native date input) has the year first; the
-            # human-typed DD/MM/YYYY has it last - only one of the two
-            # outer parts can plausibly be a 4-digit year, so that's
-            # enough to tell which order this is without needing to know
-            # which input produced it.
             year, month = (int(a), int(b)) if len(a) == 4 else (int(c), int(b))
         else:
             return 0

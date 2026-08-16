@@ -45,11 +45,11 @@ def date_filter_html(
 <div class="date-filter">
   <label class="date-filter-field">
     <span>From</span>
-    <input type="month" id="date-filter-start" min="{min_value}" max="{max_value}" value="{start_value}" placeholder="YYYY-MM">
+    <input type="month" id="date-filter-start" min="{min_value}" max="{end_value or max_value}" value="{start_value}" placeholder="YYYY-MM">
   </label>
   <label class="date-filter-field">
     <span>To</span>
-    <input type="month" id="date-filter-end" min="{min_value}" max="{max_value}" value="{end_value}" placeholder="YYYY-MM">
+    <input type="month" id="date-filter-end" min="{start_value or min_value}" max="{max_value}" value="{end_value}" placeholder="YYYY-MM">
   </label>
 </div>
 <script>
@@ -58,14 +58,6 @@ def date_filter_html(
   var startInput = document.getElementById("date-filter-start");
   var endInput = document.getElementById("date-filter-end");
 
-  // Reads genre from the URL at click time, not a value baked in when
-  // this script last ran - a genre-tag click only swaps #ml-results (see
-  // word_cloud()'s hx_swap_target usage above, which deliberately avoids
-  // resetting the genre carousel's scroll position by not re-rendering
-  // this whole header), so this script tag itself never re-executes when
-  // the genre changes. A closured genre value from render time would
-  // silently go stale the moment you then touched a date field, dropping
-  // whatever genre was actually selected back out of the URL.
   function navigate() {{
     var params = [];
     if (startInput.value) {{ params.push("start_month=" + encodeURIComponent(startInput.value)); }}

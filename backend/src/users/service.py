@@ -15,12 +15,6 @@ MAX_USERS = 5
 
 _USERNAME_RE = re.compile(r"^[a-zA-Z0-9_.-]{1,64}$")
 
-# top-level path segments already owned by global (non-per-user) routes -
-# see main.py's app.include_router calls for auth/covers/previews/static,
-# "admin" (every user's own /{username}/admin route would shadow it), and
-# AGGREGATE_ROOT_SEGMENTS (a user registered under one of those would make
-# the aggregate route at e.g. /now resolve to that person's page instead of
-# the merged view).
 RESERVED_USERNAMES = {
     "login",
     "logout",
@@ -31,9 +25,7 @@ RESERVED_USERNAMES = {
     "admin",
 } | AGGREGATE_ROOT_SEGMENTS
 
-# Tables that were single-tenant before multiuser support and need a
-# user_id column backfilled to the owner for any pre-existing rows.
-_USER_SCOPED_TABLES = (
+_TABLES_NEEDING_USER_ID_BACKFILL = (
     "track_history",
     "library_tracks",
     "library_albums",
@@ -59,6 +51,10 @@ def _has_column(con: sqlite3.Connection, table: str, column: str) -> bool:
     return any(row["name"] == column for row in con.execute(f"PRAGMA table_info({table})"))
 
 
+def _refresh_query_planner_statistics(con: sqlite3.Connection) -> None:
+    con.execute("ANALYZE")
+
+
 def ensure_schema(con: sqlite3.Connection) -> None:
     con.execute(
         "CREATE TABLE IF NOT EXISTS users ("
@@ -77,14 +73,9 @@ def ensure_schema(con: sqlite3.Connection) -> None:
         if _table_exists(con, "app_profile"):
             row = con.execute("SELECT username FROM app_profile WHERE id = 1").fetchone()
             legacy_username = row["username"] if row else None
-        # Only fabricate an owner from env-var settings for an existing
-        # install being upgraded (a legacy app_profile row proves one was
-        # already running) or one that's fully pre-configured via env vars.
-        # A genuinely fresh clone with blank settings is left owner-less on
-        # purpose - main.py's auth_state_middleware gates every route to
-        # /setup until someone actually creates the owner there, rather
-        # than silently running with an owner whose username is "".
-        if legacy_username or (settings.owner_username and settings.allowed_email):
+        is_upgrade_of_existing_single_user_install = bool(legacy_username)
+        is_fully_env_preconfigured = bool(settings.owner_username and settings.allowed_email)
+        if is_upgrade_of_existing_single_user_install or is_fully_env_preconfigured:
             con.execute(
                 "INSERT INTO users (username, email, role, created_at) VALUES (?, ?, 'owner', ?)",
                 (legacy_username or settings.owner_username, settings.allowed_email, _now_iso()),
@@ -98,7 +89,7 @@ def ensure_schema(con: sqlite3.Connection) -> None:
         con.commit()
         return
 
-    for table in _USER_SCOPED_TABLES:
+    for table in _TABLES_NEEDING_USER_ID_BACKFILL:
         if not _has_column(con, table, "user_id"):
             con.execute(f"ALTER TABLE {table} ADD COLUMN user_id INTEGER")
         con.execute(f"UPDATE {table} SET user_id = ? WHERE user_id IS NULL", (owner["id"],))
@@ -116,13 +107,7 @@ def ensure_schema(con: sqlite3.Connection) -> None:
 
     con.commit()
 
-    # Without stats, SQLite's planner has no way to know the new user_id
-    # indexes above are far less selective than the existing (name, singer)
-    # index on track_history, and picks them instead for queries filtering
-    # on both - turning an index lookup into a near-full-table scan per row
-    # (measured: ~3s per playlist on 238k rows, vs ~2ms after ANALYZE).
-    # Cheap enough (this DB's scale) to just always run after a schema change.
-    con.execute("ANALYZE")
+    _refresh_query_planner_statistics(con)
 
 
 def get_by_username(con: sqlite3.Connection, username: str) -> sqlite3.Row | None:
@@ -223,10 +208,6 @@ def remove_member(con: sqlite3.Connection, user_id: int) -> None:
 
 
 def resolve_viewed_user(request: Request, con: DBDep) -> sqlite3.Row | None:
-    """Returns None when mounted at a root, no-username path (the aggregate,
-    all-users views - see main.py's app.include_router calls without a
-    "/{username}" prefix), rather than requiring a username segment that
-    doesn't exist on those routes."""
     username = request.path_params.get("username")
     if username is None:
         return None

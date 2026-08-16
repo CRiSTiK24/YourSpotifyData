@@ -46,31 +46,6 @@ def _load_recent_discoveries(
 def _load_recently_explored_albums(
     con: sqlite3.Connection, user_id: int | None, days: int, min_tracks: int
 ) -> list[sqlite3.Row]:
-    # "Explored" = at least half of the album's tracks (distinct track
-    # names ever played from it - there's no canonical tracklist/total-track
-    # count anywhere in this schema, so a track's own play history is the
-    # only available stand-in for "how big is this album") had their first
-    # ever play within the window. recent_tracks*2 >= total_tracks instead
-    # of a fixed count so it scales with album length rather than e.g.
-    # always demanding 3 fresh tracks regardless of whether the album has
-    # 4 tracks or 20.
-    #
-    # min_tracks guards against that same proxy at the low end: an album
-    # you've only ever sampled 1-2 tracks from trivially clears a 50%
-    # ratio the moment you replay just one of them, which reads as "I
-    # explored this album" when really it's "I've barely touched it" -
-    # requiring a handful of distinct tracks played (ever) before an album
-    # is eligible at all keeps the ratio meaningful.
-    #
-    # group_key: Spotify sometimes reports a different album_name string
-    # for the same release depending on which API path supplied it (see
-    # albums/service.py's resolve_album_name_variants, which handles the
-    # single-album-page version of this same problem) - without unifying
-    # by the album_images-resolved spotify_album_id here too, a real
-    # explored album could get its plays split across two name spellings
-    # and never individually clear the ratio. Falls back to the literal
-    # (singer, album) pair when no id was resolved (album_images covers
-    # ~99.99% of this library, but not unconditionally all of it).
     window = f"-{days} days"
     user_clause, user_params = ("th.user_id = ?", [user_id]) if user_id is not None else ("1=1", [])
     return con.execute(
@@ -111,10 +86,6 @@ def _load_recently_explored_albums(
 
 
 def _most_listened_genre_href(genre: str) -> str:
-    # matches this widget's own "so far this month" window, so clicking a
-    # genre lands on the exact same period /most-listened's date filter
-    # (start_month/end_month - see library/views.py's date_filter_html)
-    # would otherwise use to filter to it.
     month = datetime.now(UTC).strftime("%Y-%m")
     return u(f"/most-listened?start_month={month}&end_month={month}&genre={quote(genre)}")
 

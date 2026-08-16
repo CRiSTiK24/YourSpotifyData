@@ -32,13 +32,6 @@ from .views import playlists_content
 router = APIRouter(tags=["playlists"])
 logger = logging.getLogger("playlists")
 
-# Listing is safe to mount both under /{username} and at the root aggregate
-# view (see main.py) since it's pure GET; the description-edit POST and
-# detail GET below stay /{username}-only, since a playlist's numeric id is
-# only meaningful together with the user that owns it (see schema.sql:
-# UNIQUE(user_id, name)) - unlike albums/artists/tracks, which are keyed by
-# name and can genuinely merge across users, two users' playlists are
-# distinct rows even if identically named.
 listing_router = APIRouter(tags=["playlists"])
 
 

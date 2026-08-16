@@ -22,11 +22,6 @@ def get_connection() -> sqlite3.Connection:
 
 
 def ensure_base_schema(con: sqlite3.Connection) -> None:
-    """Applies schema.sql unconditionally - every statement in it is already
-    CREATE TABLE/INDEX/TRIGGER IF NOT EXISTS, so this is a no-op against an
-    existing database and the only thing that makes a genuinely fresh clone
-    (no SpotifyData.db yet) bootable at all, rather than crashing on the
-    first query against a table that was never created."""
     with open(_SCHEMA_PATH) as f:
         con.executescript(f.read())
 

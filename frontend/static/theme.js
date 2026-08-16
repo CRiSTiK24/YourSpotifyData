@@ -17,12 +17,9 @@
     return /^#[0-9a-fA-F]{6}$/.test(value);
   }
 
-  // Custom properties aren't resolved by getComputedStyle().getPropertyValue()
-  // — it returns the raw "var(...)" token text. Route the value through a real
-  // CSS property on a detached probe element to get the browser to resolve it.
-  var probe = document.createElement("div");
-  probe.style.cssText = "position:absolute;left:-9999px;top:-9999px;";
-  document.body.appendChild(probe);
+  var colorResolutionProbe = document.createElement("div");
+  colorResolutionProbe.style.cssText = "position:absolute;left:-9999px;top:-9999px;";
+  document.body.appendChild(colorResolutionProbe);
 
   function rgbToHex(rgb) {
     var m = rgb.match(/\d+/g);
@@ -39,14 +36,10 @@
   }
 
   function resolvedHex(varName) {
-    probe.style.setProperty("color", "var(" + varName + ")");
-    return rgbToHex(getComputedStyle(probe).color);
+    colorResolutionProbe.style.setProperty("color", "var(" + varName + ")");
+    return rgbToHex(getComputedStyle(colorResolutionProbe).color);
   }
 
-  // Numeric custom properties (e.g. "160%", "30deg") resolve fine as plain
-  // text via getComputedStyle on :root itself - no probe trick needed like
-  // the color tokens above, since we're not asking the browser to parse
-  // them as a color.
   function resolvedNumber(varName) {
     var raw = getComputedStyle(document.documentElement).getPropertyValue(varName).trim();
     return parseFloat(raw) || 0;

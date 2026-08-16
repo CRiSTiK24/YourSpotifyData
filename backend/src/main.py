@@ -149,11 +149,6 @@ user_router.include_router(users_router)
 
 app.include_router(user_router)
 
-# Same read-only routers as above, mounted a second time with no
-# "/{username}" prefix - resolve_viewed_user (src/users/service.py) returns
-# None here since there's no username path param, which every in-scope
-# route/service function treats as "no filter, merge across every user"
-# rather than one person's data.
 app.include_router(home_router)
 app.include_router(search_router)
 app.include_router(library_router)

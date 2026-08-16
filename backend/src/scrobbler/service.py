@@ -27,17 +27,9 @@ SCOPE = (
     "playlist-modify-public playlist-modify-private"
 )
 
-# CSRF state -> which user's tokens the OAuth callback should write. Only
-# ever a few entries at once (max 5 users, one in-flight connect attempt
-# each), so a plain dict + lock is enough - same pattern as auth's pending
-# login codes.
 _pending_oauth_states: dict[str, int] = {}
 _pending_oauth_states_lock = threading.Lock()
 
-# Spotify's own placeholder for tracks it can no longer resolve metadata for
-# (seen on removed/region-locked tracks that still show up in play history) -
-# not something our code ever produces, so filtering on the literal string
-# is the only way to keep this junk out of track_history.
 UNKNOWN_TRACK_NAME = "Unknown Track"
 
 
